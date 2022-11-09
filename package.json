@@ -1,0 +1,36 @@
+{
+  "name": "accelasearch",
+  "version": "1.0.0",
+  "description": "Accelasearch module development",
+  "main": "index.js",
+  "bin": "./index.js",
+  "private": true,
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "args-parser": "^1.3.0",
+    "chalk": "^4.1.2",
+    "copyfiles": "^2.4.1",
+    "github-release": "^0.2.0",
+    "replace-in-file": "^6.3.5",
+    "rimraf": "^3.0.2",
+    "zip-a-folder": "^1.1.5"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.1.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buggyzap/accelasearch.git"
+  },
+  "author": "DGCAL SRL",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/buggyzap/accelasearch/issues"
+  },
+  "homepage": "https://github.com/buggyzap/accelasearch#readme"
+}

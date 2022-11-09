@@ -7,7 +7,7 @@
  * Boost your search engine
  *
  * @author AccelaSearch <support@accelasearch.com>
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 if (!defined('_PS_VERSION_')) exit;
@@ -1854,11 +1854,11 @@ class AccelaSearch extends Module
 	{
 		$this->name = 'accelasearch';
 		$this->tab = 'front_office_features';
-		$this->version = '0.0.2';
+		$this->version = '0.0.3';;;;;;;
 		$this->author = 'AccelaSearch';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = [
-			'min' => '1.6',
+			'min' => '1.7',
 			'max' => _PS_VERSION_,
 		];
 		$this->bootstrap = true;
