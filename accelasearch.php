@@ -12,7 +12,7 @@
 
 if (!defined('_PS_VERSION_')) exit;
 
-require_once __DIR__."/autoload.php";
+require_once __DIR__ . "/autoload.php";
 
 class AccelaSearch extends Module
 {
@@ -28,7 +28,7 @@ class AccelaSearch extends Module
 		'ACCELASEARCH_LAST_CRONJOB_EXECUTION' => 0,
 		'ACCELASEARCH_LAST_CRONJOB_PAGEVIEW_EXECUTION' => 0,
 		'ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES' => 0,
-    'ACCELASEARCH_FULLSYNC_CREATION_PROGRESS' => 0
+		'ACCELASEARCH_FULLSYNC_CREATION_PROGRESS' => 0
 	];
 
 	const TABLE_KEYS = [
@@ -94,26 +94,25 @@ class AccelaSearch extends Module
 		array $data = [],
 		bool $is_auth = false,
 		array $headers = []
-	)
-	{
+	) {
 		$method = strtoupper($method);
-		if($is_auth && empty(Configuration::get("ACCELASEARCH_APIKEY"))){
+		if ($is_auth && empty(Configuration::get("ACCELASEARCH_APIKEY"))) {
 			throw new \Exception("Cannot send API request without any configured ApiKey");
 		}
-		if(!in_array($method, self::AS_CONFIG["ACCEPTED_METHODS"])){
+		if (!in_array($method, self::AS_CONFIG["ACCEPTED_METHODS"])) {
 			throw new \Exception("Invalid method");
 		}
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, self::AS_CONFIG["API_ENDPOINT"].$controller);
+		curl_setopt($ch, CURLOPT_URL, self::AS_CONFIG["API_ENDPOINT"] . $controller);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		if($is_auth){
-			$headers[] = "X-Accelasearch-Apikey: ".Configuration::get("ACCELASEARCH_APIKEY");
+		if ($is_auth) {
+			$headers[] = "X-Accelasearch-Apikey: " . Configuration::get("ACCELASEARCH_APIKEY");
 		}
-		if(count($data) > 0){
+		if (count($data) > 0) {
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		}
-		if(count($headers) > 0){
+		if (count($headers) > 0) {
 			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 		}
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -125,28 +124,28 @@ class AccelaSearch extends Module
 	public static function triggerCronjobExternal()
 	{
 		$curl = curl_init();
-		$url = _PS_BASE_URL_SSL_.__PS_BASE_URI__."modules/accelasearch/cron.php?token=".Configuration::get("ACCELASEARCH_CRON_TOKEN")."&wait=false&origin=pageview";
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_USERAGENT, 'api');
-    curl_setopt($curl, CURLOPT_HEADER, 0);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, false);
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
-    curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
-    curl_exec($curl);
-    curl_close($curl);
+		$url = _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?token=" . Configuration::get("ACCELASEARCH_CRON_TOKEN") . "&wait=false&origin=pageview";
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_USERAGENT, 'api');
+		curl_setopt($curl, CURLOPT_HEADER, 0);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, false);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
+		curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
+		curl_exec($curl);
+		curl_close($curl);
 	}
 
 	public static function convertShopIdFromCollectorVersionToReal($id)
 	{
 		$conversion = self::asApi(
-			"shops/".$id."/convert",
+			"shops/" . $id . "/convert",
 			"GET",
 			[],
 			true
 		);
 		$conversion = json_decode($conversion);
 		$status = $conversion->status ?? null;
-		if($status === "ERROR") throw new \Exception("An error occured during shop conversion to real");
+		if ($status === "ERROR") throw new \Exception("An error occured during shop conversion to real");
 		return $conversion->shopIdentifier;
 	}
 
@@ -160,7 +159,7 @@ class AccelaSearch extends Module
 		);
 		$notify = json_decode($notify);
 		$status = $notify->status ?? null;
-		if($status === "ERROR") throw new \Exception("An error occured during shop notification to AccelaSearch");
+		if ($status === "ERROR") throw new \Exception("An error occured during shop notification to AccelaSearch");
 		return $notify;
 	}
 
@@ -178,7 +177,7 @@ class AccelaSearch extends Module
 		$category_tree = [];
 		$id_parent = 0;
 		$executions = 0;
-		while($id_category > 2){
+		while ($id_category > 2) {
 			$raw_query = AccelaSearch\Query::getByName("getFullCategoryNameByIdAndLang_query", [
 				"id_lang" => $id_lang,
 				"id_category" => $id_category
@@ -187,7 +186,7 @@ class AccelaSearch extends Module
 			$id_parent = $category["id_parent"];
 			$id_category = $id_parent;
 			$category_tree[] = $category["name"];
-			if($executions >= 5) break;
+			if ($executions >= 5) break;
 			$executions++;
 		}
 		return implode(" > ", array_reverse($category_tree));
@@ -195,27 +194,27 @@ class AccelaSearch extends Module
 
 	public static function getCategoryById($id, $categories)
 	{
-		foreach($categories as $category){
-			if($category["id_category"] == $id) return $category;
+		foreach ($categories as $category) {
+			if ($category["id_category"] == $id) return $category;
 		}
 		return false;
 	}
 
 	public static function parseCategories($categories, $id_shop, $id_lang, $storeview_id, &$processed_parents = [])
 	{
-		if(!(bool)count($categories)) return;
+		if (!(bool)count($categories)) return;
 		$id_parent = 0;
-		foreach($categories as $category){
+		foreach ($categories as $category) {
 
 			$link = new Link();
 			$children_exist = (isset($category["children"])) ? true : false;
 			$id_category = $category["id_category"];
 			$id_parent_category = $category["id_parent"];
-			if(in_array($id_parent_category, array_keys($processed_parents))) $id_parent = $processed_parents[$id_parent_category];
+			if (in_array($id_parent_category, array_keys($processed_parents))) $id_parent = $processed_parents[$id_parent_category];
 			$name = $category["name"];
 			$full_name = self::getFullCategoryNameByIdAndLang($id_category, $id_lang);
 			$url = $link->getCategoryLink($id_category, null, $id_lang, null, $id_shop);
-			$external_id_str = $id_shop."_".$id_lang."_".$id_category;
+			$external_id_str = $id_shop . "_" . $id_lang . "_" . $id_category;
 
 			$generated_id = AS_Collector::getInstance()->insert("categories", [
 				"storeviewid" => $storeview_id,
@@ -226,16 +225,14 @@ class AccelaSearch extends Module
 				"parentid" => $id_parent
 			], true);
 
-			if(isset($category["children"])){
+			if (isset($category["children"])) {
 				$processed_parents[$id_category] = $generated_id;
 			}
 
-			if($children_exist){
+			if ($children_exist) {
 				self::parseCategories($category["children"], $id_shop, $id_lang, $storeview_id, $processed_parents);
 			}
-
 		}
-
 	}
 
 	public static function generateCategories()
@@ -243,7 +240,7 @@ class AccelaSearch extends Module
 
 		$as_shops = self::getAsShops();
 
-		foreach($as_shops as $id_shop_and_lang => $as_shop){
+		foreach ($as_shops as $id_shop_and_lang => $as_shop) {
 
 			$storeview_id = $as_shop["as_shop_id"];
 			$id_shop = $as_shop["id_shop"];
@@ -251,11 +248,9 @@ class AccelaSearch extends Module
 			Shop::setContext(Shop::CONTEXT_SHOP, $id_shop);
 			$full_categories = Category::getNestedCategories(1, $id_lang);
 			self::parseCategories($full_categories, $id_shop, $id_lang, $storeview_id);
-
 		}
 
 		Shop::setContext(Shop::CONTEXT_ALL);
-
 	}
 
 	/**
@@ -276,12 +271,12 @@ class AccelaSearch extends Module
 		$queries[] = "DELETE FROM products_images_lbl;";
 		$queries[] = "DELETE FROM products_categories;";
 		$queries[] = "DELETE FROM categories;";
-		foreach($as_shops as $id_shop_and_lang => $as_shop){
+		foreach ($as_shops as $id_shop_and_lang => $as_shop) {
 
 			$storeview_id = $as_shop["as_shop_id"];
 			$id_shop = $as_shop["id_shop"];
 			$id_lang = $as_shop["id_lang"];
-			$externalidstr_warehouse = $id_shop."_".$id_lang;
+			$externalidstr_warehouse = $id_shop . "_" . $id_lang;
 
 			$customer_groups = Group::getGroups($id_lang, $id_shop);
 
@@ -291,25 +286,23 @@ class AccelaSearch extends Module
 			]);
 
 			// creazione gruppi clienti
-			foreach($customer_groups as $customer_group){
+			foreach ($customer_groups as $customer_group) {
 
 				$id_group = $customer_group["id_group"];
 				$name = $customer_group["name"];
-				$externalidstr = $id_shop."_".$id_lang."_".$id_group;
+				$externalidstr = $id_shop . "_" . $id_lang . "_" . $id_group;
 				$queries[] = AccelaSearch\Query::getByName("shopInitializationsCustomerGroup_query", [
 					"name" => pSQL($name),
 					"externalidstr" => $externalidstr,
 					"storeview_id" => $storeview_id
 				]);
-
 			}
-
 		}
 
 		$queries[] = "COMMIT;";
 
 		$queries = implode("", $queries);
-		if(AccelaSearch::AS_CONFIG["LOG_QUERY"]){
+		if (AccelaSearch::AS_CONFIG["LOG_QUERY"]) {
 			Db::getInstance()->insert("log", [
 				"severity" => 1,
 				"error_code" => 0,
@@ -319,7 +312,6 @@ class AccelaSearch extends Module
 
 		$shop_init = AS_Collector::getInstance()->query($queries);
 		self::generateCategories();
-
 	}
 
 	/**
@@ -333,12 +325,10 @@ class AccelaSearch extends Module
 		$attributes = AS_Collector::getInstance()->executeS("SELECT * FROM products_attr_label WHERE storeviewid = $storeviewid");
 		$image_attributes = AS_Collector::getInstance()->executeS("SELECT * FROM products_images_lbl WHERE storeviewid = $storeviewid");
 		$as_attributes = [];
-		foreach($attributes as $attribute)
-		{
+		foreach ($attributes as $attribute) {
 			$as_attributes[$attribute["label"]] = $attribute["id"];
 		}
-		foreach($image_attributes as $image_attribute)
-		{
+		foreach ($image_attributes as $image_attribute) {
 			$as_attributes[$image_attribute["label"]] = $image_attribute["id"];
 		}
 		return $as_attributes;
@@ -348,8 +338,7 @@ class AccelaSearch extends Module
 	{
 		$types = AS_Collector::getInstance()->executeS("SELECT * FROM products_types");
 		$as_types = [];
-		foreach($types as $type)
-		{
+		foreach ($types as $type) {
 			$as_types[$type["label"]] = $type["id"];
 		}
 		return $as_types;
@@ -359,8 +348,7 @@ class AccelaSearch extends Module
 	{
 		$users_groups = AS_Collector::getInstance()->executeS("SELECT * FROM users_groups WHERE storeviewid = $storeviewid");
 		$as_groups = [];
-		foreach($users_groups as $user_group)
-		{
+		foreach ($users_groups as $user_group) {
 			$as_groups[$user_group["externalidstr"]] = $user_group["id"];
 		}
 		return $as_groups;
@@ -374,7 +362,8 @@ class AccelaSearch extends Module
 	// NOTE: Uncomment the hardcoded return value for testing purposes
 	public static function estimateNbProducts($id_shop, $id_lang)
 	{
-		$query = AccelaSearch\Query::getByName("estimateNbProducts_query",
+		$query = AccelaSearch\Query::getByName(
+			"estimateNbProducts_query",
 			[
 				"id_shop" => $id_shop,
 				"id_lang" => $id_lang
@@ -404,25 +393,25 @@ class AccelaSearch extends Module
 	 */
 	public function hookActionCronJob($wait = true)
 	{
-		if($wait !== true){
-			if(function_exists("set_time_limit")) set_time_limit(0);
-			if(function_exists("ignore_user_abort")) ignore_user_abort(true);
-			if(function_exists("fastcgi_finish_request")) fastcgi_finish_request();
+		if ($wait !== true) {
+			if (function_exists("set_time_limit")) set_time_limit(0);
+			if (function_exists("ignore_user_abort")) ignore_user_abort(true);
+			if (function_exists("fastcgi_finish_request")) fastcgi_finish_request();
 		}
 		$dryrun = AccelaSearch::AS_CONFIG["CRONJOB_DRYRUN"];
 		$log_stack = [];
-		if(Module::isInstalled($this->name)){
+		if (Module::isInstalled($this->name)) {
 
 			// collector check
-			try{
+			try {
 				AS_Collector::getInstance();
-			}catch(Exception $e){
+			} catch (Exception $e) {
 				die("Invalid collector credentials");
 			}
 
 			// shop configuration check
 			$as_shops = self::getAsShops();
-			if(!$as_shops) die("No shops configured");
+			if (!$as_shops) die("No shops configured");
 
 			$fullsync_progress = Configuration::get("ACCELASEARCH_FULLSYNC_PROGRESS");
 			$fullsync_creation_progress = Configuration::get("ACCELASEARCH_FULLSYNC_CREATION_PROGRESS");
@@ -430,10 +419,10 @@ class AccelaSearch extends Module
 			$sync = new AccelaSearch\Sync();
 
 			// la sync non è mai stata avviata
-			if($sync->neverStarted()) die("Exit without run anything");
+			if ($sync->neverStarted()) die("Exit without run anything");
 
 			// se ha finito di scrivere le code di creazione
-			if($sync->hasCompletedQueueCreation()){
+			if ($sync->hasCompletedQueueCreation()) {
 
 				// sync differenziale
 				$sync->createQueryByDifferentialQueue();
@@ -441,16 +430,15 @@ class AccelaSearch extends Module
 				// check se c'è un elemento in coda pronto per AS
 
 				AccelaSearch\Queue::checkAndSendRowToAs();
-
 			}
 
 			// se il flag è in progress
-			if($sync->inProgress()){
+			if ($sync->inProgress()) {
 
 				// check se c'è un elemento in coda pronto per AS
 				AccelaSearch\Queue::checkAndSendRowToAs();
 
-				if($sync->isLockedByCreationProcess()){
+				if ($sync->isLockedByCreationProcess()) {
 					$sync->unlock();
 					$this->hookActionCronJob();
 				}
@@ -459,9 +447,9 @@ class AccelaSearch extends Module
 			}
 
 			// se il flag è libero per la scrittura
-			if($sync->isAbleToWriteNewRows()){
+			if ($sync->isAbleToWriteNewRows()) {
 
-				foreach($as_shops as $as_shop){
+				foreach ($as_shops as $as_shop) {
 
 					[
 						"id_shop" => $id_shop,
@@ -483,7 +471,7 @@ class AccelaSearch extends Module
 
 					// se c'è almeno un elemento in coda riprendo la generazione da quel punto
 					// fino al suo completamento
-					if(count($queues) > 0){
+					if (count($queues) > 0) {
 						[
 							"start_cycle" => $start_cycle,
 							"end_cycle" => $end_cycle,
@@ -494,7 +482,7 @@ class AccelaSearch extends Module
 						$log_stack[] = "C'è almeno un elemento in coda in questo contesto, riprendo la generazione da qui. Start cycle: $start_cycle - End cycle: $end_cycle";
 
 						// se per questo shop e lingua la coda è terminata, passo al prossimo ciclo
-						if((int)$start_cycle == (int)$end_cycle){
+						if ((int)$start_cycle == (int)$end_cycle) {
 							$log_stack[] = "Skippo questo shop e id_lang perchè la coda è terminata";
 							continue;
 						}
@@ -502,7 +490,7 @@ class AccelaSearch extends Module
 
 
 					// se il ciclo non è ancora finito
-					if((int)$start_cycle <= (int)$end_cycle){
+					if ((int)$start_cycle <= (int)$end_cycle) {
 						// imposto il lock
 						$sync->lock();
 
@@ -512,15 +500,15 @@ class AccelaSearch extends Module
 						$queue_start = (count($queues) === 0) ? $start_cycle : ++$start_cycle;
 						$executions_nb = $end_cycle;
 
-						for($start = $queue_start; $start <= $executions_nb; $start++){
+						for ($start = $queue_start; $start <= $executions_nb; $start++) {
 
 							// se non c'erano elementi in coda l'offset va sceso di 1
 							$limit_starter = $start - 1;
 
-							$limit = $divider*$limit_starter.",".$divider;
+							$limit = $divider * $limit_starter . "," . $divider;
 							$log_stack[] = "Genero le query e le scrivo nella coda per id shop: $id_shop, id lingua: $id_lang con limit: $limit e start: $start<br><br>";
 
-							if(!$dryrun){
+							if (!$dryrun) {
 								$query = AccelaSearch::generateProductsQueryStatic(
 									$id_shop,
 									$id_lang,
@@ -530,7 +518,6 @@ class AccelaSearch extends Module
 								);
 								AccelaSearch\Queue::create($query, $limit, $start, $executions_nb, $id_shop, $id_lang);
 							}
-
 						}
 					}
 					AccelaSearch\Sync::reindex($as_shop_real_id);
@@ -539,20 +526,18 @@ class AccelaSearch extends Module
 				// scrittura terminata rilascio del lock e della fullsync creation e lancio reindex remote
 				$sync->terminate();
 				$this->hookActionCronJob();
-
 			}
 		}
 
-		if($dryrun){
+		if ($dryrun) {
 			echo implode("<br>", $log_stack);
 		}
-
 	}
 
 	public static function orderAndFilterRows($rows, $id_shop, $id_lang)
 	{
 		$products = [];
-		foreach($rows as $row){
+		foreach ($rows as $row) {
 
 			[
 				"id" => $id,
@@ -572,27 +557,27 @@ class AccelaSearch extends Module
 			$id_lang = (int)$id_lang;
 
 			// skip if id_shop is not global and not configured on AS
-			if($row_id_shop !== 0 && $row_id_shop !== $id_shop) continue;
+			if ($row_id_shop !== 0 && $row_id_shop !== $id_shop) continue;
 			// skip if id_lang is not global and not configured on AS
-			if($row_id_lang !== 0 && $row_id_lang !== $id_lang) continue;
+			if ($row_id_lang !== 0 && $row_id_lang !== $id_lang) continue;
 
 			// NOTE: Gli attribute_image necessitano di aggiornamenti e cascata e non possono essere soggetti dell'accorpamento che avviene successivamente
-			if($type == "attribute_image") $id_product = $id."_id_image";
+			if ($type == "attribute_image") $id_product = $id . "_id_image";
 
 			// add id_product as array key and add new level
-			if(!array_key_exists($id_product, $products)) $products[$id_product] = [];
+			if (!array_key_exists($id_product, $products)) $products[$id_product] = [];
 
 			// add id_product_attribute as array key and add new level
-			if(!array_key_exists($id_product_attribute, $products[$id_product])) $products[$id_product][$id_product_attribute] = [];
+			if (!array_key_exists($id_product_attribute, $products[$id_product])) $products[$id_product][$id_product_attribute] = [];
 
 			// add entity type as array key and add new level
-			if(!array_key_exists($type, $products[$id_product][$id_product_attribute])) $products[$id_product][$id_product_attribute][$type] = [];
+			if (!array_key_exists($type, $products[$id_product][$id_product_attribute])) $products[$id_product][$id_product_attribute][$type] = [];
 
 			// add operation type to each entity as array key and add new level
-			if(!array_key_exists($operation,$products[$id_product][$id_product_attribute][$type])) $products[$id_product][$id_product_attribute][$type][$operation] = [];
+			if (!array_key_exists($operation, $products[$id_product][$id_product_attribute][$type])) $products[$id_product][$id_product_attribute][$type][$operation] = [];
 
 			// to prevent categories,images assignment override, if a type of update is a category product or attribute_image we reassign a $name and assure it is unique so all updates coming processed
-			if($type == "category_product" || $type == "attribute_image" || $type == "image") $name .= "_".$value;
+			if ($type == "category_product" || $type == "attribute_image" || $type == "image") $name .= "_" . $value;
 
 			// this method assure non useless updates and get access to update prioritization and removal
 			$products[$id_product][$id_product_attribute][$type][$operation][$name] = [
@@ -613,11 +598,11 @@ class AccelaSearch extends Module
 	public static function getDifferentialQueryByRowLegacy($id_product, $_row, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id)
 	{
 
-		if(!AccelaSearch\Query::$query_data_manager) throw new \Exception("Cannot perform query without query data manager instance loaded");
+		if (!AccelaSearch\Query::$query_data_manager) throw new \Exception("Cannot perform query without query data manager instance loaded");
 
 		$queries = "";
 
-		foreach($_row as $id_product_attribute => $row){
+		foreach ($_row as $id_product_attribute => $row) {
 
 			$product_update = $row["product"] ?? false;
 			$image_update = $row["image"] ?? false;
@@ -629,43 +614,42 @@ class AccelaSearch extends Module
 			$variant_update = $row["variant"] ?? false;
 
 			// se id_product non è presente è una operazione globale
-			if(!(bool)$id_product){
+			if (!(bool)$id_product) {
 
 				// global price update
-				if($price_update){
+				if ($price_update) {
 					$queries .= AccelaSearch\Query::getGlobalProductPriceUpdateQuery($id_shop, $id_lang, $as_shop_id);
 				}
 
 				// se è un aggiornamento globale non bisogna passare dagli update individuali
 				return $queries;
-
 			}
 
 			// potrebbe essere l'aggiunta di una variante ad un prodotto esistente ma anche il passaggio di un prodotto semplice ad un prodotto configurabile
-			if($variant_update){
-				if(isset($variant_update["i"]) && isset($variant_update["d"])) continue;
-				if(isset($variant_update["i"])){
+			if ($variant_update) {
+				if (isset($variant_update["i"]) && isset($variant_update["d"])) continue;
+				if (isset($variant_update["i"])) {
 					$queries .= AccelaSearch\Query::transformProductAndCreateVariant($id_product, $id_product_attribute, $id_shop, $id_lang, $as_shop_id);
 				}
-				if(isset($variant_update["d"])){
-					$externalidstr = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute;
+				if (isset($variant_update["d"])) {
+					$externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute;
 					$queries .= "UPDATE products SET deleted = 1 WHERE externalidstr = '$externalidstr';";
 				}
 			}
 
 			// se il prodotto è stato aggiornato
-			if($product_update){
+			if ($product_update) {
 
 				// se il prodotto andrà eliminato
-				if(isset($product_update["d"])){
+				if (isset($product_update["d"])) {
 					$queries .= AccelaSearch\Query::getByName("remote_product_delete", [
-						"product_external_id_str" => $id_shop."_".$id_lang."_".$id_product."_0"
+						"product_external_id_str" => $id_shop . "_" . $id_lang . "_" . $id_product . "_0"
 					]);
 				}
 
 				// se il prodotto è da creare, conviene skippare gli update presenti in coda e recuperare le informazioni aggiornate da PS, rimuovendo tutta la parte di update
-				if(isset($product_update["i"])){
-					if(isset($product_update["u"])) unset($product_update["u"]);
+				if (isset($product_update["i"])) {
+					if (isset($product_update["u"])) unset($product_update["u"]);
 					$image_update = false;
 					$stock_update = false;
 					$price_update = false;
@@ -676,37 +660,36 @@ class AccelaSearch extends Module
 				}
 
 				// ...se invece ci sono aggiornamenti
-				if(isset($product_update["u"])){
-					foreach($product_update["u"] as $entity => $update){
+				if (isset($product_update["u"])) {
+					foreach ($product_update["u"] as $entity => $update) {
 						$queries .= AccelaSearch\Query::getProductUpdateQueryByEntity($update["raw"], $id_shop, $id_lang);
 					}
 				}
-
 			}
 
 			// se le immagini sono state aggiornate
-			if($image_update){
+			if ($image_update) {
 
 				// elimino le image delete se c'è almeno un insert o un update
 				// if(isset($image_update["i"]) || isset($image_update["u"])) unset($image_update["d"]);
 
-				if(isset($image_update["d"])){
-					foreach($image_update["d"] as $id_image_str => $im_update){
+				if (isset($image_update["d"])) {
+					foreach ($image_update["d"] as $id_image_str => $im_update) {
 						[
 							"id_product" => $row_id_product,
 							"id_product_attribute" => $row_id_product_attribute,
 							"value" => $id_image
 						] = $im_update["raw"];
 
-						$image_external_id_cover = $id_shop."_".$id_lang."_".$row_id_product."_".$row_id_product_attribute."_".$id_image."_cover";
-						$image_external_id_others = $id_shop."_".$id_lang."_".$row_id_product."_".$row_id_product_attribute."_".$id_image."_others";
+						$image_external_id_cover = $id_shop . "_" . $id_lang . "_" . $row_id_product . "_" . $row_id_product_attribute . "_" . $id_image . "_cover";
+						$image_external_id_others = $id_shop . "_" . $id_lang . "_" . $row_id_product . "_" . $row_id_product_attribute . "_" . $id_image . "_others";
 						$queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_cover';";
 						$queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_others';";
 					}
 				}
 
-				if(isset($image_update["i"])){
-					foreach($image_update["i"] as $id_image_str => $im_update){
+				if (isset($image_update["i"])) {
+					foreach ($image_update["i"] as $id_image_str => $im_update) {
 						[
 							"id_product" => $row_id_product,
 							"id_product_attribute" => $row_id_product_attribute,
@@ -717,8 +700,8 @@ class AccelaSearch extends Module
 					}
 				}
 
-				if(isset($image_update["u"])){
-					foreach($image_update["u"] as $id_image_str => $im_update){
+				if (isset($image_update["u"])) {
+					foreach ($image_update["u"] as $id_image_str => $im_update) {
 						[
 							"id_product" => $row_id_product,
 							"id_product_attribute" => $row_id_product_attribute,
@@ -727,13 +710,12 @@ class AccelaSearch extends Module
 						$queries .= AccelaSearch\Query::getProductImageByIdQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $id_image);
 					}
 				}
-
 			}
 
 			// se le quantità sono cambiate
-			if($stock_update){
+			if ($stock_update) {
 
-				if(isset($stock_update["u"])){
+				if (isset($stock_update["u"])) {
 					[
 						"id_product" => $row_id_product,
 						"id_product_attribute" => $row_id_product_attribute,
@@ -742,13 +724,12 @@ class AccelaSearch extends Module
 
 					$queries .= AccelaSearch\Query::getProductStockUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $quantity);
 				}
-
 			}
 
 			// se ci sono state regole di prezzo per questo prodotto, bisogna ricalcolare ed aggiornare i prezzi
-			if($price_update){
+			if ($price_update) {
 
-				if(isset($price_update["i"])){
+				if (isset($price_update["i"])) {
 					[
 						"id_product" => $row_id_product,
 						"id_product_attribute" => $row_id_product_attribute
@@ -757,7 +738,7 @@ class AccelaSearch extends Module
 					$queries .= AccelaSearch\Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang);
 				}
 
-				if(isset($price_update["d"])){
+				if (isset($price_update["d"])) {
 					[
 						"id_product" => $row_id_product,
 						"id_product_attribute" => $row_id_product_attribute
@@ -766,7 +747,7 @@ class AccelaSearch extends Module
 					$queries .= AccelaSearch\Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang);
 				}
 
-				if(isset($price_update["u"])){
+				if (isset($price_update["u"])) {
 					[
 						"id_product" => $row_id_product,
 						"id_product_attribute" => $row_id_product_attribute
@@ -774,76 +755,73 @@ class AccelaSearch extends Module
 
 					$queries .= AccelaSearch\Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang);
 				}
-
 			}
 
 			// variazioni nelle categorie
-			if($category_update){
+			if ($category_update) {
 
 
 				// se la categoria andrà eliminata è inutile fare le altre operazioni di update
-				if(isset($category_update["d"])){
+				if (isset($category_update["d"])) {
 					$queries .= AccelaSearch\Query::getCategoryDeleteQuery($id_product, $id_shop, $id_lang, $as_shop_id);
-					if(isset($category_update["i"])) unset($category_update["i"]);
-					if(isset($category_update["u"])) unset($category_update["u"]);
+					if (isset($category_update["i"])) unset($category_update["i"]);
+					if (isset($category_update["u"])) unset($category_update["u"]);
 				}
 
 				// se la cat è da creare, conviene skippare gli update presenti in coda e recuperare le informazioni aggiornate da PS, rimuovendo tutta la parte di update
-				if(isset($category_update["i"])){
-					if(isset($category_update["u"])) unset($category_update["u"]);
+				if (isset($category_update["i"])) {
+					if (isset($category_update["u"])) unset($category_update["u"]);
 					$queries .= AccelaSearch\Query::getCategoryCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id);
 				}
 
 				// ... se la cat è da aggiornare
-				if(isset($category_update["u"])){
+				if (isset($category_update["u"])) {
 					$op_name = array_keys($category_update["u"])[0];
 					$new_value = $category_update["u"][$op_name]["value"];
 					$queries .= AccelaSearch\Query::getCategoryUpdateQuery($id_product, $new_value, $id_shop, $id_lang, $as_shop_id, $op_name);
 				}
-
 			}
 
 			// variazioni nelle categorie associate al prodotto
 
-			if($category_association_update){
+			if ($category_association_update) {
 
 
 				// l'associazione della categoria è stata rimossa
-				if(isset($category_association_update["d"])){
-					foreach($category_association_update["d"] as $id_category_str => $cat_update){
+				if (isset($category_association_update["d"])) {
+					foreach ($category_association_update["d"] as $id_category_str => $cat_update) {
 						[
 							"value" => $id_category,
 							"id_product" => $id_product
 						] = $cat_update["raw"];
 						$lastupdate = date("Y-m-d H:i:s");
-						$externalidstr = $id_shop."_".$id_lang."_".$id_category;
-						$ext_product_idstr = $id_shop."_".$id_lang."_".$id_product."_0";
+						$externalidstr = $id_shop . "_" . $id_lang . "_" . $id_category;
+						$ext_product_idstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_0";
 						$queries .= "UPDATE products_categories SET deleted = 1, lastupdate = '$lastupdate' WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr');";
 					}
 				}
 
 				// c'è una nuova categoria associata
-				if(isset($category_association_update["i"])){
-					foreach($category_association_update["i"] as $id_category_str => $cat_update){
+				if (isset($category_association_update["i"])) {
+					foreach ($category_association_update["i"] as $id_category_str => $cat_update) {
 						[
 							"value" => $id_category,
 							"id_product" => $id_product
 						] = $cat_update["raw"];
 						$lastupdate = date("Y-m-d H:i:s");
-						$externalidstr = $id_shop."_".$id_lang."_".$id_category;
-						$ext_product_idstr = $id_shop."_".$id_lang."_".$id_product."_0";
+						$externalidstr = $id_shop . "_" . $id_lang . "_" . $id_category;
+						$ext_product_idstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_0";
 						$id_association = AS_Collector::getInstance()->getValue("SELECT id FROM products_categories WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr')");
-						if(!$id_association){
+						if (!$id_association) {
 							$queries .= "INSERT INTO products_categories (categoryid, productid) VALUES ((SELECT id FROM categories WHERE externalidstr = '$externalidstr'),(SELECT id FROM products WHERE externalidstr = '$ext_product_idstr'));";
-						}else{
+						} else {
 							$queries .= "UPDATE products_categories SET deleted = 0, lastupdate = '$lastupdate' WHERE id = $id_association;";
 						}
 					}
 				}
-
 			}
 
-			if($attribute_image_update){
+			if ($attribute_image_update) {
 
 				// NOTE: Questo codice rimuove gli stessi delete ed update dagli aggiornamenti delle immagini delle varianti - rimosso perchè dato che PS quando salva il prodotto elimina e re-inserisce le immagini delle varianti poteva creare conflitto con operazioni reali successive di insert o delete ed andrebbero perse.
 
@@ -860,8 +838,8 @@ class AccelaSearch extends Module
 				// }
 
 
-				if(isset($attribute_image_update["i"])){
-					foreach($attribute_image_update["i"] as $id_image_str => $im_update){
+				if (isset($attribute_image_update["i"])) {
+					foreach ($attribute_image_update["i"] as $id_image_str => $im_update) {
 						[
 							"id_product" => $row_id_product,
 							"id_product_attribute" => $row_id_product_attribute,
@@ -872,22 +850,22 @@ class AccelaSearch extends Module
 					}
 				}
 
-				if(isset($attribute_image_update["d"])){
-					foreach($attribute_image_update["d"] as $id_image_str => $im_update){
+				if (isset($attribute_image_update["d"])) {
+					foreach ($attribute_image_update["d"] as $id_image_str => $im_update) {
 						[
 							"id_product" => $row_id_product,
 							"id_product_attribute" => $row_id_product_attribute,
 							"value" => $id_image
 						] = $im_update["raw"];
 
-						$image_external_id_cover = $id_shop."_".$id_lang."_".$row_id_product."_".$row_id_product_attribute."_".$id_image."_cover";
-						$image_external_id_others = $id_shop."_".$id_lang."_".$row_id_product."_".$row_id_product_attribute."_".$id_image."_others";
+						$image_external_id_cover = $id_shop . "_" . $id_lang . "_" . $row_id_product . "_" . $row_id_product_attribute . "_" . $id_image . "_cover";
+						$image_external_id_others = $id_shop . "_" . $id_lang . "_" . $row_id_product . "_" . $row_id_product_attribute . "_" . $id_image . "_others";
 						$queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_cover';";
 						$queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_others';";
 					}
 				}
 
-				if(isset($attribute_image_update["u"])){
+				if (isset($attribute_image_update["u"])) {
 					[
 						"id_product" => $row_id_product,
 						"id_product_attribute" => $row_id_product_attribute,
@@ -896,58 +874,54 @@ class AccelaSearch extends Module
 
 					$queries .= AccelaSearch\Query::getProductImageByIdQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $id_image);
 				}
-
 			}
 
-			if((bool)$id_product && !empty($queries)){
-				$externalidstr = $id_shop."_".$id_lang."_".$id_product."_";
+			if ((bool)$id_product && !empty($queries)) {
+				$externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_";
 				$timestamp = date("Y-m-d H:i:s");
 				$queries .= "UPDATE products SET lastupdate = '$timestamp' WHERE externalidstr LIKE '$externalidstr%';";
 			}
-
 		}
 
 		return $queries;
-
 	}
 
 	public static function getDifferentialQueryByRow($id_product, $_row, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id)
 	{
 
-		if(!AccelaSearch\Query::$query_data_manager) throw new \Exception("Cannot perform query without query data manager instance loaded");
+		if (!AccelaSearch\Query::$query_data_manager) throw new \Exception("Cannot perform query without query data manager instance loaded");
 
 		$queries = "";
 
 		$update_context = new AccelaSearch\Updater\UpdateContext($id_shop, $id_lang, $as_shop_id, $as_shop_real_id, $id_product);
 		$updater = new AccelaSearch\Updater\Updater($update_context);
 
-		foreach($_row as $id_product_attribute => $row){
+		foreach ($_row as $id_product_attribute => $row) {
 			$update_context->setIdProductAttribute($id_product_attribute);
 			$update_row = new AccelaSearch\Updater\UpdateRow($row);
 			$queries .= $updater->getQueries($update_row);
 		}
 
 		return $queries;
-
 	}
 
 	public static function cleanProcessedDifferentialRows($start, $end)
 	{
-		Db::getInstance()->query("DELETE FROM "._DB_PREFIX_."as_notifications WHERE id >= $start AND id <= $end");
+		Db::getInstance()->query("DELETE FROM " . _DB_PREFIX_ . "as_notifications WHERE id >= $start AND id <= $end");
 	}
 
 	/**
-	*	Dati necessari e comuni a tutte le query
-	*/
+	 *	Dati necessari e comuni a tutte le query
+	 */
 	public static function createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id)
 	{
-		if(AccelaSearch\Query::$query_data_manager) return;
+		if (AccelaSearch\Query::$query_data_manager) return;
 		$link = new Link();
 		// un cart ID è obbligatorio per il calcolo dei prezzi
 		$currencies = Currency::getCurrenciesByIdShop($id_shop);
 		// creo un cart id per ogni valuta, obbligatorio per il calcolo dei prezzi in base a valuta
 		$currencies_cart = [];
-		foreach($currencies as $currency){
+		foreach ($currencies as $currency) {
 			$fake_cart = new Cart();
 			$fake_cart->id_currency = $currency["id"];
 			$fake_cart->save();
@@ -979,13 +953,12 @@ class AccelaSearch extends Module
 		$id_product,
 		$id_product_attribute,
 		&$queries
-	)
-	{
-		foreach($currencies_cart as $iso_code => $cart_id){
-			foreach($customer_groups as $customer_group){
+	) {
+		foreach ($currencies_cart as $iso_code => $cart_id) {
+			foreach ($customer_groups as $customer_group) {
 
 				$id_group = $customer_group["id_group"];
-				$as_id_group = $users_groups[$id_shop."_".$id_lang."_".$id_group];
+				$as_id_group = $users_groups[$id_shop . "_" . $id_lang . "_" . $id_group];
 
 				$price = \Product::getPriceStatic(
 					$id_product,
@@ -1015,7 +988,7 @@ class AccelaSearch extends Module
 					$cart_id
 				);
 
-				$product_price_externalidstr = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute."_".$iso_code;
+				$product_price_externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_" . $iso_code;
 
 				$queries[] = AccelaSearch\Query::getByName("priceUpdate_query", [
 					"as_id_group" => $as_id_group,
@@ -1024,7 +997,6 @@ class AccelaSearch extends Module
 					"product_price_externalidstr" => $product_price_externalidstr,
 					"currency" => $iso_code
 				]);
-
 			}
 		}
 	}
@@ -1035,35 +1007,35 @@ class AccelaSearch extends Module
 	 */
 	public static function getMissingProductsOnAs($id_shop, $id_lang): array
 	{
-		$_products = Db::getInstance()->executeS("SELECT id_product FROM "._DB_PREFIX_."product_shop WHERE active = 1 AND id_shop = $id_shop");
-		$_product_attributes = Db::getInstance()->executeS("SELECT id_product, id_product_attribute FROM "._DB_PREFIX_."product_attribute_shop WHERE id_shop = $id_shop");
+		$_products = Db::getInstance()->executeS("SELECT id_product FROM " . _DB_PREFIX_ . "product_shop WHERE active = 1 AND id_shop = $id_shop");
+		$_product_attributes = Db::getInstance()->executeS("SELECT id_product, id_product_attribute FROM " . _DB_PREFIX_ . "product_attribute_shop WHERE id_shop = $id_shop");
 		$product_attributes = [];
-		foreach($_product_attributes as $_product_attribute){
+		foreach ($_product_attributes as $_product_attribute) {
 			[
 				"id_product" => $id_product,
 				"id_product_attribute" => $id_product_attribute
 			] = $_product_attribute;
-			if(!array_key_exists($id_product, $product_attributes)) $product_attributes[$id_product] = [];
+			if (!array_key_exists($id_product, $product_attributes)) $product_attributes[$id_product] = [];
 			$product_attributes[$id_product][] = $id_product_attribute;
 		}
 		$products = [];
-		foreach($_products as $_product){
+		foreach ($_products as $_product) {
 			[
 				"id_product" => $id_product
 			] = $_product;
-			$ext = $id_shop."_".$id_lang."_".$id_product."_0";
+			$ext = $id_shop . "_" . $id_lang . "_" . $id_product . "_0";
 			$products[] = $ext;
-			if(array_key_exists($id_product, $product_attributes)){
-				foreach($product_attributes[$id_product] as $product_attribute){
-					$ext = $id_shop."_".$id_lang."_".$id_product."_".$product_attribute;
+			if (array_key_exists($id_product, $product_attributes)) {
+				foreach ($product_attributes[$id_product] as $product_attribute) {
+					$ext = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $product_attribute;
 					$products[] = $ext;
 				}
 			}
 		}
-		$ext_as = $id_shop."_".$id_lang."_";
+		$ext_as = $id_shop . "_" . $id_lang . "_";
 		$_as_products = AS_Collector::getInstance()->executeS("SELECT externalidstr FROM products WHERE externalidstr LIKE '$ext_as%'");
 		$as_products = [];
-		foreach($_as_products as $_as_product){
+		foreach ($_as_products as $_as_product) {
 			$as_products[] = $_as_product["externalidstr"];
 		}
 		$diff = array_diff($products, $as_products);
@@ -1077,20 +1049,19 @@ class AccelaSearch extends Module
 		$as_shop_id,
 		$as_shop_real_id,
 		$limit
-	)
-	{
+	) {
 
 		$queries = [];
 
 		// elimino gli aggiornamenti di prezzo singoli se è presente un aggiornamento globale
-		$global_price_rule_exist = (bool)Db::getInstance()->getValue("SELECT COUNT(*) FROM "._DB_PREFIX_."as_notifications WHERE id_product = 0 AND type = 'price' AND id_shop = $id_shop");
+		$global_price_rule_exist = (bool)Db::getInstance()->getValue("SELECT COUNT(*) FROM " . _DB_PREFIX_ . "as_notifications WHERE id_product = 0 AND type = 'price' AND id_shop = $id_shop");
 
-		if($global_price_rule_exist){
-			Db::getInstance()->query("DELETE FROM "._DB_PREFIX_."as_notifications WHERE id_product != 0 AND type = 'price' AND id_shop = $id_shop");
-			Db::getInstance()->query("DELETE FROM "._DB_PREFIX_."as_notifications WHERE id_product != 0 AND type = 'product' AND id_shop = $id_shop AND name='price'");
+		if ($global_price_rule_exist) {
+			Db::getInstance()->query("DELETE FROM " . _DB_PREFIX_ . "as_notifications WHERE id_product != 0 AND type = 'price' AND id_shop = $id_shop");
+			Db::getInstance()->query("DELETE FROM " . _DB_PREFIX_ . "as_notifications WHERE id_product != 0 AND type = 'product' AND id_shop = $id_shop AND name='price'");
 		}
 
-		$rows = Db::getInstance()->executeS("SELECT * FROM "._DB_PREFIX_."as_notifications ORDER BY id ASC LIMIT $limit");
+		$rows = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "as_notifications ORDER BY id ASC LIMIT $limit");
 
 		$rows_id_start = $rows[0]["id"];
 		$rows_end = end($rows);
@@ -1100,9 +1071,9 @@ class AccelaSearch extends Module
 
 		self::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
 
-		foreach($rows as $id_product => $row){
+		foreach ($rows as $id_product => $row) {
 			$query = self::getDifferentialQueryByRow($id_product, $row, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
-			if(!empty($query)){
+			if (!empty($query)) {
 				$queries[] = $query;
 			}
 		}
@@ -1111,13 +1082,12 @@ class AccelaSearch extends Module
 
 		self::cleanProcessedDifferentialRows($rows_id_start, $rows_id_end);
 		return implode("", $queries);
-
 	}
 
 	public static function getRealShopIdByIdShopAndLang($id_shop, $id_lang)
 	{
 		$as_shops = self::getAsShops();
-		return $as_shops[$id_shop."_".$id_lang]["as_shop_real_id"];
+		return $as_shops[$id_shop . "_" . $id_lang]["as_shop_real_id"];
 	}
 
 	// TODO: Add support for other product types bundle, virtual and downloadable
@@ -1138,7 +1108,7 @@ class AccelaSearch extends Module
 			"virtual" => "Virtual",
 			"pack" => "Bundle"
 		];
-		if(!in_array($product_type, array_keys($type_map))) throw new \Exception("Invalid Product type, passed ".$product_type." and not matched with any type of ".implode(",", array_keys($type_map)));
+		if (!in_array($product_type, array_keys($type_map))) throw new \Exception("Invalid Product type, passed " . $product_type . " and not matched with any type of " . implode(",", array_keys($type_map)));
 		return $type_map[$product_type];
 	}
 
@@ -1166,8 +1136,7 @@ class AccelaSearch extends Module
 		$id_product_attribute = null,
 		$ps_product = null,
 		$link_rewrite
-		)
-	{
+	) {
 
 		$image_response = [
 			"cover" => [],
@@ -1178,37 +1147,37 @@ class AccelaSearch extends Module
 		$link = new Link();
 
 		$images = Image::getImages($id_lang, $id_product, $id_product_attribute, $id_shop);
-		if(count($images) === 0) return false;
+		if (count($images) === 0) return false;
 
 		$id_product_attribute_sign = ($id_product_attribute === null) ? "0" : $id_product_attribute;
 		// search for cover
 		$cover_url = null;
 		$cover_external_id_str = null;
-		foreach($images as $image){
-			if((bool)$image["cover"]){
+		foreach ($images as $image) {
+			if ((bool)$image["cover"]) {
 				$cover_url = $link->getImageLink($link_rewrite, $image["id_image"]);
-				$cover_external_id_str = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute_sign."_".$image["id_image"]."_cover";
-			}else{
+				$cover_external_id_str = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute_sign . "_" . $image["id_image"] . "_cover";
+			} else {
 				$others_url[] = [
 					"url" => $link->getImageLink($link_rewrite, $image["id_image"]),
-					"idstr" => $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute_sign."_".$image["id_image"]."_others"
+					"idstr" => $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute_sign . "_" . $image["id_image"] . "_others"
 				];
 			}
 		}
 
 		// se non c'è nessuna cover imposta la prima immagine dell'array
-		if($cover_url === null){
+		if ($cover_url === null) {
 			$cover_url = $others_url[0]["url"];
 			$cover_external_id_str = str_replace("_others", "_cover", $others_url[0]["idstr"]);
 		}
 
-		$image_response["cover"]["cover_url"] = Tools::getShopProtocol().$cover_url;
+		$image_response["cover"]["cover_url"] = Tools::getShopProtocol() . $cover_url;
 		$image_response["cover"]["cover_external_id_str"] = $cover_external_id_str;
 
 		$sort = 2;
-		foreach($others_url as $other_url){
+		foreach ($others_url as $other_url) {
 			$image_response["others"][] = [
-				"other_url" => Tools::getShopProtocol().$other_url["url"],
+				"other_url" => Tools::getShopProtocol() . $other_url["url"],
 				"others_url_idstr" => $other_url["idstr"],
 				"sort" => $sort
 			];
@@ -1216,7 +1185,6 @@ class AccelaSearch extends Module
 		}
 
 		return $image_response;
-
 	}
 
 	/**
@@ -1243,24 +1211,23 @@ class AccelaSearch extends Module
 		$cover_id,
 		$others_id,
 		$users_groups
-		)
-	{
-		foreach($childrens as $children){
+	) {
+		foreach ($childrens as $children) {
 
 			$id_product_attribute = $children["id_product_attribute"];
-			$sku = !empty($children["reference"]) ? "'".$children["reference"]."'" : "NULL";
+			$sku = !empty($children["reference"]) ? "'" . $children["reference"] . "'" : "NULL";
 			$typeid = $as_product_types["Simple"];
-			$product_external_id_str = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute;
+			$product_external_id_str = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute;
 			$qty = $children["real_qty"];
 
 			$ean13 = $children["ean13"];
-			$ean13_external = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute."_ean13";
+			$ean13_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_ean13";
 			$isbn = $children["isbn"];
-			$isbn_external = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute."_isbn";
+			$isbn_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_isbn";
 			$upc = $children["upc"];
-			$upc_external = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute."_upc";
+			$upc_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_upc";
 			$mpn = $children["mpn"] ?? "";
-			$mpn_external = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute."_mpn";
+			$mpn_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_mpn";
 
 			$images = Image::getImages($id_lang, $id_product, $id_product_attribute, $id_shop);
 
@@ -1288,7 +1255,7 @@ class AccelaSearch extends Module
 
 			// immagini specifiche delle varianti
 			$images = self::getProductImages($id_shop, $id_lang, $id_product, $id_product_attribute, $children, $ps_product["link_rewrite"]);
-			if($images !== false){
+			if ($images !== false) {
 
 				[
 					"cover" => $cover,
@@ -1302,8 +1269,7 @@ class AccelaSearch extends Module
 					"external_id_str" => $cover["cover_external_id_str"]
 				]);
 
-				foreach($others as $other)
-				{
+				foreach ($others as $other) {
 					$queries[] = AccelaSearch\Query::getByName("mainProductsInsertChildrenImagesOthers_query", [
 						"product_external_id_str" => $product_external_id_str,
 						"other_url" => $other["other_url"],
@@ -1312,15 +1278,14 @@ class AccelaSearch extends Module
 						"sort" => $other["sort"]
 					]);
 				}
-
 			}
 
-			foreach($currencies_cart as $iso_code => $cart_id){
+			foreach ($currencies_cart as $iso_code => $cart_id) {
 				// prezzi specifici della variante
-				foreach($customer_groups as $customer_group){
+				foreach ($customer_groups as $customer_group) {
 
 					$id_group = $customer_group["id_group"];
-					$as_id_group = $users_groups[$id_shop."_".$id_lang."_".$id_group];
+					$as_id_group = $users_groups[$id_shop . "_" . $id_lang . "_" . $id_group];
 
 					$price = Product::getPriceStatic(
 						$id_product,
@@ -1350,7 +1315,7 @@ class AccelaSearch extends Module
 						$cart_id
 					);
 
-					$product_price_externalidstr = $id_shop."_".$id_lang."_".$id_product."_".$id_product_attribute."_".$iso_code;
+					$product_price_externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_" . $iso_code;
 
 					$queries[] = AccelaSearch\Query::getByName("priceInsertChildren_query", [
 						"as_id_group" => $as_id_group,
@@ -1360,17 +1325,15 @@ class AccelaSearch extends Module
 						"product_price_externalidstr" => $product_price_externalidstr,
 						"currency" => $iso_code
 					]);
-
 				}
 			}
-
 		}
 	}
 
 	private function disableTablesKeys(&$queries)
 	{
 		$tables = self::TABLE_KEYS;
-		foreach($tables as $table){
+		foreach ($tables as $table) {
 			$queries[] = "ALTER TABLE $table DISABLE KEYS;";
 		}
 	}
@@ -1378,16 +1341,16 @@ class AccelaSearch extends Module
 	private function enableTablesKeys(&$queries)
 	{
 		$tables = self::TABLE_KEYS;
-		foreach($tables as $table){
+		foreach ($tables as $table) {
 			$queries[] = "ALTER TABLE $table ENABLE KEYS;";
 		}
 	}
 
 	public static function getProductCategories($id_product)
 	{
-		$cats = Db::getInstance()->executeS("SELECT * FROM "._DB_PREFIX_."category_product WHERE id_product = $id_product");
+		$cats = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "category_product WHERE id_product = $id_product");
 		$cat_ids = [];
-		foreach($cats as $cat){
+		foreach ($cats as $cat) {
 			$cat_ids[] = $cat["id_category"];
 		}
 		return $cat_ids;
@@ -1400,13 +1363,12 @@ class AccelaSearch extends Module
 		$as_shop_real_id,
 		$ps_product,
 		array &$queries
-	)
-	{
+	) {
 
 		// $queries[] = "BEGIN;";
 
 		$queryData = AccelaSearch\Query::$query_data_manager;
-		if(!$queryData) throw new \Exception("Cannot perform product query without query data manager instance");
+		if (!$queryData) throw new \Exception("Cannot perform product query without query data manager instance");
 
 		$as_product_types = $queryData->as_product_types;
 
@@ -1454,10 +1416,9 @@ class AccelaSearch extends Module
 
 		// external idstr
 		// crea variabili tipo: $name_external = 1_1_123_name;
-		foreach($as_instance->getAsAttributesId($as_shop_id) as $attr_name => $attr_id)
-		{
-			$var_name = $attr_name."_external";
-			$$var_name = $id_shop."_".$id_lang."_".$id_product."_".$attr_name;
+		foreach ($as_instance->getAsAttributesId($as_shop_id) as $attr_name => $attr_id) {
+			$var_name = $attr_name . "_external";
+			$$var_name = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $attr_name;
 		}
 
 
@@ -1465,7 +1426,7 @@ class AccelaSearch extends Module
 		$product_type = empty($product_type) ? self::getProductTypeById($id_product, $id_shop, $id_lang) : self::convertPrestashopTypeToAsType($product_type);
 
 		$typeid = $as_product_types[$product_type] ?? $as_product_types["Simple"];
-		$product_external_id_str = $id_shop."_".$id_lang."_".$id_product."_0";
+		$product_external_id_str = $id_shop . "_" . $id_lang . "_" . $id_product . "_0";
 
 		// product creation e attributes
 		$queries[] = AccelaSearch\Query::getByName("mainProductsInsert_query", [
@@ -1504,17 +1465,17 @@ class AccelaSearch extends Module
 
 		// assign product categories using AceelaSearch ids
 		$product_categories = self::getProductCategories($id_product);
-		foreach($product_categories as $product_category){
-			$as_cat_id = $as_categories[$id_shop."_".$id_lang."_".$product_category]["id"] ?? false;
-			if($as_cat_id === false) continue;
+		foreach ($product_categories as $product_category) {
+			$as_cat_id = $as_categories[$id_shop . "_" . $id_lang . "_" . $product_category]["id"] ?? false;
+			if ($as_cat_id === false) continue;
 			$queries[] = AccelaSearch\Query::getByName("assignProductCategory_query", [
 				"as_cat_id" => $as_cat_id
 			]);
 		}
 
-		if($product_type == "Configurable"){
+		if ($product_type == "Configurable") {
 			$childrens = self::getProductChildrensById($id_product, $id_shop, $id_lang);
-			if(count($childrens) > 0){
+			if (count($childrens) > 0) {
 				self::addChildrensQuery(
 					$childrens,
 					$id_shop,
@@ -1541,11 +1502,11 @@ class AccelaSearch extends Module
 
 		// Immagini del prodotto semplice / configurabile
 		$id_product_attribute = null;
-		$id_product_attribute_to_add = (!(bool)$id_product_attribute) ? "_0" : "_".$id_product_attribute;
-		$product_external_id_str = $id_shop."_".$id_lang."_".$id_product.$id_product_attribute_to_add;
+		$id_product_attribute_to_add = (!(bool)$id_product_attribute) ? "_0" : "_" . $id_product_attribute;
+		$product_external_id_str = $id_shop . "_" . $id_lang . "_" . $id_product . $id_product_attribute_to_add;
 
 		$images = self::getProductImages($id_shop, $id_lang, $id_product, $id_product_attribute, $ps_product, $ps_product["link_rewrite"]);
-		if($images !== false){
+		if ($images !== false) {
 
 			[
 				"cover" => $cover,
@@ -1559,8 +1520,7 @@ class AccelaSearch extends Module
 				"external_id_str" => $cover["cover_external_id_str"]
 			]);
 
-			foreach($others as $other)
-			{
+			foreach ($others as $other) {
 				$queries[] = AccelaSearch\Query::getByName("mainProductsInsertImagesOthers_query", [
 					"product_external_id_str" => $product_external_id_str,
 					"other_url" => $other["other_url"],
@@ -1569,15 +1529,14 @@ class AccelaSearch extends Module
 					"sort" => $other["sort"]
 				]);
 			}
-
 		}
 
-		foreach($currencies_cart as $iso_code => $cart_id){
+		foreach ($currencies_cart as $iso_code => $cart_id) {
 			// prezzi specifici della variante
-			foreach($customer_groups as $customer_group){
+			foreach ($customer_groups as $customer_group) {
 
 				$id_group = $customer_group["id_group"];
-				$as_id_group = $users_groups[$id_shop."_".$id_lang."_".$id_group];
+				$as_id_group = $users_groups[$id_shop . "_" . $id_lang . "_" . $id_group];
 
 				$price = Product::getPriceStatic(
 					$id_product,
@@ -1607,7 +1566,7 @@ class AccelaSearch extends Module
 					$cart_id
 				);
 
-				$product_price_externalidstr = $id_shop."_".$id_lang."_".$id_product."_0_".$iso_code;
+				$product_price_externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_0_" . $iso_code;
 
 				$queries[] = AccelaSearch\Query::getByName("priceInsert_query", [
 					"as_id_group" => $as_id_group,
@@ -1617,7 +1576,6 @@ class AccelaSearch extends Module
 					"product_price_externalidstr" => $product_price_externalidstr,
 					"currency" => $iso_code
 				]);
-
 			}
 		}
 
@@ -1635,7 +1593,8 @@ class AccelaSearch extends Module
 		$add_mpn_if_exist = version_compare(_PS_VERSION_, "1.7.7", "<") ? "" : "p.mpn,";
 		$add_product_type_if_exist = version_compare(_PS_VERSION_, "1.7.8", "<") ? "" : "p.product_type,";
 
-		$ps_products_query = AccelaSearch\Query::getByName("psProducts_query",
+		$ps_products_query = AccelaSearch\Query::getByName(
+			"psProducts_query",
 			[
 				"id_shop" => $id_shop,
 				"id_lang" => $id_lang,
@@ -1651,15 +1610,13 @@ class AccelaSearch extends Module
 
 		$queries[] = "BEGIN;";
 
-		foreach($ps_products as $ps_product)
-		{
+		foreach ($ps_products as $ps_product) {
 			self::generateProductQueryByProductRow($id_shop, $id_lang, $as_shop_id, $as_shop_real_id, $ps_product, $queries);
 		}
 
 		$queries[] = "COMMIT;";
 
 		return implode("", $queries);
-
 	}
 
 	private function hasApiKey(): bool
@@ -1675,65 +1632,63 @@ class AccelaSearch extends Module
 			[],
 			false,
 			[
-				"X-Accelasearch-Apikey: ".$key
+				"X-Accelasearch-Apikey: " . $key
 			]
 		);
 		$credentials = json_decode($credentials);
 		return isset($credentials->status) ? false : true;
 	}
 
-  public function hookActionAdminControllerSetMedia($params)
+	public function hookActionAdminControllerSetMedia($params)
 	{
 
 		$accelasearch_controller_link = $this->context->link->getAdminLink('AdminAccelaSearchActions');
 		$execute_client_cronjob = false;
 
 		// se il cronjob non è mai stato eseguito
-		if(!(bool)Configuration::get("ACCELASEARCH_LAST_CRONJOB_EXECUTION") && Configuration::get("ACCELASEARCH_SHOPS_SYNCED") != "{}"){
+		if (!(bool)Configuration::get("ACCELASEARCH_LAST_CRONJOB_EXECUTION") && Configuration::get("ACCELASEARCH_SHOPS_SYNCED") != "{}") {
 
 			$last_view_exec = Configuration::get("ACCELASEARCH_LAST_CRONJOB_PAGEVIEW_EXECUTION");
 			$view_exec_times = Configuration::get("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES");
-			if(!$view_exec_times){
+			if (!$view_exec_times) {
 				Configuration::updateGlobalValue("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES", 0);
 				$view_exec_times = 0;
 			}
-			if(!(bool)$last_view_exec){
+			if (!(bool)$last_view_exec) {
 				$last_view_exec = time() - 61;
 			}
 
-			if((time() - $last_view_exec) > 60){
+			if ((time() - $last_view_exec) > 60) {
 				$execute_client_cronjob = true;
 				Configuration::updateGlobalValue("ACCELASEARCH_LAST_CRONJOB_PAGEVIEW_EXECUTION", time());
 				Configuration::updateGlobalValue("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES", ++$view_exec_times);
 			}
-
 		}
 
 		Media::addJsDef([
 			"as_admin_controller" => $accelasearch_controller_link,
-			"module_cron_url" => _PS_BASE_URL_SSL_.__PS_BASE_URI__."modules/accelasearch/cron.php?token=".Configuration::get("ACCELASEARCH_CRON_TOKEN"),
+			"module_cron_url" => _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?token=" . Configuration::get("ACCELASEARCH_CRON_TOKEN"),
 			"execute_client_cronjob" => $execute_client_cronjob,
-      '_AS' => [
+			'_AS' => [
 				"apikey" => Configuration::get("ACCELASEARCH_APIKEY"),
-        "translations" => AccelaSearch\Translator::getInstance()->translation_array
+				"translations" => AccelaSearch\Translator::getInstance()->translation_array
 			]
-    ]);
+		]);
 
 		$configure = $_GET["configure"] ?? NULL;
-		if($configure == "accelasearch"){
+		if ($configure == "accelasearch") {
 			$this->context->controller->addCSS(
-				'modules/'.$this->name.'/views/css/output.css'
+				'modules/' . $this->name . '/views/css/output.css'
 			);
 
 			$this->context->controller->addCSS(
-				'modules/'.$this->name.'/views/css/back.css'
+				'modules/' . $this->name . '/views/css/back.css'
 			);
 
 			$this->context->controller->addJs(
-	       'modules/'.$this->name.'/views/js/back.js'
-	    );
+				'modules/' . $this->name . '/views/js/back.js'
+			);
 		}
-
 	}
 
 	public function hookActionFrontControllerSetMedia($params)
@@ -1747,24 +1702,24 @@ class AccelaSearch extends Module
 				"currencyCode" => $iso,
 				"visitorType" => $group_name
 			]
-    ]);
+		]);
 	}
 
 	public static function getAsShops()
 	{
-		if(!self::$as_shops_synced){
+		if (!self::$as_shops_synced) {
 			$as_shops = Configuration::get("ACCELASEARCH_SHOPS_SYNCED");
-			if(!empty($as_shops) && $as_shops !== "{}") self::$as_shops_synced = json_decode($as_shops, true);
+			if (!empty($as_shops) && $as_shops !== "{}") self::$as_shops_synced = json_decode($as_shops, true);
 		}
 		return self::$as_shops_synced;
 	}
 
 	public static function getAsCategories()
 	{
-		if(!self::$as_categories){
+		if (!self::$as_categories) {
 			$as_categories = AS_Collector::getInstance()->executeS("SELECT * FROM categories");
 			$as_categories_indexed = [];
-			foreach($as_categories as $as_category){
+			foreach ($as_categories as $as_category) {
 				$as_categories_indexed[$as_category["externalidstr"]] = $as_category;
 			}
 			self::$as_categories = $as_categories_indexed;
@@ -1772,10 +1727,10 @@ class AccelaSearch extends Module
 		return self::$as_categories;
 	}
 
-  public function __construct()
-  {
-    $this->initializeModule();
-  }
+	public function __construct()
+	{
+		$this->initializeModule();
+	}
 
 
 	public function getTriggerQueries()
@@ -1783,7 +1738,7 @@ class AccelaSearch extends Module
 		$trigger_data = new AccelaSearch\TriggerDataElements();
 		$t_queries = "";
 		$t_queries .= AccelaSearch\Trigger::getDeleteQueries($trigger_data->elements);
-		foreach($trigger_data->elements as $trigger_def){
+		foreach ($trigger_data->elements as $trigger_def) {
 			$triggerDataObject = new AccelaSearch\TriggerData($trigger_def);
 			$trigger = new AccelaSearch\Trigger($triggerDataObject);
 			$t_queries .= $trigger->getQuery();
@@ -1791,35 +1746,33 @@ class AccelaSearch extends Module
 		return $t_queries;
 	}
 
-  public function install()
-  {
-		$install_sql = str_replace("{{PREFIX}}", _DB_PREFIX_, file_get_contents(__DIR__.'/sql/install.sql'));
+	public function install()
+	{
+		$install_sql = str_replace("{{PREFIX}}", _DB_PREFIX_, file_get_contents(__DIR__ . '/sql/install.sql'));
 		$install_sql .= $this->getTriggerQueries();
-		if(Shop::isFeatureActive()){
+		if (Shop::isFeatureActive()) {
 			Shop::setContext(Shop::CONTEXT_ALL);
 		}
-    return
-      parent::install()
-      && $this->initDefaultConfigurationValues()
-      && $this->installTab()
+		return
+			parent::install()
+			&& $this->initDefaultConfigurationValues()
+			&& $this->installTab()
 			&& $this->registerHook('actionAdminControllerSetMedia')
-      && $this->registerHook('actionFrontControllerSetMedia')
+			&& $this->registerHook('actionFrontControllerSetMedia')
 			&& $this->registerHook('actionCronJob')
-			&& Db::getInstance()->query($install_sql)
-    ;
-  }
+			&& Db::getInstance()->query($install_sql);
+	}
 
-  public function uninstall()
-  {
-		$uninstall_sql = str_replace("{{PREFIX}}", _DB_PREFIX_, file_get_contents(__DIR__.'/sql/uninstall.sql'));
+	public function uninstall()
+	{
+		$uninstall_sql = str_replace("{{PREFIX}}", _DB_PREFIX_, file_get_contents(__DIR__ . '/sql/uninstall.sql'));
 		$trigger_data = new AccelaSearch\TriggerDataElements();
 		$uninstall_sql .= AccelaSearch\Trigger::getDeleteQueries($trigger_data->elements);
-    return
-      parent::uninstall()
-      && $this->uninstallTab()
-			&& Db::getInstance()->query($uninstall_sql)
-    ;
-  }
+		return
+			parent::uninstall()
+			&& $this->uninstallTab()
+			&& Db::getInstance()->query($uninstall_sql);
+	}
 
 	public function getContent()
 	{
@@ -1828,43 +1781,43 @@ class AccelaSearch extends Module
 		$languages = Language::getLanguages();
 		$shops_with_languages = [];
 
-		foreach($shops as $key => $shop){
+		foreach ($shops as $key => $shop) {
 			$available_languages = [];
-			foreach($languages as $language){
-				if($language["shops"][$shop["id_shop"]] === true) $available_languages[] = $language;
+			foreach ($languages as $language) {
+				if ($language["shops"][$shop["id_shop"]] === true) $available_languages[] = $language;
 			}
 			$shops[$key]["languages"] = $available_languages;
 		}
 
 		$this->context->smarty->assign([
-			"module_url" => Context::getContext()->shop->getBaseURL(true).'modules/'.$this->name.'/',
+			"module_url" => Context::getContext()->shop->getBaseURL(true) . 'modules/' . $this->name . '/',
 			"as_shops" => $shops
 		]);
 
 		$apikey = Configuration::get("ACCELASEARCH_APIKEY");
 		$isValidApikey = false;
-		if(!empty($apikey)){
+		if (!empty($apikey)) {
 			$isValidApikey = $this->isValidApikey($apikey);
 		}
 
-    $this->context->smarty->assign([
+		$this->context->smarty->assign([
 			"AS_apikey" => $apikey
 		]);
 
 		$tpl = "configure";
-		if($isValidApikey) $tpl = "shop_selection";
+		if ($isValidApikey) $tpl = "shop_selection";
 		$shops_synced = Configuration::get("ACCELASEARCH_SHOPS_SYNCED");
-		if($shops_synced !== "{}"){
+		if ($shops_synced !== "{}") {
 			$shops_synced = json_decode($shops_synced, true);
-			if(count($shops_synced) > 0){
+			if (count($shops_synced) > 0) {
 				$tpl = "dashboard";
 			}
 		}
 
 		$as_shops = self::getAsShops();
 		$missing_users_groups = [];
-		if(isset($as_shops)){
-			foreach($as_shops as $as_shop){
+		if (isset($as_shops)) {
+			foreach ($as_shops as $as_shop) {
 				[
 					"id_shop" => $id_shop,
 					"id_lang" => $id_lang,
@@ -1872,11 +1825,11 @@ class AccelaSearch extends Module
 					"as_shop_real_id" => $as_shop_real_id
 				] = $as_shop;
 				$customer_groups = Group::getGroups($id_lang, $id_shop);
-				foreach($customer_groups as $customer_group){
+				foreach ($customer_groups as $customer_group) {
 					$id_group = $customer_group["id_group"];
-					$externalidstr = $id_shop."_".$id_lang."_".$id_group;
+					$externalidstr = $id_shop . "_" . $id_lang . "_" . $id_group;
 					$group_on_as = (bool)AS_Collector::getInstance()->getValue("SELECT COUNT(*) FROM users_groups WHERE externalidstr = '$externalidstr'");
-					if(!$group_on_as) $missing_users_groups[] = $externalidstr;
+					if (!$group_on_as) $missing_users_groups[] = $externalidstr;
 				}
 			}
 		}
@@ -1893,9 +1846,8 @@ class AccelaSearch extends Module
 			"MISSING_USERS_GROUPS" => $missing_users_groups
 		]);
 
-		$output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/'.$tpl.'.tpl');
+		$output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/' . $tpl . '.tpl');
 		return $output;
-
 	}
 
 	private function initializeModule()
@@ -1921,7 +1873,7 @@ class AccelaSearch extends Module
 	private function initDefaultConfigurationValues()
 	{
 		foreach (self::DEFAULT_CONFIGURATION as $key => $value) {
-			if(!Configuration::get($key)) Configuration::updateGlobalValue($key, $value);
+			if (!Configuration::get($key)) Configuration::updateGlobalValue($key, $value);
 		}
 		$token = self::generateToken(40);
 		Configuration::updateGlobalValue("ACCELASEARCH_CRON_TOKEN", $token);
@@ -1960,5 +1912,4 @@ class AccelaSearch extends Module
 		}
 		return true;
 	}
-
 }
