@@ -85,15 +85,23 @@ const createPackage = async (version, message = "") => {
   try {
     const options = {
       files: "./accelasearch.php",
-      from: [/\* @version .*/g, /\$this->version = '.*'/g],
-      to: ["* @version " + version, "$this->version = '" + version + "';"],
+      from: [
+        /\* @version .*/g,
+        /\$this->version = '.*'/g,
+        /"DEBUG_MODE" => true/g,
+      ],
+      to: [
+        "* @version " + version,
+        "$this->version = '" + version + "'",
+        '"DEBUG_MODE" => false',
+      ],
     };
     await replace(options);
   } catch (error) {
     console.error(_error("Error occurred:", error));
   }
   exec(
-    "npx copyfiles ./classes/*.php ./classes/Updater/** ./controllers/** ./sql/** ./views/** ./*.php ./*.png releases/tmp_dir/accelasearch",
+    "npx copyfiles -e './sample_structure.png' -e './classes/Updater/updater_uml.png' ./classes/*.php ./classes/Updater/** ./controllers/** ./sql/** ./views/** ./*.php ./*.png releases/tmp_dir/accelasearch",
     async () => {
       console.log("Pacchetto grezzo creato");
       await createPackageZip(version);

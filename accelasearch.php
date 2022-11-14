@@ -51,7 +51,7 @@ class AccelaSearch extends Module
 		"API_ENDPOINT" => "https://svc11.accelasearch.net/API/",
 		"CMS_ID" => 99,
 		"LOG_QUERY" => false,
-		"DEBUG_MODE" => true,
+		"DEBUG_MODE" => false,
 		"CRONJOB_DRYRUN" => false,
 		"ACCEPTED_METHODS" => [
 			"GET",
@@ -1854,7 +1854,7 @@ class AccelaSearch extends Module
 	{
 		$this->name = 'accelasearch';
 		$this->tab = 'front_office_features';
-		$this->version = '0.0.3';;;;;;;
+		$this->version = '0.0.3';
 		$this->author = 'AccelaSearch';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = [
