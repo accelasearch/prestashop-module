@@ -72,7 +72,7 @@ const createPackage = async (version, message = "") => {
     return;
   }
   const changelogExist = await existChangelog(version);
-  if (!changelogExist) {
+  if (!changelogExist && !args["skip-check"]) {
     console.log(
       _error(
         "Fatal error: Specifica nel file CHANGELOG.md cosa è cambiato in questa versione prima di fare una release"

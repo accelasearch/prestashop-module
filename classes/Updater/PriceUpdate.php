@@ -1,7 +1,9 @@
 <?php
 
 namespace AccelaSearch\Updater;
+
 use AccelaSearch\Query;
+use AccelaSearch\Queue;
 
 class PriceUpdate extends UpdateOperation implements Operation
 {
@@ -19,14 +21,27 @@ class PriceUpdate extends UpdateOperation implements Operation
     $id_product = $context->id_product;
     $id_product_attribute = $context->id_product_attribute;
 
-    if($context->isGlobalOperation()){
-      $this->queries .= Query::getGlobalProductPriceUpdateQuery($context->id_shop, $context->id_lang, $context->as_shop_id);
+    //NOTE: Questa operazione deve essere splittata se le istruzioni sono più di 15k perchè altrimenti va in blocco
+    if ($context->isGlobalOperation()) {
+      $queries = Query::getGlobalProductPriceUpdateQuery($context->id_shop, $context->id_lang, $context->as_shop_id);
+      $queries = explode(";", $queries);
+      $query_size = count($queries);
+      if ($query_size > 15000) {
+        $start_cycle = 1;
+        $end_cycle = ceil($query_size / 15000);
+        for ($start = $start_cycle; $start <= $end_cycle; $start++) {
+          $query = implode(";", array_slice($queries, 15000 * $start - 1, 15000));
+          Queue::create($query, 0, $start, $end_cycle, $context->id_shop, $context->id_lang);
+        }
+        return $this;
+      }
+      $this->queries = implode(";", $queries);
       $update_row->unsetOperationIfExist("i");
       $update_row->unsetOperationIfExist("d");
       $update_row->unsetOperationIfExist("u");
     }
 
-    if($update_row->isInsertOperation()){
+    if ($update_row->isInsertOperation()) {
       [
         "id_product" => $row_id_product,
         "id_product_attribute" => $row_id_product_attribute
@@ -35,7 +50,7 @@ class PriceUpdate extends UpdateOperation implements Operation
       $this->queries .= Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $context->id_shop, $context->id_lang);
     }
 
-    if($update_row->isDeleteOperation()){
+    if ($update_row->isDeleteOperation()) {
       [
         "id_product" => $row_id_product,
         "id_product_attribute" => $row_id_product_attribute
@@ -44,7 +59,7 @@ class PriceUpdate extends UpdateOperation implements Operation
       $this->queries .= Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $context->id_shop, $context->id_lang);
     }
 
-    if($update_row->isUpdateOperation()){
+    if ($update_row->isUpdateOperation()) {
       [
         "id_product" => $row_id_product,
         "id_product_attribute" => $row_id_product_attribute
@@ -54,14 +69,10 @@ class PriceUpdate extends UpdateOperation implements Operation
     }
 
     return $this;
-
   }
 
   public function getQueries(): string
   {
     return $this->queries;
   }
-
 }
-
- ?>

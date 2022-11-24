@@ -7,7 +7,7 @@
  * Boost your search engine
  *
  * @author AccelaSearch <support@accelasearch.com>
- * @version 0.0.3
+ * @version 0.0.23
  */
 
 if (!defined('_PS_VERSION_')) exit;
@@ -106,6 +106,8 @@ class AccelaSearch extends Module
 		curl_setopt($ch, CURLOPT_URL, self::AS_CONFIG["API_ENDPOINT"] . $controller);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 		if ($is_auth) {
 			$headers[] = "X-Accelasearch-Apikey: " . Configuration::get("ACCELASEARCH_APIKEY");
 		}
@@ -1691,6 +1693,33 @@ class AccelaSearch extends Module
 		}
 	}
 
+	private function getLangLink($idLang = null, Context $context = null, $idShop = null)
+	{
+		static $psRewritingSettings = null;
+		if ($psRewritingSettings === null) {
+			$psRewritingSettings = (int) Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop);
+		}
+		if (!$context) {
+			$context = Context::getContext();
+		}
+		if (!Language::isMultiLanguageActivated($idShop) || !$psRewritingSettings) {
+			return '';
+		}
+		if (!$idLang) {
+			$idLang = $context->language->id;
+		}
+		return Language::getIsoById($idLang) . '/';
+	}
+
+	public function getCurrentHash()
+	{
+		$id_shop = $this->context->shop->id;
+		$iso = $this->context->language->iso_code;
+		$id_lang = $this->context->language->id;
+		$link = new Link();
+		return md5($link->getBaseLink($id_shop) . $this->getLangLink($id_lang, null, $id_shop) . $iso);
+	}
+
 	public function hookActionFrontControllerSetMedia($params)
 	{
 		$iso = $this->context->currency->iso_code;
@@ -1703,6 +1732,16 @@ class AccelaSearch extends Module
 				"visitorType" => $group_name
 			]
 		]);
+		$this->context->controller->registerJavascript(
+			'as-layer',
+			'https://svc11.accelasearch.io/API/shops/' . $this->getCurrentHash() . '/loader',
+			[
+				'position' => 'head',
+				'priority' => 0,
+				'attributes' => "async",
+				"server" => "remote"
+			]
+		);
 	}
 
 	public static function getAsShops()
@@ -1854,7 +1893,7 @@ class AccelaSearch extends Module
 	{
 		$this->name = 'accelasearch';
 		$this->tab = 'front_office_features';
-		$this->version = '0.0.3';
+		$this->version = '0.0.23';
 		$this->author = 'AccelaSearch';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = [
