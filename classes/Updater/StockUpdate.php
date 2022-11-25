@@ -1,6 +1,7 @@
 <?php
 
 namespace AccelaSearch\Updater;
+
 use AccelaSearch\Query;
 
 class StockUpdate extends UpdateOperation implements Operation
@@ -19,7 +20,7 @@ class StockUpdate extends UpdateOperation implements Operation
     $id_product = $context->id_product;
     $id_product_attribute = $context->id_product_attribute;
 
-    if($update_row->isUpdateOperation()){
+    if ($update_row->isUpdateOperation()) {
       [
         "id_product" => $row_id_product,
         "id_product_attribute" => $row_id_product_attribute,
@@ -30,15 +31,10 @@ class StockUpdate extends UpdateOperation implements Operation
     }
 
     return $this;
-
   }
 
   public function getQueries(): string
   {
     return $this->queries;
   }
-
 }
-
-
- ?>

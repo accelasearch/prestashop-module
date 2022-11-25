@@ -16,7 +16,4 @@ abstract class UpdateOperation
   {
     return $this->name;
   }
-
 }
-
- ?>

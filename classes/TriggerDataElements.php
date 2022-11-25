@@ -593,7 +593,7 @@ class TriggerDataElements
 
     // add mpn field if ps_version match requirement
 
-    if(!version_compare(_PS_VERSION_, "1.7.7", "<")){
+    if (!version_compare(_PS_VERSION_, "1.7.7", "<")) {
       $this->elements["u_product"]["fields"][] = [
         "name" => "mpn",
         "select_fields" => [
@@ -1096,8 +1096,5 @@ class TriggerDataElements
         ]
       ],
     ];
-
   }
 }
-
- ?>

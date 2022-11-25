@@ -1,6 +1,7 @@
 <?php
 
 namespace AccelaSearch\Updater;
+
 use AccelaSearch\Query;
 
 class ImageUpdate extends UpdateOperation implements Operation
@@ -19,8 +20,8 @@ class ImageUpdate extends UpdateOperation implements Operation
     $id_product = $context->id_product;
     $id_product_attribute = $context->id_product_attribute;
 
-    if($update_row->isDeleteOperation()){
-      foreach($update_row->getRow()["d"] as $id_image_str => $im_update){
+    if ($update_row->isDeleteOperation()) {
+      foreach ($update_row->getRow()["d"] as $id_image_str => $im_update) {
         [
           "id_product" => $row_id_product,
           "id_product_attribute" => $row_id_product_attribute,
@@ -43,8 +44,8 @@ class ImageUpdate extends UpdateOperation implements Operation
       }
     }
 
-    if($update_row->isInsertOperation()){
-      foreach($update_row->getRow()["i"] as $id_image_str => $im_update){
+    if ($update_row->isInsertOperation()) {
+      foreach ($update_row->getRow()["i"] as $id_image_str => $im_update) {
         [
           "id_product" => $row_id_product,
           "id_product_attribute" => $row_id_product_attribute,
@@ -55,8 +56,8 @@ class ImageUpdate extends UpdateOperation implements Operation
       }
     }
 
-    if($update_row->isUpdateOperation()){
-      foreach($update_row->getRow()["u"] as $id_image_str => $im_update){
+    if ($update_row->isUpdateOperation()) {
+      foreach ($update_row->getRow()["u"] as $id_image_str => $im_update) {
         [
           "id_product" => $row_id_product,
           "id_product_attribute" => $row_id_product_attribute,
@@ -67,14 +68,10 @@ class ImageUpdate extends UpdateOperation implements Operation
     }
 
     return $this;
-
   }
 
   public function getQueries(): string
   {
     return $this->queries;
   }
-
 }
-
- ?>

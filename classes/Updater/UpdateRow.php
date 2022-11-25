@@ -56,7 +56,7 @@ class UpdateRow implements RowOperations
 
   public function unsetOperationIfExist(string $op)
   {
-    if(isset($this->row[$op])) unset($this->row[$op]);
+    if (isset($this->row[$op])) unset($this->row[$op]);
   }
 
   public function removeFromStack(string $op)
@@ -68,7 +68,4 @@ class UpdateRow implements RowOperations
   {
     return $this->to_remove;
   }
-
 }
-
- ?>

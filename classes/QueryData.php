@@ -16,11 +16,8 @@ class QueryData
 
   public function __construct($data)
   {
-    foreach($data as $private_var_name => $private_var_value){
+    foreach ($data as $private_var_name => $private_var_value) {
       $this->{$private_var_name} = $private_var_value;
     }
   }
-
 }
-
- ?>

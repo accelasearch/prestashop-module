@@ -18,8 +18,8 @@ class CategoryProductUpdate extends UpdateOperation implements Operation
     $id_product = $context->id_product;
     $id_product_attribute = $context->id_product_attribute;
 
-    if($update_row->isDeleteOperation()){
-      foreach($update_row->getRow()["d"] as $id_category_str => $cat_update){
+    if ($update_row->isDeleteOperation()) {
+      foreach ($update_row->getRow()["d"] as $id_category_str => $cat_update) {
         [
           "value" => $id_category,
           "id_product" => $id_product
@@ -31,8 +31,8 @@ class CategoryProductUpdate extends UpdateOperation implements Operation
       }
     }
 
-    if($update_row->isInsertOperation()){
-      foreach($update_row->getRow()["i"] as $id_category_str => $cat_update){
+    if ($update_row->isInsertOperation()) {
+      foreach ($update_row->getRow()["i"] as $id_category_str => $cat_update) {
         [
           "value" => $id_category,
           "id_product" => $id_product
@@ -41,23 +41,19 @@ class CategoryProductUpdate extends UpdateOperation implements Operation
         $externalidstr = $context->buildExternalId([$id_category]);
         $ext_product_idstr = $context->buildExternalId([$id_product, 0]);
         $id_association = \AS_Collector::getInstance()->getValue("SELECT id FROM products_categories WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr')");
-        if(!$id_association){
+        if (!$id_association) {
           $this->queries .= "INSERT INTO products_categories (categoryid, productid) VALUES ((SELECT id FROM categories WHERE externalidstr = '$externalidstr'),(SELECT id FROM products WHERE externalidstr = '$ext_product_idstr'));";
-        }else{
+        } else {
           $this->queries .= "UPDATE products_categories SET deleted = 0, lastupdate = '$lastupdate' WHERE id = $id_association;";
         }
       }
     }
 
     return $this;
-
   }
 
   public function getQueries(): string
   {
     return $this->queries;
   }
-
 }
-
- ?>

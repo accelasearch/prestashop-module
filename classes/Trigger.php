@@ -27,8 +27,7 @@ class Trigger
   public function getQueryFields($fields, $type)
   {
     $queries = "";
-    foreach($fields as $field)
-    {
+    foreach ($fields as $field) {
 
       // field structure
       [
@@ -67,7 +66,7 @@ class Trigger
       $from = "";
       $where_base = "";
 
-      if(!empty($from_name) && !empty($from_as)){
+      if (!empty($from_name) && !empty($from_as)) {
         $from = "FROM `{{PREFIX}}$from_name` AS $from_as";
         $where_base = "WHERE 1";
       }
@@ -104,19 +103,18 @@ FIELD;
   public static function getDeleteQueries($trigger_data)
   {
     $del_queries = "";
-    foreach($trigger_data as $trigger)
-    {
-      $trigger_name = $trigger["table"]."_".strtolower($trigger["type"]);
-      $del_queries .= "DROP TRIGGER IF EXISTS `as_"._DB_PREFIX_.$trigger_name."`;";
+    foreach ($trigger_data as $trigger) {
+      $trigger_name = $trigger["table"] . "_" . strtolower($trigger["type"]);
+      $del_queries .= "DROP TRIGGER IF EXISTS `as_" . _DB_PREFIX_ . $trigger_name . "`;";
     }
     return $del_queries;
   }
 
   public function getQuery()
   {
-    if(!$this->triggerDataInstance) throw new \Exception("No trigger instance defined");
+    if (!$this->triggerDataInstance) throw new \Exception("No trigger instance defined");
     $fields = $this->getQueryFields($this->triggerDataInstance->fields, $this->triggerDataInstance->type);
-    $trigger_name = $this->triggerDataInstance->table."_".strtolower($this->triggerDataInstance->type);
+    $trigger_name = $this->triggerDataInstance->table . "_" . strtolower($this->triggerDataInstance->type);
     $query = <<<TRIGGER
     CREATE TRIGGER `as_{{PREFIX}}{$trigger_name}`
       {$this->triggerDataInstance->when} {$this->triggerDataInstance->type} ON `{{PREFIX}}{$this->triggerDataInstance->table}` FOR EACH ROW
@@ -127,5 +125,4 @@ TRIGGER;
     $query = str_replace("{{PREFIX}}", _DB_PREFIX_, $query);
     return $query;
   }
-
 }

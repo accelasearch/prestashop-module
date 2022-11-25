@@ -8,5 +8,3 @@ interface RowOperations
   public function isInsertOperation(): bool;
   public function isUpdateOperation(): bool;
 }
-
- ?>

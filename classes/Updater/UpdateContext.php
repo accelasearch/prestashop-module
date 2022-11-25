@@ -35,9 +35,6 @@ class UpdateContext
   public function buildExternalId(array $append): string
   {
     $append = implode("_", $append);
-    return $this->id_shop."_".$this->id_lang."_".$append;
+    return $this->id_shop . "_" . $this->id_lang . "_" . $append;
   }
-
 }
-
- ?>
