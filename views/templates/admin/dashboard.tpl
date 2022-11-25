@@ -303,6 +303,32 @@
               </div>
             </div>
           </div>
+          <div class="bg-white overflow-hidden shadow-md rounded-lg">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-xl font-bold text-gray-700 truncate mb-2">{l s='Resync all prices' mod='accelasearch'}</dt>
+                    <dd>
+                      <div class="text-sm text-gray-500">
+                        {l s='Trigger a full price resync. Update all prices with a last product original price and special price on AccelaSearch.' mod='accelasearch'}
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div class="px-5 py-3">
+              <div class="text-sm text-right">
+                <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-600 mr-2" id="resync_all_prices">{l s='RESYNC ALL PRICES' mod='accelasearch'}</button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="px-4 py-6 sm:px-0">
           {if $DEBUG_MODE}
