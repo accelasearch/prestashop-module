@@ -1,4 +1,5 @@
 <?php
+
 namespace AccelaSearch;
 
 class Queue
@@ -7,20 +8,20 @@ class Queue
   public static function getRowsToProcess($id_shop = null, $id_lang = null)
   {
     $where = "";
-    if($id_shop !== null){
+    if ($id_shop !== null) {
       $where .= " AND id_shop = $id_shop";
     }
-    if($id_lang !== null){
+    if ($id_lang !== null) {
       $where .= " AND id_lang = $id_lang";
     }
-    return \Db::getInstance()->getRow("SELECT * FROM "._DB_PREFIX_."as_fullsync_queue WHERE 1 $where AND is_processing = 0 ORDER BY id asc");
+    return \Db::getInstance()->getRow("SELECT * FROM " . _DB_PREFIX_ . "as_fullsync_queue WHERE 1 $where AND is_processing = 0 ORDER BY id asc");
   }
 
   public static function checkAndSendRowToAs()
   {
-    for($i = 0; $i < 3; $i++){
+    for ($i = 0; $i < 3; $i++) {
       $queue = self::getRowsToProcess();
-      if($queue !== false){
+      if ($queue !== false) {
         $id_queue = $queue["id"];
         \Db::getInstance()->update(
           "as_fullsync_queue",
@@ -31,7 +32,7 @@ class Queue
           ],
           "id = $id_queue"
         );
-        if(empty($queue["query"])) continue;
+        if (empty($queue["query"])) continue;
         // invio ad AS
         Sync::startRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue["id_shop"], $queue["id_lang"]));
         $as_query_success = \AS_Collector::getInstance()->query($queue["query"]);
@@ -41,24 +42,24 @@ class Queue
   }
 
   public static function get($id_shop = null, $id_lang = null, $limited = true)
-	{
-		$where = "";
-		if($id_shop !== null){
-			$where .= " AND id_shop = $id_shop";
-		}
-		if($id_lang !== null){
-			$where .= " AND id_lang = $id_lang";
-		}
-		$limit = $limited ? "LIMIT 1" : "";
-		return \Db::getInstance()->executeS("SELECT * FROM "._DB_PREFIX_."as_fullsync_queue WHERE 1 $where AND is_processing = 0 ORDER BY id desc $limit");
-	}
+  {
+    $where = "";
+    if ($id_shop !== null) {
+      $where .= " AND id_shop = $id_shop";
+    }
+    if ($id_lang !== null) {
+      $where .= " AND id_lang = $id_lang";
+    }
+    $limit = $limited ? "LIMIT 1" : "";
+    return \Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "as_fullsync_queue WHERE 1 $where AND is_processing = 0 ORDER BY id desc $limit");
+  }
 
   public static function getOffsetDividerByType($type = "PRODUCT", $nb)
   {
 
-		// key = greater than
-		// value = divider
-		$divider_settings = [
+    // key = greater than
+    // value = divider
+    $divider_settings = [
       "PRODUCT" => [
         0 => 300,
         1000 => 500,
@@ -79,24 +80,24 @@ class Queue
         1000000 => 1000000,
         10000000 => 2000000
       ],
-   	];
+    ];
 
-		$div_keys = array_keys($divider_settings[$type]);
-		foreach($div_keys as $pos => $gt){
-			if($nb > $gt && $nb < next($div_keys)) return $divider_settings[$type][$div_keys[$pos]];
-		}
-		return 1000;
+    $div_keys = array_keys($divider_settings[$type]);
+    foreach ($div_keys as $pos => $gt) {
+      if ($nb > $gt && $nb < next($div_keys)) return $divider_settings[$type][$div_keys[$pos]];
+    }
+    return 1000;
   }
 
   /**
-	 * Sulla base della stima dei prodotti ritorna il corretto divisore per avere
-	 * una sync veloce ed efficiente ( calcola il LIMIT della query che genera la coda )
-	 */
-	public static function getOffsetDivider($id_shop, $id_lang)
-	{
-		$nb = \AccelaSearch::estimateNbProducts($id_shop, $id_lang);
+   * Sulla base della stima dei prodotti ritorna il corretto divisore per avere
+   * una sync veloce ed efficiente ( calcola il LIMIT della query che genera la coda )
+   */
+  public static function getOffsetDivider($id_shop, $id_lang)
+  {
+    $nb = \AccelaSearch::estimateNbProducts($id_shop, $id_lang);
     return self::getOffsetDividerByType("PRODUCT", $nb);
-	}
+  }
 
   public static function create($query, $offset_limit, $start_cycle, $end_cycle, $id_shop, $id_lang)
   {
@@ -115,5 +116,4 @@ class Queue
     );
     return \Db::getInstance()->Insert_ID();
   }
-
 }

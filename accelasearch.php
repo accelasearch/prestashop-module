@@ -7,7 +7,7 @@
  * Boost your search engine
  *
  * @author AccelaSearch <support@accelasearch.com>
- * @version 0.0.23
+ * @version 0.0.28
  */
 
 if (!defined('_PS_VERSION_')) exit;
@@ -256,8 +256,8 @@ class AccelaSearch extends Module
 	}
 
 	/**
-	 * Attributi da aggiungere su AS
-	 * name, short_description, description, brand, ean13, isbn, upc, mpn
+	 * Attributi da aggiungere su AS:
+	 * name, short_description, description, brand, ean13, isbn, upc, mpn, sku
 	 *
 	 * @return bool
 	 */
@@ -1212,7 +1212,8 @@ class AccelaSearch extends Module
 		$ps_product,
 		$cover_id,
 		$others_id,
-		$users_groups
+		$users_groups,
+		$sku_id
 	) {
 		foreach ($childrens as $children) {
 
@@ -1230,6 +1231,7 @@ class AccelaSearch extends Module
 			$upc_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_upc";
 			$mpn = $children["mpn"] ?? "";
 			$mpn_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_mpn";
+			$sku_external = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_sku";
 
 			$images = Image::getImages($id_lang, $id_product, $id_product_attribute, $id_shop);
 
@@ -1252,7 +1254,9 @@ class AccelaSearch extends Module
 				"upc_external" => $upc_external,
 				"mpn" => $mpn,
 				"mpn_id" => $mpn_id,
-				"mpn_external" => $mpn_external
+				"mpn_external" => $mpn_external,
+				"sku_id" => $sku_id,
+				"sku_external" => $sku_external
 			]);
 
 			// immagini specifiche delle varianti
@@ -1383,6 +1387,7 @@ class AccelaSearch extends Module
 			"isbn" => $isbn_id,
 			"upc" => $upc_id,
 			"mpn" => $mpn_id,
+			"sku" => $sku_id,
 			"cover" => $cover_id,
 			"others" => $others_id
 		] = $queryData->as_attributes_ids;
@@ -1462,7 +1467,9 @@ class AccelaSearch extends Module
 			"upc_external" => $upc_external,
 			"mpn" => $mpn,
 			"mpn_id" => $mpn_id,
-			"mpn_external" => $mpn_external
+			"mpn_external" => $mpn_external,
+			"sku_id" => $sku_id,
+			"sku_external" => $sku_external
 		]);
 
 		// assign product categories using AceelaSearch ids
@@ -1497,7 +1504,8 @@ class AccelaSearch extends Module
 					$ps_product,
 					$cover_id,
 					$others_id,
-					$users_groups
+					$users_groups,
+					$sku_id
 				);
 			}
 		}
@@ -1893,7 +1901,7 @@ class AccelaSearch extends Module
 	{
 		$this->name = 'accelasearch';
 		$this->tab = 'front_office_features';
-		$this->version = '0.0.23';
+		$this->version = '0.0.28';
 		$this->author = 'AccelaSearch';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = [

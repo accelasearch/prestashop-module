@@ -1,5 +1,5 @@
 <?php
-
+ignore_user_abort(true);
 if (!defined('_PS_VERSION_')) exit;
 class AdminAccelaSearchActionsController extends ModuleAdminController
 {
@@ -172,6 +172,17 @@ SQL;
 				'success' => true
 			]
 		));
+	}
+
+	public function ajaxProcessResyncAllPrices()
+	{
+		$as_shops = \AccelaSearch::getAsShops();
+		foreach ($as_shops as $as_shop) {
+			[
+				"id_shop" => $id_shop
+			] = $as_shop;
+			\AccelaSearch\Sync::createRepriceRule($id_shop);
+		}
 	}
 
 	public function ajaxProcessResyncAll()
@@ -394,7 +405,6 @@ SQL;
 		$as_shops = AccelaSearch::getAsShops();
 		$queries = "";
 		set_time_limit(0);
-		ignore_user_abort(true);
 		fastcgi_finish_request();
 		foreach ($as_shops as $as_shop) {
 

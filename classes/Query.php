@@ -111,6 +111,7 @@ class Query
       "mpn" => "products_attr_str",
       "short_description" => "products_attr_text",
       "description" => "products_attr_text",
+      "sku" => "products_attr_str"
     ];
 
     if ($entity_name == "price") {
@@ -122,6 +123,10 @@ class Query
       $externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute;
       $timestamp = date("Y-m-d H:i:s");
       $query = "UPDATE products SET sku = '$entity_value', lastupdate = '$timestamp' WHERE externalidstr = '$externalidstr';";
+      $table = $attributes_to_table["sku"];
+      $entity_value = pSQL($entity_value);
+      $externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_sku";
+      $query .= "UPDATE $table SET value = '$entity_value', lastupdate = '$timestamp' WHERE externalidstr = '$externalidstr';";
       return $query;
     }
 
@@ -181,8 +186,6 @@ class Query
     }
   }
 
-  // TODO: Scrivere codice del metodo
-  // NOTE: Forse non necessario
   public static function getProductImagesRegenerationQuery($id_product, $id_product_attribute, $id_shop, $id_lang)
   {
     return "Regenerate images query for product $id_product \n";
@@ -214,7 +217,8 @@ class Query
       "upc" => $upc_id,
       "mpn" => $mpn_id,
       "cover" => $cover_id,
-      "others" => $others_id
+      "others" => $others_id,
+      "sku" => $sku_id
     ] = $queryData->as_attributes_ids;
 
     $as_categories = $queryData->as_categories;
@@ -251,7 +255,8 @@ class Query
       $ps_product,
       $cover_id,
       $others_id,
-      $users_groups
+      $users_groups,
+      $sku_id
     );
 
     return implode("", $queries);
@@ -289,7 +294,7 @@ class Query
     return implode("", $queries);
   }
 
-  public static function getGlobalProductPriceUpdateQuery($id_shop, $id_lang)
+  public static function getGlobalProductPriceUpdateQuery($id_shop, $id_lang, $as_shop_id)
   {
 
     $queries = [];
@@ -603,6 +608,15 @@ SQL;
     '{{MPN_EXTERNAL}}'
   );
 
+  INSERT IGNORE INTO products_attr_str (labelid, productid, value, externalidstr)
+  VALUES
+  (
+    '{{SKU_ID}}',
+    @generated_product_id_children,
+    {{SKU}},
+    '{{SKU_EXTERNAL}}'
+  );
+
   INSERT IGNORE INTO stocks
   (
     wharehouseid,
@@ -687,6 +701,8 @@ SQL;
   SET @upc_label_id = LAST_INSERT_ID();
   INSERT IGNORE INTO products_attr_label (label, storeviewid) VALUES ('mpn', {{STOREVIEW_ID}});
   SET @mpn_label_id = LAST_INSERT_ID();
+  INSERT IGNORE INTO products_attr_label (label, storeviewid) VALUES ('sku', {{STOREVIEW_ID}});
+  SET @sku_id = LAST_INSERT_ID();
   INSERT IGNORE INTO products_images_lbl (label, storeviewid, externalidstr, deleted) VALUES ('cover', {{STOREVIEW_ID}}, '{{EXTERNALIDSTR_WAREHOUSE}}', 0);
   INSERT IGNORE INTO products_images_lbl (label, storeviewid, externalidstr, deleted) VALUES ('others', {{STOREVIEW_ID}}, '{{EXTERNALIDSTR_WAREHOUSE}}', 0);
   INSERT IGNORE INTO warehouses
@@ -906,6 +922,15 @@ SQL;
     @generated_product_id,
     '{{MPN}}',
     '{{MPN_EXTERNAL}}'
+  );
+
+  INSERT IGNORE INTO products_attr_str (labelid, productid, value, externalidstr)
+  VALUES
+  (
+    '{{SKU_ID}}',
+    @generated_product_id,
+    '{{SKU}}',
+    '{{SKU_EXTERNAL}}'
   );
 
 	INSERT IGNORE INTO products_attr_text

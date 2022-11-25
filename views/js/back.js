@@ -4,49 +4,49 @@ richiamabili da _AS.translations
 ================================================*/
 
 const AS = {
-  endpoint : "https://svc11.accelasearch.net/API/",
-  controller : async (action = "", method = "GET", data) => {
-
+  endpoint: "https://svc11.accelasearch.net/API/",
+  controller: async (action = "", method = "GET", data) => {
     const _data = {
-      ajax : 1,
-      action : action,
-      ...data
+      ajax: 1,
+      action: action,
+      ...data,
     };
 
     return await $.ajax({
       type: method,
       cache: false,
-      dataType: 'json',
+      dataType: "json",
       url: as_admin_controller,
-      data: _data
+      data: _data,
     });
-
   },
-  api : async (action = "", method = "GET", is_auth = false) => {
+  api: async (action = "", method = "GET", is_auth = false) => {
     const headers = {};
-    if(is_auth){
+    if (is_auth) {
       headers["X-Accelasearch-Apikey"] = _AS.apikey;
     }
-    const fetchObject = {}
+    const fetchObject = {};
     fetchObject["method"] = method;
-    fetchObject["headers"] = new Headers(headers)
-    return await fetch(AS.endpoint+controller, fetchObject);
+    fetchObject["headers"] = new Headers(headers);
+    return await fetch(AS.endpoint + controller, fetchObject);
   },
-  helpers : {
-    seeLog : (k) => {
+  helpers: {
+    seeLog: (k) => {
       const modal_content = `
       <div class="mt-5 sm:mt-6">
         <button type="button" class="dismiss-modal inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-as-primary-400 text-base font-medium text-white hover:bg-as-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-as-primary-400 sm:text-sm">${_AS.translations.close}</button>
       </div>
       `;
-      if(!(k in AS.last_errors)){
-        AS.helpers.modal("<div>"+_AS.translations.no_logs+"</div>"+modal_content);
+      if (!(k in AS.last_errors)) {
+        AS.helpers.modal(
+          "<div>" + _AS.translations.no_logs + "</div>" + modal_content
+        );
         return;
       }
-      AS.helpers.modal("<div>"+AS.last_errors[k]+"</div>"+modal_content);
+      AS.helpers.modal("<div>" + AS.last_errors[k] + "</div>" + modal_content);
     },
-    toast_timeout : "",
-    modal : (content) => {
+    toast_timeout: "",
+    modal: (content) => {
       const modal_content = `
       <div class="modal-container relative z-[501]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed z-[501] inset-0 overflow-y-auto">
@@ -60,19 +60,20 @@ const AS = {
       `;
       $("#as-backdrop").show(0);
       $("#as-modals").html(modal_content);
-      $(".dismiss-modal").on("click", function(){
+      $(".dismiss-modal").on("click", function () {
         $(this).closest(".modal-container").remove();
         $("#as-backdrop").hide(0);
-      })
+      });
     },
-    toast : (msg, type = "SUCCESS", duration = 7000) => {
-      const title = type == "SUCCESS" ? _AS.translations.good_job : _AS.translations.oops;
-      const icon = type == "SUCCESS" ?
-      `<svg class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+    toast: (msg, type = "SUCCESS", duration = 7000) => {
+      const title =
+        type == "SUCCESS" ? _AS.translations.good_job : _AS.translations.oops;
+      const icon =
+        type == "SUCCESS"
+          ? `<svg class="h-6 w-6 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>`
-      :
-      `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+          : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
       </svg>`;
       const toast_html = `
@@ -103,14 +104,14 @@ const AS = {
       $("#as-toaster .toast").addClass("as-toast-show");
       AS.helpers.toast_timeout = setTimeout(() => {
         $("#as-toaster").html("");
-      }, duration)
-      $(".dismiss-toast").on("click", function(){
+      }, duration);
+      $(".dismiss-toast").on("click", function () {
         $("#as-toaster").html("");
         clearTimeout(AS.helpers.toast_timeout);
-      })
+      });
     },
-    buttonContent : {},
-    load : (el) => {
+    buttonContent: {},
+    load: (el) => {
       const originalButtonContent = $(el).html();
       AS.helpers.buttonContent[el] = originalButtonContent;
       $(el).addClass("cursor-not-allowed");
@@ -120,32 +121,32 @@ const AS = {
       `;
       $(el).html(loaderHtmlContent);
     },
-    unload : (el) => {
+    unload: (el) => {
       const originalButtonContent = AS.helpers.buttonContent[el];
       $(el).removeClass("cursor-not-allowed");
       $(el).removeAttr("disabled");
       $(el).html(originalButtonContent);
-    }
-  }
+    },
+  },
 };
 
-(function(){
-
+(function () {
   "use strict";
   console.trace = null;
 
-
   const menu_classes = {
-    "default" : "no-underline text-gray-100 hover:bg-as-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
-    "selected" : "as-current-page no-underline bg-as-primary-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+    default:
+      "no-underline text-gray-100 hover:bg-as-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium",
+    selected:
+      "as-current-page no-underline bg-as-primary-700 text-white px-3 py-2 rounded-md text-sm font-medium",
   };
 
-  function copyInput(el){
+  function copyInput(el) {
     $(el).select();
     document.execCommand("copy");
   }
 
-  function showCronModal(){
+  function showCronModal() {
     const modal_content = `
       <div>
         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100">
@@ -156,6 +157,7 @@ const AS = {
         <div class="mt-3 text-center sm:mt-5">
           <h2 class="text-lg leading-6 font-bold text-gray-900">${_AS.translations.cron_setup_title}</h2>
           <p class="text-xs text-gray-600 mt-2 leading-5">${_AS.translations.cron_setup_description}</p>
+          <b>Unix Format: * * * * *</b>
           <div class="mt-4">
             <div>
               <div class="mt-1 relative rounded-md shadow-sm">
@@ -176,12 +178,12 @@ const AS = {
       </div>
     `;
     AS.helpers.modal(modal_content);
-    $("#cronjob_setup, .cronjob_setup_icon").on("click", function(){
+    $("#cronjob_setup, .cronjob_setup_icon").on("click", function () {
       copyInput("#cronjob_setup");
-    })
+    });
   }
 
-  function showResyncModal(){
+  function showResyncModal() {
     const modal_content = `
       <div class="sm:flex sm:items-start">
         <div class="mt-3 text-center sm:mt-0 sm:text-left mb-4">
@@ -205,33 +207,40 @@ const AS = {
     </div>
     `;
     AS.helpers.modal(modal_content);
-    $("#confirm_resync").on("keyup", function(){
+    $("#confirm_resync").on("keyup", function () {
       const typed = $(this).val();
-      if(typed == "RESYNC"){
-        $("#resync_all_trigger").removeClass("disabled cursor-not-allowed opacity-25");
+      if (typed == "RESYNC") {
+        $("#resync_all_trigger").removeClass(
+          "disabled cursor-not-allowed opacity-25"
+        );
         $("#resync_all_trigger").removeAttr("disabled");
-      }else{
-        $("#resync_all_trigger").addClass("disabled cursor-not-allowed opacity-25");
-        $("#resync_all_trigger").attr("disabled","disabled");
+      } else {
+        $("#resync_all_trigger").addClass(
+          "disabled cursor-not-allowed opacity-25"
+        );
+        $("#resync_all_trigger").attr("disabled", "disabled");
       }
-    })
-    $("#resync_all_trigger").on("click", function(e){
+    });
+    $("#resync_all_trigger").on("click", function (e) {
       e.preventDefault();
-      if($(this).hasClass("disabled")) return;
+      if ($(this).hasClass("disabled")) return;
       AS.helpers.load("#resync_all_trigger");
-      AS.controller(
-        "resyncall",
-        "POST"
-      ).then(r => {
-        AS.helpers.unload("#resync_all_trigger");
-        AS.helpers.toast(_AS.translations.resync_all_success);
-        $(".dismiss-modal").trigger("click");
-        location.reload(1);
-      })
-    })
+      AS.controller("resyncall", "POST")
+        .then((r) => {
+          AS.helpers.unload("#resync_all_trigger");
+          AS.helpers.toast(_AS.translations.resync_all_success);
+          $(".dismiss-modal").trigger("click");
+          location.reload(1);
+        })
+        .catch((e) => {
+          AS.helpers.unload("#resync_all_trigger");
+          $(".dismiss-modal").trigger("click");
+          location.reload(1);
+        });
+    });
   }
 
-  function showDisconnectApikeyModal(){
+  function showDisconnectApikeyModal() {
     const modal_content = `
       <div class="sm:flex sm:items-start">
         <div class="mt-3 text-center sm:mt-0 sm:text-left mb-4">
@@ -254,77 +263,86 @@ const AS = {
     </div>
     `;
     AS.helpers.modal(modal_content);
-    $("#confirm_disconnect").on("keyup", function(){
+    $("#confirm_disconnect").on("keyup", function () {
       const typed = $(this).val();
-      if(typed == "DISCONNECT"){
-        $("#disconnect_all_trigger").removeClass("disabled cursor-not-allowed opacity-25");
+      if (typed == "DISCONNECT") {
+        $("#disconnect_all_trigger").removeClass(
+          "disabled cursor-not-allowed opacity-25"
+        );
         $("#disconnect_all_trigger").removeAttr("disabled");
-      }else{
-        $("#disconnect_all_trigger").addClass("disabled cursor-not-allowed opacity-25");
-        $("#disconnect_all_trigger").attr("disabled","disabled");
+      } else {
+        $("#disconnect_all_trigger").addClass(
+          "disabled cursor-not-allowed opacity-25"
+        );
+        $("#disconnect_all_trigger").attr("disabled", "disabled");
       }
-    })
-    $("#disconnect_all_trigger").on("click", function(e){
+    });
+    $("#disconnect_all_trigger").on("click", function (e) {
       e.preventDefault();
-      if($(this).hasClass("disabled")) return;
+      if ($(this).hasClass("disabled")) return;
       AS.helpers.load("#disconnect_all_trigger");
-      AS.controller(
-        "disconnectapikey",
-        "POST"
-      ).then(r => {
+      AS.controller("disconnectapikey", "POST").then((r) => {
         AS.helpers.unload("#disconnect_all_trigger");
         AS.helpers.toast(_AS.translations.disconnect_success);
         $(".dismiss-modal").trigger("click");
         setTimeout(() => {
           location.reload(1);
-        },3000)
-      })
-    })
+        }, 3000);
+      });
+    });
   }
 
-  function updateProductView(products){
+  function updateProductView(products) {
     let productHtml = "";
-    $.each(products, function(k, product){
-      const productType = (k.split("_")[0] == "30") ? "Configurabile" : "Semplice";
+    $.each(products, function (k, product) {
+      const productType =
+        k.split("_")[0] == "30" ? "Configurabile" : "Semplice";
       let attrsHtml = "";
       let imagesHtml = "";
       let pricesHtml = "";
       let stocksHtml = "";
       let categoriesHtml = '<p class="ml-2 text-sm text-gray-500">Categorie: ';
-      $.each(product.attrs, function(attr_name, attr_value){
-        attrsHtml += '<p class="ml-2 text-sm text-gray-500">'+attr_name+': '+attr_value+'</p>';
-      })
-      $.each(product.images, function(attr_name, image){
+      $.each(product.attrs, function (attr_name, attr_value) {
+        attrsHtml +=
+          '<p class="ml-2 text-sm text-gray-500">' +
+          attr_name +
+          ": " +
+          attr_value +
+          "</p>";
+      });
+      $.each(product.images, function (attr_name, image) {
         imagesHtml += `
         <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden">
           <img src="${image.url}" alt="" class="w-full h-full object-center object-cover">
         </div>
         `;
-      })
-      $.each(product.prices, function(k, price){
+      });
+      $.each(product.prices, function (k, price) {
         pricesHtml += `
           <p class="ml-2 text-sm text-gray-500">
             ${price.currency}, Gruppo: ${price.groupid}| Prezzo: ${price.price} - Prezzo speciale: ${price.specialprice}
           </p>
         `;
-      })
-      $.each(product.categories, function(k, category){
+      });
+      $.each(product.categories, function (k, category) {
         categoriesHtml += `
           ${category.categoryid} -
         `;
-      })
-      categoriesHtml += '</p>';
-      $.each(product.stocks, function(k, stock){
+      });
+      categoriesHtml += "</p>";
+      $.each(product.stocks, function (k, stock) {
         stocksHtml += `
           <p class="ml-2 text-sm text-gray-500">Stock: ${stock.quantity}</p>
         `;
-      })
+      });
       productHtml += `
       <div class="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8 lg:grid lg:grid-cols-2 lg:gap-x-8">
         <div class="lg:max-w-lg lg:self-end">
           <div class="mt-4">
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-gray-100 text-gray-800">${productType}</span>
-            <h2 class="text-xl font-extrabold tracking-tight text-gray-900 sm:text-xl">${product.attrs.name??""}</h2>
+            <h2 class="text-xl font-extrabold tracking-tight text-gray-900 sm:text-xl">${
+              product.attrs.name ?? ""
+            }</h2>
           </div>
           <section aria-labelledby="information-heading" class="mt-4">
             <div class="mt-6">
@@ -339,25 +357,27 @@ const AS = {
           ${imagesHtml}
         </div>
         <div>
-          <textarea rows="4" class="w-full">${JSON.stringify(product)}</textarea>
+          <textarea rows="4" class="w-full">${JSON.stringify(
+            product
+          )}</textarea>
         </div>
       </div>
       `;
-    })
+    });
     $("#as-product-container").html(productHtml);
   }
 
-  function switchToPage(page){
+  function switchToPage(page) {
     $("#as-menu-nav a").removeClass();
-    $("#as-menu-nav a[page='"+page+"']").addClass(menu_classes.selected);
+    $("#as-menu-nav a[page='" + page + "']").addClass(menu_classes.selected);
     $("#as-menu-nav a:not(.as-current-page)").addClass(menu_classes.default);
     $("#as-pages .as-page").addClass("as-hidden");
-    $("#as-pages [page='"+page+"']").removeClass("as-hidden");
+    $("#as-pages [page='" + page + "']").removeClass("as-hidden");
   }
 
-  function renderMissingErrors(missings){
-    let missings_html = '';
-    $.each(missings, function(k, v){
+  function renderMissingErrors(missings) {
+    let missings_html = "";
+    $.each(missings, function (k, v) {
       const [id_shop, id_lang, id_product, id_product_attribute] = v.split("_");
       missings_html += `
       <tr>
@@ -370,7 +390,7 @@ const AS = {
         </td>
       </tr>
       `;
-    })
+    });
     const tables = `
     <div class="px-4 sm:px-6 lg:px-8">
       <div class="mt-8 flex flex-col">
@@ -400,20 +420,17 @@ const AS = {
     $(".missing-response").html(tables);
   }
 
-  function renderFaqs(){
-    AS.controller(
-      "getfaqs",
-      "POST"
-    ).then(r => {
-      if(Object.keys(r.faqs).length == 0){
+  function renderFaqs() {
+    AS.controller("getfaqs", "POST").then((r) => {
+      if (Object.keys(r.faqs).length == 0) {
         $("#faqs-wrapper").html("No faqs");
       }
-      if(Object.keys(r.faqs).length > 0){
+      if (Object.keys(r.faqs).length > 0) {
         let faqs_item_count = 0;
         let faqs_section = "";
-        $.each(r.faqs, function(section, faq){
+        $.each(r.faqs, function (section, faq) {
           let faq_single = "";
-          $.each(faq, function(answer, response){
+          $.each(faq, function (answer, response) {
             faq_single += `
             <dl class="mt-6 space-y-6 divide-y divide-gray-200">
               <div class="pt-6">
@@ -434,14 +451,14 @@ const AS = {
             </dl>
             `;
             faqs_item_count++;
-          })
+          });
           faqs_section += `
           <div class="mx-auto divide-y-2 divide-gray-200 mb-16">
             <h2 class="text-xl font-bold text-gray-900 sm:text-xl">${section}</h2>
             ${faq_single}
           </div>
           `;
-        })
+        });
         const faqs_html = `
           <div class="mx-auto py-12 px-4 sm:py-16 sm:px-6 lg:px-8">
             <h2 class="text-xl font-extrabold text-gray-900 sm:text-2xl mb-16">FAQS</h2>
@@ -449,30 +466,32 @@ const AS = {
           </div>
         `;
         $("#faqs-wrapper").html(faqs_html);
-        $(".toggle_faq_item").on("click", function(){
+        $(".toggle_faq_item").on("click", function () {
           $(this).find("svg").toggleClass("rotate-0 rotate-180");
-          $("#"+$(this).attr("aria-controls")).toggle(0);
-        })
+          $("#" + $(this).attr("aria-controls")).toggle(0);
+        });
       }
-    })
+    });
   }
 
-  $(document).ready(function(){
-
+  $(document).ready(function () {
     renderFaqs();
 
-    $(".start_now").on("click", function(){
+    $(".start_now").on("click", function () {
       $(".intro").hide(0);
       $(".apikey-insert").show(0);
-    })
+    });
 
-    if(execute_client_cronjob){
-      const url = module_cron_url+"&wait=false&origin=pageview";
+    if (execute_client_cronjob) {
+      const url = module_cron_url + "&wait=false&origin=pageview";
       fetch(url);
     }
 
-    if(window.performance){
-      if(!!localStorage.getItem("as_lastpage") && performance.navigation.type){
+    if (window.performance) {
+      if (
+        !!localStorage.getItem("as_lastpage") &&
+        performance.navigation.type
+      ) {
         switchToPage(localStorage.getItem("as_lastpage"));
       }
     }
@@ -481,121 +500,114 @@ const AS = {
 
     // gestisce la chiusura di tutti gli elementi quando si clicca fuori di essi.
     // Es. i menu quando si clicca fuori di essi
-    $(document).mouseup(function(e){
-
+    $(document).mouseup(function (e) {
       const container = $(".as-dropdown");
-      if(!container.is(e.target) && container.has(e.target).length === 0) {
+      if (!container.is(e.target) && container.has(e.target).length === 0) {
         $(".dropdown-container").next().removeClass("as-dropdown-show");
         $(".dropdown-container").next().hide(0);
       }
 
-      if($(".modal-container").length){
+      if ($(".modal-container").length) {
         const modal_container = $(".modal-content");
-        if(!modal_container.is(e.target) && modal_container.has(e.target).length === 0) {
+        if (
+          !modal_container.is(e.target) &&
+          modal_container.has(e.target).length === 0
+        ) {
           $(".modal-container").remove();
           $("#as-backdrop").hide(0);
         }
       }
-
     });
 
     // toggle dei menu dropdown
-    $(".dropdown-container > button").on("click", function(){
+    $(".dropdown-container > button").on("click", function () {
       $(this).parent().next().toggle(0);
       $(this).parent().next().toggleClass("as-dropdown-show");
-    })
+    });
 
     // toggle della nav dashboard.tpl
-    $("#as-menu-nav a").on("click", function(){
+    $("#as-menu-nav a").on("click", function () {
       const page = $(this).attr("page");
       localStorage.setItem("as_lastpage", page);
       switchToPage(page);
-    })
+    });
 
-    $("#resync_all_products").on("click", function(){
+    $("#resync_all_products").on("click", function () {
       showResyncModal();
-    })
+    });
 
-    $("#as_shop_selection_form").on("submit", function(e){
+    $("#as_shop_selection_form").on("submit", function (e) {
       e.preventDefault();
       const shops_selected = [];
-      $(".as_shop_to_sync").each(function(){
-        if($(this).prop("checked")) shops_selected.push({
-          id_shop : $(this).attr("data-id-shop"),
-          id_lang : $(this).attr("data-id-lang")
-        });
-      })
-      if(!shops_selected.length){
+      $(".as_shop_to_sync").each(function () {
+        if ($(this).prop("checked"))
+          shops_selected.push({
+            id_shop: $(this).attr("data-id-shop"),
+            id_lang: $(this).attr("data-id-lang"),
+          });
+      });
+      if (!shops_selected.length) {
         AS.helpers.toast(_AS.translations.select_at_least_1_shop, "ERROR");
         return false;
       }
       AS.helpers.load("#as_shop_selection_cta");
-      AS.controller(
-        "addshops",
-        "POST",
-        {
-          shops: shops_selected
-        }
-      ).then(r => {
-        if(r.success === true){
+      AS.controller("addshops", "POST", {
+        shops: shops_selected,
+      }).then((r) => {
+        if (r.success === true) {
           AS.helpers.toast(_AS.translations.shop_sync_success);
           setTimeout(() => {
             location.reload(1);
-          },3000)
+          }, 3000);
           return;
         }
         AS.helpers.unload("#as_shop_selection_cta");
         AS.helpers.toast(_AS.translations.shop_sync_failed, "ERROR");
-      })
-    })
+      });
+    });
 
-    $("#shop_initializations").on("click", function(e){
+    $("#shop_initializations").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "shopinitializations",
-        "POST"
-      ).then(r => {
+      AS.controller("shopinitializations", "POST").then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#disconnect_apikey").on("click", function(e){
+    $("#resync_all_prices").on("click", function (e) {
+      e.preventDefault();
+      AS.controller("resyncallprices", "POST").then((r) => {
+        AS.helpers.toast("Regole avviata, attendi qualche minuto.");
+      });
+    });
+
+    $("#disconnect_apikey").on("click", function (e) {
       e.preventDefault();
       showDisconnectApikeyModal();
-    })
+    });
 
-    $("#resync_users_groups").on("click", function(e){
+    $("#resync_users_groups").on("click", function (e) {
       e.preventDefault();
       AS.helpers.load("#resync_users_groups");
-      AS.controller(
-        "resyncusersgroups",
-        "POST"
-      ).then(r => {
+      AS.controller("resyncusersgroups", "POST").then((r) => {
         AS.helpers.toast(_AS.translations.resync_users_groups_success);
         AS.helpers.unload("#resync_users_groups");
-      })
-    })
+      });
+    });
 
-    $("#soft_delete_and_cleanup_products").on("click", function(e){
+    $("#soft_delete_and_cleanup_products").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "softdeleteandcleanupproducts",
-        "POST"
-      ).then(r => {
+      AS.controller("softdeleteandcleanupproducts", "POST").then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#start_remote_checker").on("click", function(e){
+    $("#start_remote_checker").on("click", function (e) {
       e.preventDefault();
       AS.helpers.load("#start_remote_checker");
-      AS.controller(
-        "startremotechecker",
-        "POST"
-      ).then(r => {
+      AS.controller("startremotechecker", "POST").then((r) => {
         $("#no-issues, #with-issues").hide(0);
         AS.helpers.unload("#start_remote_checker");
-        if(r.missings.length > 0){
+        if (r.missings.length > 0) {
           renderMissingErrors(r.missings);
           $("#with-issues").show(0);
           AS.last_errors = r.errors;
@@ -603,101 +615,75 @@ const AS = {
         }
         $("#no-issues").show(0);
         AS.helpers.toast(_AS.translations.start_remote_checker_success);
-      })
-    })
+      });
+    });
 
-    $("#get_as_informations").on("click", function(e){
+    $("#get_as_informations").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "getasproductinformations",
-        "POST",
-        {
-          pid : $("#as_pid").val()
-        }
-      ).then(r => {
+      AS.controller("getasproductinformations", "POST", {
+        pid: $("#as_pid").val(),
+      }).then((r) => {
         console.log(r);
-        if(!Object.keys(r.products)) alert("Nessun prodotto trovato");
+        if (!Object.keys(r.products)) alert("Nessun prodotto trovato");
         updateProductView(r.products);
-      })
-    })
+      });
+    });
 
-    $("#generate_products_query").on("click", function(e){
+    $("#generate_products_query").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "generateproductsquery",
-        "POST",
-        {
-          limit : "0,1000"
-        }
-      ).then(r => {
+      AS.controller("generateproductsquery", "POST", {
+        limit: "0,1000",
+      }).then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#automatic_queue").on("click", function(e){
+    $("#automatic_queue").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "automaticqueue",
-        "POST"
-      ).then(r => {
+      AS.controller("automaticqueue", "POST").then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#cleanup_products").on("click", function(e){
+    $("#cleanup_products").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "cleanupproducts",
-        "POST"
-      ).then(r => {
+      AS.controller("cleanupproducts", "POST").then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#send_queue").on("click", function(e){
+    $("#send_queue").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "sendqueue",
-        "POST"
-      ).then(r => {
+      AS.controller("sendqueue", "POST").then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#delete_queue").on("click", function(e){
+    $("#delete_queue").on("click", function (e) {
       e.preventDefault();
-      AS.controller(
-        "deletequeue",
-        "POST"
-      ).then(r => {
+      AS.controller("deletequeue", "POST").then((r) => {
         console.log(r);
-      })
-    })
+      });
+    });
 
-    $("#as_apikey_form").on("submit", function(e){
+    $("#as_apikey_form").on("submit", function (e) {
       e.preventDefault();
       const apikey = $("#apikey").val();
-      if(apikey == "") return;
+      if (apikey == "") return;
       AS.helpers.load("#as_apikey_cta");
-      AS.controller(
-        "submitapikey",
-        "POST",
-        {
-          apikey: apikey
-        }
-      ).then(r => {
-        if(r.success){
+      AS.controller("submitapikey", "POST", {
+        apikey: apikey,
+      }).then((r) => {
+        if (r.success) {
           AS.helpers.toast(_AS.translations.apikey_connection_success);
           setTimeout(() => {
             location.reload(1);
-          },3000);
+          }, 3000);
           return;
         }
         AS.helpers.unload("#as_apikey_cta");
         AS.helpers.toast(_AS.translations.api_key_error, "ERROR");
-      })
-    })
-
-  })
-
+      });
+    });
+  });
 })();

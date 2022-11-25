@@ -97,6 +97,21 @@ class Sync
     \Configuration::updateGlobalValue("ACCELASEARCH_FULLSYNC_CREATION_PROGRESS", 1);
   }
 
+  public static function createRepriceRule($id_shop)
+  {
+    $row = [
+      "id_product" => 0,
+      "id_product_attribute" => 0,
+      "type" => "price",
+      "id_shop" => $id_shop,
+      "id_lang" => 0,
+      "name" => "id_product",
+      "value" => 0,
+      "op" => "i"
+    ];
+    \Db::getInstance()->insert("as_notifications", $row);
+  }
+
   public static function startRemoteSync($real_shop_id)
   {
     $start_sync = \AccelaSearch::asApi(
