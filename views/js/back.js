@@ -575,9 +575,11 @@ const AS = {
 
     $("#resync_all_prices").on("click", function (e) {
       e.preventDefault();
-      AS.controller("resyncallprices", "POST").then((r) => {
-        AS.helpers.toast("Regole avviata, attendi qualche minuto.");
-      });
+      AS.controller("resyncallprices", "POST")
+        .then((r) => {
+          AS.helpers.toast("Regole avviata, attendi qualche minuto.");
+        })
+        .catch((error) => console.log(error));
     });
 
     $("#disconnect_apikey").on("click", function (e) {

@@ -101,7 +101,7 @@ const createPackage = async (version, message = "") => {
     console.error(_error("Error occurred:", error));
   }
   exec(
-    "npx copyfiles -e './sample_structure.png' -e './classes/Updater/updater_uml.png' ./classes/*.php ./classes/Updater/** ./controllers/** ./sql/** ./views/** ./*.php ./*.png releases/tmp_dir/accelasearch",
+    "npx copyfiles -e './sample_structure.png' -e './classes/Updater/updater_uml.png' ./classes/*.php ./classes/Updater/** ./controllers/** ./sql/** ./views/** ./*.pdf ./*.php ./*.png releases/tmp_dir/accelasearch",
     async () => {
       console.log("Pacchetto grezzo creato");
       await createPackageZip(version);

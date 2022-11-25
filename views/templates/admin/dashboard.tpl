@@ -313,7 +313,7 @@
             <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-2" id="send_queue">Send queue to AS</button>
             <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-orange-800 hover:bg-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-800 mr-2" id="delete_queue">Delete queue</button>
             <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 mr-2" id="automatic_queue">Automatic queue start</button>
-            <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-2" id="resync_all_prices">Resync all prices</button>
+            <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 mr-2" id="resync_all_prices">Resync all prices</button>
           </div>
           <div class="flex my-2">
             <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 mr-2" id="soft_delete_and_cleanup_products">Soft delete & Clean up </button>
@@ -368,12 +368,12 @@
                   <p class="text-center text-gray-400 pb-4 font-bold text-l">
                     {l s='Need help? Read a module documentation' mod='accelasearch'}
                   </p>
-                  <button type="button" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-as-primary-400 hover:bg-as-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-as-primary-400" >Download PDF</button>
+                  <a href="{$module_url}docs.pdf" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-as-primary-400 hover:bg-as-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-as-primary-400" >Open PDF</a>
                 </div>
                 <div class="text-center mt-6">
                   <div>{l s='Can\'t find a solution to your problem?' mod='accelasearch'}</div>
                   <div class="">
-                    <a href="#" target="_self" class="btn btn-link flex justify-center items-center text-as-primary-400">
+                    <a href="https://dgcal.atlassian.net/servicedesk/customer/portal/6" target="_blank" class="btn btn-link flex justify-center items-center text-as-primary-400">
                       Open a support Ticket
                       <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
