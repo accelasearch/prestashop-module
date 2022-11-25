@@ -7,7 +7,7 @@
  * Boost your search engine
  *
  * @author AccelaSearch <support@accelasearch.com>
- * @version 0.0.35
+ * @version 0.0.50
  */
 
 if (!defined('_PS_VERSION_')) exit;
@@ -962,10 +962,12 @@ class AccelaSearch extends Module
 				$id_group = $customer_group["id_group"];
 				$as_id_group = $users_groups[$id_shop . "_" . $id_lang . "_" . $id_group];
 
+				$id_product_attribute_price = $id_product_attribute === 0 ? null : $id_product_attribute;
+
 				$price = \Product::getPriceStatic(
 					$id_product,
 					true,
-					$id_product_attribute,
+					$id_product_attribute_price,
 					6,
 					null,
 					false,
@@ -979,7 +981,7 @@ class AccelaSearch extends Module
 				$specialprice = \Product::getPriceStatic(
 					$id_product,
 					true,
-					$id_product_attribute,
+					$id_product_attribute_price,
 					6,
 					null,
 					false,
@@ -992,13 +994,16 @@ class AccelaSearch extends Module
 
 				$product_price_externalidstr = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_" . $iso_code;
 
-				$queries[] = AccelaSearch\Query::getByName("priceUpdate_query", [
+
+				$generated_query = AccelaSearch\Query::getByName("priceUpdate_query", [
 					"as_id_group" => $as_id_group,
 					"price" => $price,
 					"specialprice" => $specialprice,
 					"product_price_externalidstr" => $product_price_externalidstr,
 					"currency" => $iso_code
 				]);
+
+				$queries[] = $generated_query;
 			}
 		}
 	}
@@ -1901,7 +1906,7 @@ class AccelaSearch extends Module
 	{
 		$this->name = 'accelasearch';
 		$this->tab = 'front_office_features';
-		$this->version = '0.0.35';
+		$this->version = '0.0.50';
 		$this->author = 'AccelaSearch';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = [

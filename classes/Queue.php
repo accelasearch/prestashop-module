@@ -5,6 +5,9 @@ namespace AccelaSearch;
 class Queue
 {
 
+  const FLUSH_QUERY_VALUE = true;
+  const SEND_QUERY_TO_AS = true;
+
   public static function getRowsToProcess($id_shop = null, $id_lang = null)
   {
     $where = "";
@@ -23,20 +26,25 @@ class Queue
       $queue = self::getRowsToProcess();
       if ($queue !== false) {
         $id_queue = $queue["id"];
+        $update_data = [
+          "is_processing" => 1,
+          "processed_at" => date("Y-m-d H:i:s")
+        ];
+        if (self::FLUSH_QUERY_VALUE) {
+          $update_data["query"] = "";
+        }
         \Db::getInstance()->update(
           "as_fullsync_queue",
-          [
-            "is_processing" => 1,
-            "processed_at" => date("Y-m-d H:i:s"),
-            "query" => ""
-          ],
+          $update_data,
           "id = $id_queue"
         );
         if (empty($queue["query"])) continue;
         // invio ad AS
-        Sync::startRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue["id_shop"], $queue["id_lang"]));
-        $as_query_success = \AS_Collector::getInstance()->query($queue["query"]);
-        Sync::terminateRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue["id_shop"], $queue["id_lang"]));
+        if (self::SEND_QUERY_TO_AS) {
+          Sync::startRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue["id_shop"], $queue["id_lang"]));
+          $as_query_success = \AS_Collector::getInstance()->query($queue["query"]);
+          Sync::terminateRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue["id_shop"], $queue["id_lang"]));
+        }
       }
     }
   }

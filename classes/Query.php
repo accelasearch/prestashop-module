@@ -310,6 +310,10 @@ class Query
 
     // processo i prezzi dei semplici o configurabili
 
+    $currencies_cart = self::$query_data_manager->currencies_cart;
+    $customer_groups = self::$query_data_manager->customer_groups;
+    $users_groups = self::$query_data_manager->users_groups;
+
     foreach ($ps_products as $ps_product) {
 
       [
@@ -318,10 +322,6 @@ class Query
 
 
       $id_product_attribute = 0;
-
-      $currencies_cart = self::$query_data_manager->currencies_cart;
-      $customer_groups = self::$query_data_manager->customer_groups;
-      $users_groups = self::$query_data_manager->users_groups;
 
       \AccelaSearch::addProductPriceToQueries(
         $id_shop,
@@ -538,7 +538,6 @@ SQL;
   JOIN {{PREFIX}}product AS p ON p.id_product = ps.id_product
   WHERE ps.id_shop = {{ID_SHOP}}
   AND p.active = 1
-  LIMIT 100;
 SQL;
 
   private $mainProductsChildrenInsert_query = <<<SQL

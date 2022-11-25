@@ -30,7 +30,7 @@ class PriceUpdate extends UpdateOperation implements Operation
         $start_cycle = 1;
         $end_cycle = ceil($query_size / 15000);
         for ($start = $start_cycle; $start <= $end_cycle; $start++) {
-          $query = implode(";", array_slice($queries, 15000 * $start - 1, 15000));
+          $query = implode(";", array_slice($queries, 15000 * ($start - 1), 15000));
           Queue::create($query, 0, $start, $end_cycle, $context->id_shop, $context->id_lang);
         }
         return $this;
