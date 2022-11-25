@@ -227,16 +227,16 @@ const AS = {
       AS.helpers.load("#resync_all_trigger");
       AS.controller("resyncall", "POST")
         .then((r) => {
-          AS.helpers.unload("#resync_all_trigger");
           AS.helpers.toast(_AS.translations.resync_all_success);
           $(".dismiss-modal").trigger("click");
           location.reload(1);
         })
         .catch((e) => {
-          AS.helpers.unload("#resync_all_trigger");
+          AS.helpers.toast(_AS.translations.resync_all_fail, "ERROR");
           $(".dismiss-modal").trigger("click");
           location.reload(1);
-        });
+        })
+        .finally(() => AS.helpers.unload("#resync_all_trigger"));
     });
   }
 
@@ -575,11 +575,15 @@ const AS = {
 
     $("#resync_all_prices").on("click", function (e) {
       e.preventDefault();
+      AS.helpers.load("#resync_all_prices");
       AS.controller("resyncallprices", "POST")
         .then((r) => {
-          AS.helpers.toast("Regole avviata, attendi qualche minuto.");
+          AS.helpers.toast(_AS.translations.resync_price_success);
         })
-        .catch((error) => console.log(error));
+        .catch((error) =>
+          AS.helpers.toast(_AS.translations.resync_price_fail, "ERROR")
+        )
+        .finally(() => AS.helpers.unload("#resync_all_prices"));
     });
 
     $("#disconnect_apikey").on("click", function (e) {

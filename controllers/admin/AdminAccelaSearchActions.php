@@ -183,6 +183,11 @@ SQL;
 			] = $as_shop;
 			\AccelaSearch\Sync::createRepriceRule($id_shop);
 		}
+		$this->ajaxDie(Tools::jsonEncode(
+			[
+				'success' => true
+			]
+		));
 	}
 
 	public function ajaxProcessResyncAll()
@@ -218,6 +223,11 @@ SQL;
 		\AccelaSearch\Sync::deleteAll();
 		AccelaSearch::shopInitializations();
 		Configuration::updateGlobalValue("ACCELASEARCH_FULLSYNC_CREATION_PROGRESS", 0);
+		$this->ajaxDie(Tools::jsonEncode(
+			[
+				'success' => true
+			]
+		));
 	}
 
 	public function ajaxProcessSoftDeleteAndCleanupProducts()
@@ -313,6 +323,11 @@ SQL;
 	{
 		if (!AccelaSearch::AS_CONFIG["DEBUG_MODE"]) return;
 		Db::getInstance()->query("DELETE FROM " . _DB_PREFIX_ . "as_fullsync_queue");
+		$this->ajaxDie(Tools::jsonEncode(
+			[
+				'success' => true
+			]
+		));
 	}
 
 	public function ajaxProcessGetAsProductInformations()
