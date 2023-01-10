@@ -482,11 +482,6 @@ const AS = {
       $(".apikey-insert").show(0);
     });
 
-    if (execute_client_cronjob) {
-      const url = module_cron_url + "&wait=false&origin=pageview";
-      fetch(url);
-    }
-
     if (window.performance) {
       if (
         !!localStorage.getItem("as_lastpage") &&

@@ -125,16 +125,8 @@ class AccelaSearch extends Module
 
 	public static function triggerCronjobExternal()
 	{
-		$curl = curl_init();
 		$url = _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?token=" . Configuration::get("ACCELASEARCH_CRON_TOKEN") . "&wait=false&origin=pageview";
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_USERAGENT, 'api');
-		curl_setopt($curl, CURLOPT_HEADER, 0);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, false);
-		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 1);
-		curl_setopt($curl, CURLOPT_DNS_CACHE_TIMEOUT, 100);
-		curl_exec($curl);
-		curl_close($curl);
+		@file_get_contents($url, 0, stream_context_create(["http" => ["timeout" => 0.1]]));
 	}
 
 	public static function convertShopIdFromCollectorVersionToReal($id)
@@ -1658,7 +1650,6 @@ class AccelaSearch extends Module
 	{
 
 		$accelasearch_controller_link = $this->context->link->getAdminLink('AdminAccelaSearchActions');
-		$execute_client_cronjob = false;
 
 		// se il cronjob non è mai stato eseguito
 		if (!(bool)Configuration::get("ACCELASEARCH_LAST_CRONJOB_EXECUTION") && Configuration::get("ACCELASEARCH_SHOPS_SYNCED") != "{}") {
@@ -1672,18 +1663,11 @@ class AccelaSearch extends Module
 			if (!(bool)$last_view_exec) {
 				$last_view_exec = time() - 61;
 			}
-
-			if ((time() - $last_view_exec) > 60) {
-				$execute_client_cronjob = true;
-				Configuration::updateGlobalValue("ACCELASEARCH_LAST_CRONJOB_PAGEVIEW_EXECUTION", time());
-				Configuration::updateGlobalValue("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES", ++$view_exec_times);
-			}
 		}
 
 		Media::addJsDef([
 			"as_admin_controller" => $accelasearch_controller_link,
 			"module_cron_url" => _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?token=" . Configuration::get("ACCELASEARCH_CRON_TOKEN"),
-			"execute_client_cronjob" => $execute_client_cronjob,
 			'_AS' => [
 				"apikey" => Configuration::get("ACCELASEARCH_APIKEY"),
 				"translations" => AccelaSearch\Translator::getInstance()->translation_array
@@ -1784,6 +1768,28 @@ class AccelaSearch extends Module
 		$this->initializeModule();
 	}
 
+	public function hookActionControllerInitBefore()
+	{
+		// esegue il cronjob se sono passati più di 60s dall'ultima pageview
+		if (Configuration::get("ACCELASEARCH_SHOPS_SYNCED") != "{}") {
+			$last_view_exec = Configuration::get("ACCELASEARCH_LAST_CRONJOB_PAGEVIEW_EXECUTION");
+			$view_exec_times = Configuration::get("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES");
+			if (!$view_exec_times) {
+				Configuration::updateGlobalValue("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES", 0);
+				$view_exec_times = 0;
+			}
+			if (!(bool)$last_view_exec) {
+				$last_view_exec = time() - 61;
+			}
+
+			if ((time() - $last_view_exec) > 60) {
+				Configuration::updateGlobalValue("ACCELASEARCH_LAST_CRONJOB_PAGEVIEW_EXECUTION", time());
+				Configuration::updateGlobalValue("ACCELASEARCH_CRONJOB_PAGEVIEW_EXECUTION_TIMES", ++$view_exec_times);
+				$this->triggerCronjobExternal();
+			}
+		}
+	}
+
 
 	public function getTriggerQueries()
 	{
@@ -1812,6 +1818,7 @@ class AccelaSearch extends Module
 			&& $this->registerHook('actionAdminControllerSetMedia')
 			&& $this->registerHook('actionFrontControllerSetMedia')
 			&& $this->registerHook('actionCronJob')
+			&& $this->registerHook('actionControllerInitBefore')
 			&& Db::getInstance()->query($install_sql);
 	}
 
