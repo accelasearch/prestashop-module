@@ -250,7 +250,7 @@ class AccelaSearch extends Module
 		$queries = [];
 		foreach ($attributes as $attribute) {
 			$slug = strtolower(str_replace(" ", "_", $attribute["name"]));
-			$external_id_str = "0_" . $id_lang . "_" . $attribute["id_attribute_group"];
+			$external_id_str = "attribute_0_" . $id_lang . "_" . $attribute["id_attribute_group"];
 			$queries[] = AccelaSearch\Query::getByName(
 				"createVariant_query",
 				[
@@ -264,8 +264,24 @@ class AccelaSearch extends Module
 		return implode("", $queries);
 	}
 
-	public static function generateFeaturesQuery($id_shop, $id_lang)
+	public static function generateFeaturesQuery($storeview_id, $id_lang)
 	{
+		$features = Feature::getFeatures($id_lang);
+		$queries = [];
+		foreach ($features as $feature) {
+			$slug = strtolower(str_replace(" ", "_", $feature["name"]));
+			$external_id_str = "feature_0_" . $id_lang . "_" . $feature["id_feature"];
+			$queries[] = AccelaSearch\Query::getByName(
+				"createVariant_query",
+				[
+					"external_id_str" => $external_id_str,
+					"name" => $feature["name"],
+					"storeview_id" => $storeview_id,
+					"slug" => $slug
+				]
+			);
+		}
+		return implode("", $queries);
 	}
 
 	/**
