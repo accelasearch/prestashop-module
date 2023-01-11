@@ -683,6 +683,11 @@ SQL;
   INSERT IGNORE INTO users_groups (label, externalidstr, storeviewid) VALUES ('{{NAME}}', '{{EXTERNALIDSTR}}', {{STOREVIEW_ID}});
 SQL;
 
+  private $createVariant_query = <<<SQL
+  INSERT IGNORE INTO products_attr_label (label, storeviewid, externalidstr) VALUES ('{{NAME}}', {{STOREVIEW_ID}}, '{{EXTERNAL_ID_STR}}');
+    SET @{{SLUG}}_label_id = LAST_INSERT_ID();
+SQL;
+
   private $shopInitializationsAttributes_query = <<<SQL
   INSERT IGNORE INTO products_attr_label (label, storeviewid) VALUES ('name', {{STOREVIEW_ID}});
   SET @name_label_id = LAST_INSERT_ID();

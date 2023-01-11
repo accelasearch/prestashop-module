@@ -447,7 +447,7 @@ SQL;
 		if (!AccelaSearch::AS_CONFIG["DEBUG_MODE"]) return;
 		$as_shops = AccelaSearch::getAsShops();
 		$queries = "";
-		$limit = "25,30";
+		$limit = "0,1";
 		foreach ($as_shops as $as_shop) {
 			$queries .= AccelaSearch::generateProductsQueryStatic(
 				$as_shop["id_shop"],
@@ -457,26 +457,8 @@ SQL;
 				$limit
 			);
 		}
-
-		$queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
-
-		// AccelaSearch::createQueue($queries, $limit);
-
-		// file_put_contents("/home/bimbimatti/public_html/modules/accelasearch/controllers/admin/query_payload.sql", $queries);
-
-		echo $queries;
-		// AS_Collector::getInstance()->query($queries);
-
-		// Db::getInstance()->query($ps_queries);
-		// Db::getInstance()->update(
-		// 	"as_fullsync_queue",
-		// 	[
-		// 		"query" => $queries
-		// 	],
-		// 	"id = $queue_id"
-		// );
-
-
+		die($queries);
+		// $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
 	}
 
 	public function ajaxProcessCleanupProducts()

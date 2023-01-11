@@ -8,6 +8,9 @@ if ($token === Configuration::get("ACCELASEARCH_CRON_TOKEN")) {
   $accelasearch = Module::getInstanceByName('accelasearch');
   if ($accelasearch->active) {
     if ($origin !== "pageview") Configuration::updateGlobalValue("ACCELASEARCH_LAST_CRONJOB_EXECUTION", time());
+
+    dump(AccelaSearch::generateVariantsQuery(13, 1));
+
     $accelasearch->hookActionCronJob($wait);
   }
 }

@@ -51,7 +51,7 @@ class AccelaSearch extends Module
 		"API_ENDPOINT" => "https://svc11.accelasearch.net/API/",
 		"CMS_ID" => 99,
 		"LOG_QUERY" => false,
-		"DEBUG_MODE" => false,
+		"DEBUG_MODE" => true,
 		"CRONJOB_DRYRUN" => false,
 		"ACCEPTED_METHODS" => [
 			"GET",
@@ -231,9 +231,7 @@ class AccelaSearch extends Module
 
 	public static function generateCategories()
 	{
-
 		$as_shops = self::getAsShops();
-
 		foreach ($as_shops as $id_shop_and_lang => $as_shop) {
 
 			$storeview_id = $as_shop["as_shop_id"];
@@ -243,8 +241,31 @@ class AccelaSearch extends Module
 			$full_categories = Category::getNestedCategories(1, $id_lang);
 			self::parseCategories($full_categories, $id_shop, $id_lang, $storeview_id);
 		}
-
 		Shop::setContext(Shop::CONTEXT_ALL);
+	}
+
+	public static function generateVariantsQuery($storeview_id, $id_lang)
+	{
+		$attributes = AttributeGroup::getAttributesGroups($id_lang);
+		$queries = [];
+		foreach ($attributes as $attribute) {
+			$slug = strtolower(str_replace(" ", "_", $attribute["name"]));
+			$external_id_str = "0_" . $id_lang . "_" . $attribute["id_attribute_group"];
+			$queries[] = AccelaSearch\Query::getByName(
+				"createVariant_query",
+				[
+					"external_id_str" => $external_id_str,
+					"name" => $attribute["name"],
+					"storeview_id" => $storeview_id,
+					"slug" => $slug
+				]
+			);
+		}
+		return implode("", $queries);
+	}
+
+	public static function generateFeaturesQuery($id_shop, $id_lang)
+	{
 	}
 
 	/**
@@ -278,6 +299,13 @@ class AccelaSearch extends Module
 				"storeview_id" => $storeview_id,
 				"externalidstr_warehouse" => $externalidstr_warehouse
 			]);
+
+			// creazione attributi variante (prodotti semplici)
+			//TODO: Scrivere metodo che aggiunge alla tabella products_attr_label gli attributi dinamici delle varianti (tipo colore, taglia)
+			// $queries[] = self::generateVariantsQuery();
+
+			// creazione caratteristiche
+			//TODO: Scrivere metodo che aggiunge alla tabella products_attr_label le caratteristiche dei prodotti
 
 			// creazione gruppi clienti
 			foreach ($customer_groups as $customer_group) {
@@ -407,9 +435,6 @@ class AccelaSearch extends Module
 			$as_shops = self::getAsShops();
 			if (!$as_shops) die("No shops configured");
 
-			$fullsync_progress = Configuration::get("ACCELASEARCH_FULLSYNC_PROGRESS");
-			$fullsync_creation_progress = Configuration::get("ACCELASEARCH_FULLSYNC_CREATION_PROGRESS");
-
 			$sync = new AccelaSearch\Sync();
 
 			// la sync non è mai stata avviata
@@ -440,7 +465,7 @@ class AccelaSearch extends Module
 				die("Fullsync is running");
 			}
 
-			// se il flag è libero per la scrittura
+			// se il flag è libero per la scrittura inizia a scrivere i prodotti per la prima volta
 			if ($sync->isAbleToWriteNewRows()) {
 
 				foreach ($as_shops as $as_shop) {
