@@ -704,6 +704,37 @@ class TriggerDataElements
       ],
     ];
 
+    // nuova caratteristica inserita
+    $this->elements["i_feature_product"] = [
+      "when" => "AFTER",
+      "type" => "INSERT",
+      "table" => "feature_product",
+      "fields" => [
+        [
+          "name" => "id_product",
+          "select_fields" => [
+            "fp.`id_product`",
+            "'feature_product'",
+            "0",
+            "0",
+            "'id_feature_value'",
+            "NEW.`id_feature_value`",
+            "'{{PREFIX}}feature_product'",
+            "'i'"
+          ],
+          "from_clause" => [
+            "from_name" => "feature_product",
+            "from_as" => "fp"
+          ],
+          "joins" => [],
+          "wheres" => [
+            " AND fp.`id_product`=NEW.`id_product`",
+            " AND fp.`id_feature_value`=NEW.`id_feature_value`",
+          ],
+        ]
+      ],
+    ];
+
     // nuova variante inserita
 
     $this->elements["i_product_attribute_shop"] = [
@@ -923,6 +954,34 @@ class TriggerDataElements
           "from_clause" => [
             "from_name" => "",
             "from_as" => ""
+          ],
+          "joins" => [],
+          "wheres" => [],
+        ]
+      ],
+    ];
+
+    // caratteristica eliminata
+    $this->elements["d_feature_product"] = [
+      "when" => "AFTER",
+      "type" => "DELETE",
+      "table" => "feature_product",
+      "fields" => [
+        [
+          "name" => "id_product",
+          "select_fields" => [
+            "OLD.`id_product`",
+            "'feature_product'",
+            "0",
+            "0",
+            "'id_feature_value'",
+            "OLD.`id_feature_value`",
+            "'{{PREFIX}}feature_product'",
+            "'d'"
+          ],
+          "from_clause" => [
+            "from_name" => "feature_product",
+            "from_as" => "fp"
           ],
           "joins" => [],
           "wheres" => [],
