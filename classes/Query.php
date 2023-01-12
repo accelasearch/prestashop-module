@@ -540,6 +540,25 @@ SQL;
   AND p.active = 1
 SQL;
 
+  private $addVariant_query = <<<SQL
+  INSERT IGNORE INTO products_attr_str
+  (
+    labelid,
+    productid,
+    value,
+    configurable,
+    externalidstr
+  )
+  VALUES
+  (
+    {{LABEL_ID}},
+    @generated_product_id_children,
+    '{{VALUE}}',
+    {{IS_CONFIGURABLE}},
+    '{{EXTERNAL_ID_STR}}'
+  );
+SQL;
+
   private $mainProductsChildrenInsert_query = <<<SQL
   INSERT IGNORE INTO products
   (

@@ -69,7 +69,7 @@ class Queue
     // value = divider
     $divider_settings = [
       "PRODUCT" => [
-        0 => 200,
+        0 => 10,
         1000 => 400,
         5000 => 800,
         20000 => 1500,

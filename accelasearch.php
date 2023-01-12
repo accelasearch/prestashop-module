@@ -317,11 +317,10 @@ class AccelaSearch extends Module
 			]);
 
 			// creazione attributi variante (prodotti semplici)
-			//TODO: Scrivere metodo che aggiunge alla tabella products_attr_label gli attributi dinamici delle varianti (tipo colore, taglia)
-			// $queries[] = self::generateVariantsQuery();
+			$queries[] = self::generateVariantsQuery($storeview_id, $id_lang);
 
 			// creazione caratteristiche
-			//TODO: Scrivere metodo che aggiunge alla tabella products_attr_label le caratteristiche dei prodotti
+			$queries[] = self::generateFeaturesQuery($storeview_id, $id_lang);
 
 			// creazione gruppi clienti
 			foreach ($customer_groups as $customer_group) {
@@ -1273,6 +1272,8 @@ class AccelaSearch extends Module
 
 			$images = Image::getImages($id_lang, $id_product, $id_product_attribute, $id_shop);
 
+			$queryData = AccelaSearch\Query::$query_data_manager;
+
 			$queries[] = AccelaSearch\Query::getByName("mainProductsChildrenInsert_query", [
 				"sku" => $sku,
 				"as_shop_id" => $as_shop_id,
@@ -1296,6 +1297,23 @@ class AccelaSearch extends Module
 				"sku_id" => $sku_id,
 				"sku_external" => $sku_external
 			]);
+
+			// scrivo il valore dell'attributo del semplice
+			$attributes = Db::getInstance()->executeS("SELECT id_attribute FROM " . _DB_PREFIX_ . "product_attribute_combination WHERE id_product_attribute = $id_product_attribute");
+			foreach ($attributes as $attribute) {
+				$ps_attribute = new Attribute($attribute["id_attribute"]);
+				$ps_attribute_group = new AttributeGroup($ps_attribute->id_attribute_group);
+				$name = $ps_attribute_group->name[$id_lang];
+				$label_id = $queryData->as_attributes_ids[$name];
+				$slug = strtolower(str_replace(" ", "_", $name));
+				$external_id_str = $id_shop . "_" . $id_lang . "_" . $id_product . "_" . $id_product_attribute . "_" . $slug;
+				$queries[] = AccelaSearch\Query::getByName("addVariant_query", [
+					"label_id" => $label_id,
+					"value" => $ps_attribute->name[$id_lang],
+					"is_configurable" => 1,
+					"external_id_str" => $external_id_str
+				]);
+			}
 
 			// immagini specifiche delle varianti
 			$images = self::getProductImages($id_shop, $id_lang, $id_product, $id_product_attribute, $children, $ps_product["link_rewrite"]);
