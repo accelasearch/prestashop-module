@@ -1,0 +1,9 @@
+{
+    "require-dev": {
+        "prestashop/php-dev-tools": "^4.3",
+        "prestashop/autoindex": "^2.1",
+        "phpstan/phpstan": "^1.9"
+    },
+    "author": "PrestaShop",
+    "license": "AFL-3.0"
+}

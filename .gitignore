@@ -2,3 +2,4 @@ node_modules/
 releases
 classes/_dev
 config_it.xml
+vendor/

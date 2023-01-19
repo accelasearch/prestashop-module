@@ -19,19 +19,12 @@
  */
 
 
-namespace AccelaSearch;
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
-class TriggerData
-{
-    public $when;
-    public $type;
-    public $table;
-    public $fields = [];
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-    public function __construct($data)
-    {
-        foreach ($data as $private_var_name => $private_var_value) {
-            $this->{$private_var_name} = $private_var_value;
-        }
-    }
-}
+header('Location: ../');
+exit;

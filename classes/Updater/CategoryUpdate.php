@@ -1,4 +1,23 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
+
 
 namespace AccelaSearch\Updater;
 
@@ -6,42 +25,40 @@ use AccelaSearch\Query;
 
 class CategoryUpdate extends UpdateOperation implements Operation
 {
+    private $queries = '';
 
-  private $queries = "";
-
-  public function __construct()
-  {
-    $this->setName("category");
-  }
-
-  public function generateQueries(UpdateRow $update_row, UpdateContext $context)
-  {
-
-    $id_product = $context->id_product;
-    $id_product_attribute = $context->id_product_attribute;
-
-    if ($update_row->isDeleteOperation()) {
-      $this->queries .= Query::getCategoryDeleteQuery($id_product, $context->id_shop, $context->id_lang, $context->as_shop_id);
-      $update_row->unsetOperationIfExist("i");
-      $update_row->unsetOperationIfExist("u");
+    public function __construct()
+    {
+        $this->setName('category');
     }
 
-    if ($update_row->isInsertOperation()) {
-      $update_row->unsetOperationIfExist("u");
-      $this->queries .= Query::getCategoryCreationQuery($id_product, $context->id_shop, $context->id_lang, $context->as_shop_id);
+    public function generateQueries(UpdateRow $update_row, UpdateContext $context)
+    {
+        $id_product = $context->id_product;
+        $id_product_attribute = $context->id_product_attribute;
+
+        if ($update_row->isDeleteOperation()) {
+            $this->queries .= Query::getCategoryDeleteQuery($id_product, $context->id_shop, $context->id_lang, $context->as_shop_id);
+            $update_row->unsetOperationIfExist('i');
+            $update_row->unsetOperationIfExist('u');
+        }
+
+        if ($update_row->isInsertOperation()) {
+            $update_row->unsetOperationIfExist('u');
+            $this->queries .= Query::getCategoryCreationQuery($id_product, $context->id_shop, $context->id_lang, $context->as_shop_id);
+        }
+
+        if ($update_row->isUpdateOperation()) {
+            $op_name = array_keys($update_row->getRow()['u'])[0];
+            $new_value = $update_row->getRow()['u'][$op_name]['value'];
+            $this->queries .= Query::getCategoryUpdateQuery($id_product, $new_value, $context->id_shop, $context->id_lang, $context->as_shop_id, $op_name);
+        }
+
+        return $this;
     }
 
-    if ($update_row->isUpdateOperation()) {
-      $op_name = array_keys($update_row->getRow()["u"])[0];
-      $new_value = $update_row->getRow()["u"][$op_name]["value"];
-      $this->queries .= Query::getCategoryUpdateQuery($id_product, $new_value, $context->id_shop, $context->id_lang, $context->as_shop_id, $op_name);
+    public function getQueries(): string
+    {
+        return $this->queries;
     }
-
-    return $this;
-  }
-
-  public function getQueries(): string
-  {
-    return $this->queries;
-  }
 }
