@@ -17,8 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
-
 ignore_user_abort(true);
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -371,7 +369,7 @@ SQL;
         if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
             return;
         }
-        $id_product = $_POST['pid'] ?? null;
+        $id_product = Tools::getValue("pid", null);
         if ($id_product > 0) {
             $as_shops = AccelaSearch::getAsShops();
             $products = [];

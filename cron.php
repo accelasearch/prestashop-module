@@ -17,12 +17,10 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
-
 include_once dirname(__FILE__) . '/../../config/config.inc.php';
-$token = $_GET['token'] ?? null;
-$wait = $_GET['wait'] ?? true;
-$origin = $_GET['origin'] ?? 'cronjob';
+$token = Tools::getValue("token", null);
+$wait = Tools::getValue("wait", true);
+$origin = Tools::getValue("origin", "cronjob");
 if ($token === Configuration::get('ACCELASEARCH_CRON_TOKEN')) {
     $accelasearch = Module::getInstanceByName('accelasearch');
     if ($accelasearch->active) {

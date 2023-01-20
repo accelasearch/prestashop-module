@@ -17,8 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
-
 require_once __DIR__ . '/classes/AS_Collector.php';
 require_once __DIR__ . '/classes/Query.php';
 require_once __DIR__ . '/classes/QueryData.php';
