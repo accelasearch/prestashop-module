@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -340,17 +341,6 @@ SQL;
         ));
     }
 
-    private function setQueueAsProcessed($id)
-    {
-        return Db::getInstance()->update(
-            'as_fullsync_queue',
-            [
-                'is_processing' => 2,
-                'processed_at' => date('Y-m-d H:i:s'),
-            ]
-        );
-    }
-
     public function ajaxProcessDeleteQueue()
     {
         if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
@@ -434,50 +424,9 @@ SQL;
         }
     }
 
-    public function ajaxProcessSendQueue()
-    {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
-            return;
-        }
-        $queues = AccelaSearch::getQueues();
-        foreach ($queues as $queue) {
-            AS_Collector::getInstance()->query($queue['query']);
-            $this->setQueueAsProcessed($queue['id']);
-        }
-    }
-
     public function ajaxProcessCronManager()
     {
         echo 'Hello from cron manager';
-    }
-
-    public function ajaxProcessAutomaticQueue()
-    {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
-            return;
-        }
-        $as_shops = AccelaSearch::getAsShops();
-        $queries = '';
-        set_time_limit(0);
-        fastcgi_finish_request();
-        foreach ($as_shops as $as_shop) {
-            $divider = AccelaSearch::getOffsetDivider($as_shop['id_shop'], $as_shop['id_lang']);
-            $queue_start = 1;
-            $products_nb = AccelaSearch::estimateNbProducts($as_shop['id_shop'], $as_shop['id_lang']);
-            $executions_nb = ceil($products_nb / $divider);
-
-            for ($start = $queue_start; $start <= $executions_nb; ++$start) {
-                $limit = $divider * ($start - 1) . ',' . $divider;
-                $query = AccelaSearch::generateProductsQueryStatic(
-                    $as_shop['id_shop'],
-                    $as_shop['id_lang'],
-                    $as_shop['as_shop_id'],
-                    $as_shop['as_shop_real_id'],
-                    $limit
-                );
-                AccelaSearch::createQueue($query, $limit, $start, $executions_nb, $as_shop['id_shop'], $as_shop['id_lang']);
-            }
-        }
     }
 
     public function ajaxProcessGenerateProductsQuery()
@@ -497,7 +446,44 @@ SQL;
                 $limit
             );
         }
-        exit($queries);
+        $this->ajaxDie(Tools::jsonEncode(
+            [
+                'success' => true,
+                'queries' => $queries
+            ]
+        ));
+        // $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
+    }
+
+    public function ajaxProcessGenerateProductsQueueQuery()
+    {
+        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+            return;
+        }
+        $as_shops = AccelaSearch::getAsShops();
+        $queries = '';
+        foreach ($as_shops as $as_shop) {
+            [
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
+                'as_shop_id' => $as_shop_id,
+                'as_shop_real_id' => $as_shop_real_id
+            ] = $as_shop;
+            $queries .= \AccelaSearch::generateProductsQueryByDifferentialRows(
+                $id_shop,
+                $id_lang,
+                $as_shop_id,
+                $as_shop_real_id,
+                100,
+                false
+            );
+        }
+        $this->ajaxDie(Tools::jsonEncode(
+            [
+                'success' => true,
+                'queries' => $queries
+            ]
+        ));
         // $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
     }
 

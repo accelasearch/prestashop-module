@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -58,6 +59,9 @@ class Updater
         }
         if (in_array('variant', $types)) {
             $this->addToStack(new VariantUpdate());
+        }
+        if (in_array('feature_product', $types)) {
+            $this->addToStack(new FeatureUpdate());
         }
     }
 

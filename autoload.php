@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -41,3 +42,4 @@ require_once __DIR__ . '/classes/Updater/UpdateContext.php';
 require_once __DIR__ . '/classes/Updater/Updater.php';
 require_once __DIR__ . '/classes/Updater/UpdateRow.php';
 require_once __DIR__ . '/classes/Updater/VariantUpdate.php';
+require_once __DIR__ . '/classes/Updater/FeatureUpdate.php';

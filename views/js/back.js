@@ -652,6 +652,15 @@ const AS = {
       });
     });
 
+    $("#generate_products_queue_query").on("click", function (e) {
+      e.preventDefault();
+      AS.controller("generateproductsqueuequery", "POST", {
+        limit: "0,1000",
+      }).then((r) => {
+        console.log(r);
+      });
+    });
+
     $("#automatic_queue").on("click", function (e) {
       e.preventDefault();
       AS.controller("automaticqueue", "POST").then((r) => {

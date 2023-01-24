@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -45,8 +46,8 @@ class Queue
             if ($queue !== false) {
                 $id_queue = $queue['id'];
                 $update_data = [
-                  'is_processing' => 1,
-                  'processed_at' => date('Y-m-d H:i:s'),
+                    'is_processing' => 1,
+                    'processed_at' => date('Y-m-d H:i:s'),
                 ];
                 if (self::FLUSH_QUERY_VALUE) {
                     $update_data['query'] = '';
@@ -88,26 +89,26 @@ class Queue
         // key = greater than
         // value = divider
         $divider_settings = [
-          'PRODUCT' => [
-            0 => 10,
-            1000 => 400,
-            5000 => 800,
-            20000 => 1500,
-            100000 => 3500,
-            300000 => 10000,
-            1000000 => 50000,
-            10000000 => 500000,
-          ],
-          'DIFFERENTIAL_QUEUE' => [
-            0 => 2500,
-            5000 => 5000,
-            20000 => 10000,
-            50000 => 20000,
-            100000 => 100,
-            300000 => 100000,
-            1000000 => 1000000,
-            10000000 => 2000000,
-          ],
+            'PRODUCT' => [
+                0 => 200,
+                1000 => 400,
+                5000 => 800,
+                20000 => 1500,
+                100000 => 3500,
+                300000 => 10000,
+                1000000 => 50000,
+                10000000 => 500000,
+            ],
+            'DIFFERENTIAL_QUEUE' => [
+                0 => 2500,
+                5000 => 5000,
+                20000 => 10000,
+                50000 => 20000,
+                100000 => 100,
+                300000 => 100000,
+                1000000 => 1000000,
+                10000000 => 2000000,
+            ],
         ];
 
         $div_keys = array_keys($divider_settings[$type]);
@@ -138,12 +139,12 @@ class Queue
         $queue = \Db::getInstance()->insert(
             'as_fullsync_queue',
             [
-              'query' => $query,
-              'offset_limit' => $offset_limit,
-              'start_cycle' => $start_cycle,
-              'end_cycle' => $end_cycle,
-              'id_shop' => $id_shop,
-              'id_lang' => $id_lang,
+                'query' => $query,
+                'offset_limit' => $offset_limit,
+                'start_cycle' => $start_cycle,
+                'end_cycle' => $end_cycle,
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
             ]
         );
 

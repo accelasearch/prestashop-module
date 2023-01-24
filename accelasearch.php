@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,7 +19,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 if (!defined('_PS_VERSION_')) {
-    exit; 
+    exit;
 }
 
 require_once __DIR__ . '/autoload.php';
@@ -58,7 +59,7 @@ class AccelaSearch extends Module
     const AS_CONFIG = [
         'API_ENDPOINT' => 'https://svc11.accelasearch.net/API/',
         'CMS_ID' => 99,
-        'LOG_QUERY' => false,
+        'LOG_QUERY' => true,
         'DEBUG_MODE' => true,
         'CRONJOB_DRYRUN' => false,
         'ACCEPTED_METHODS' => [
@@ -84,6 +85,26 @@ class AccelaSearch extends Module
         'products_attr_label',
         'products_categories',
     ];
+
+    private function initializeModule()
+    {
+        $this->name = 'accelasearch';
+        $this->tab = 'front_office_features';
+        $this->version = '0.0.82';
+        $this->author = 'AccelaSearch';
+        $this->need_instance = 0;
+        $this->ps_versions_compliancy = [
+            'min' => '1.7',
+            'max' => _PS_VERSION_,
+        ];
+        $this->bootstrap = true;
+
+        parent::__construct();
+
+        $this->displayName = $this->l('AccelaSearch');
+        $this->description = $this->l('Boost your search engine');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module ?');
+    }
 
     public static function generateToken($length = 10)
     {
@@ -993,7 +1014,7 @@ class AccelaSearch extends Module
     /**
      *	Dati necessari e comuni a tutte le query
      */
-    public static function createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id)
+    public static function createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id = 0)
     {
         if (AccelaSearch\Query::$query_data_manager) {
             return;
@@ -1011,6 +1032,7 @@ class AccelaSearch extends Module
         }
         $as_instance = (new self());
         $_queryData = [
+            'as_shop_id' => $as_shop_id,
             'as_attributes_ids' => $as_instance->getAsAttributesId($as_shop_id),
             'as_product_types' => $as_instance->getAsProductTypes(),
             'as_categories' => self::getAsCategories(),
@@ -1137,7 +1159,8 @@ class AccelaSearch extends Module
         $id_lang,
         $as_shop_id,
         $as_shop_real_id,
-        $limit
+        $limit,
+        $cleanAfterComplete = true
     ) {
         $queries = [];
 
@@ -1168,7 +1191,7 @@ class AccelaSearch extends Module
 
         // dump(implode("", $queries), $rows);die;
 
-        self::cleanProcessedDifferentialRows($rows_id_start, $rows_id_end);
+        if ($cleanAfterComplete) self::cleanProcessedDifferentialRows($rows_id_start, $rows_id_end);
 
         return implode('', $queries);
     }
@@ -1592,11 +1615,13 @@ class AccelaSearch extends Module
             $label_id = $queryData->as_attributes_ids[$name_feature];
             $slug = strtolower(str_replace(' ', '_', $name_feature));
             $external_id_str = $id_shop . '_' . $id_lang . '_' . $id_product . '_0_' . $slug;
-            $queries[] = AccelaSearch\Query::getByName('addVariant_query', [
+            $external_id_str_product = $id_shop . '_' . $id_lang . '_' . $id_product . '_0';
+            $queries[] = AccelaSearch\Query::getByName('addFeature_query', [
                 'label_id' => $label_id,
                 'value' => $name_feature_value,
                 'is_configurable' => 0,
                 'external_id_str' => $external_id_str,
+                'external_id_str_product' => $external_id_str_product,
             ]);
         }
 
@@ -2049,26 +2074,6 @@ class AccelaSearch extends Module
         $output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/' . $tpl . '.tpl');
 
         return $output;
-    }
-
-    private function initializeModule()
-    {
-        $this->name = 'accelasearch';
-        $this->tab = 'front_office_features';
-        $this->version = '0.0.59';
-        $this->author = 'AccelaSearch';
-        $this->need_instance = 0;
-        $this->ps_versions_compliancy = [
-            'min' => '1.7',
-            'max' => _PS_VERSION_,
-        ];
-        $this->bootstrap = true;
-
-        parent::__construct();
-
-        $this->displayName = $this->l('AccelaSearch');
-        $this->description = $this->l('Boost your search engine');
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module ?');
     }
 
     private function initDefaultConfigurationValues()
