@@ -90,7 +90,7 @@ class AccelaSearch extends Module
     {
         $this->name = 'accelasearch';
         $this->tab = 'front_office_features';
-        $this->version = '0.0.82';
+        $this->version = '0.0.87';
         $this->author = 'AccelaSearch';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
@@ -677,7 +677,7 @@ class AccelaSearch extends Module
             }
 
             // to prevent categories,images assignment override, if a type of update is a category product or attribute_image we reassign a $name and assure it is unique so all updates coming processed
-            if ($type == 'category_product' || $type == 'attribute_image' || $type == 'image') {
+            if ($type == 'category_product' || $type == 'attribute_image' || $type == 'image' || $type == 'feature_product') {
                 $name .= '_' . $value;
             }
 

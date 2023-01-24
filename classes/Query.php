@@ -348,16 +348,18 @@ class Query
     $slug = strtolower(str_replace(' ', '_', $name_feature));
     $external_id_str = $id_shop . '_' . $id_lang . '_' . $id_product . '_0_' . $slug;
     $external_id_str_product = $id_shop . '_' . $id_lang . '_' . $id_product . '_0';
+    $feature_value = $ps_feature_value->value[$id_lang];
 
     $query = AccelaSearch\Query::getByName('addFeature_query', [
       'label_id' => $label_id,
-      'value' => $ps_feature_value->value[$id_lang],
+      'value' => $feature_value,
       'is_configurable' => 0,
       'external_id_str' => $external_id_str,
       'external_id_str_product' => $external_id_str_product,
     ]);
 
     $query .= "UPDATE products_attr_str SET deleted = 0 WHERE externalidstr = '$external_id_str';";
+    $query .= "UPDATE products_attr_str SET value = '$feature_value' WHERE externalidstr = '$external_id_str';";
 
     return $query;
   }

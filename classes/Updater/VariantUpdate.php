@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -28,7 +29,7 @@ class VariantUpdate extends UpdateOperation implements Operation
 
     public function __construct()
     {
-        $this->setName('variant_update');
+        $this->setName('variant');
     }
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
@@ -38,6 +39,8 @@ class VariantUpdate extends UpdateOperation implements Operation
 
         if ($update_row->isInsertOperation()) {
             $this->queries .= Query::transformProductAndCreateVariant($id_product, $id_product_attribute, $context->id_shop, $context->id_lang, $context->as_shop_id);
+            $externalidstr = $context->buildExternalId([$id_product, $id_product_attribute]);
+            $this->queries .= "UPDATE products SET deleted = 0 WHERE externalidstr = '$externalidstr';";
         }
 
         if ($update_row->isDeleteOperation()) {

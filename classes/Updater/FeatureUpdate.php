@@ -36,22 +36,26 @@ class FeatureUpdate extends UpdateOperation implements Operation
     {
 
         if ($update_row->isDeleteOperation()) {
-            [
-                'id_product' => $row_id_product,
-                'value' => $id_feature_value
-            ] = $update_row->getRow()['d']['id_feature_value']['raw'];
+            foreach ($update_row->getRow()['d'] as $feature_str => $feature_update) {
+                [
+                    'id_product' => $row_id_product,
+                    'value' => $id_feature_value
+                ] = $feature_update['raw'];
 
-            $this->queries .= Query::getFeatureProductDeleteQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+                $this->queries .= Query::getFeatureProductDeleteQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+            }
         }
 
         if ($update_row->isInsertOperation()) {
 
-            [
-                'id_product' => $row_id_product,
-                'value' => $id_feature_value
-            ] = $update_row->getRow()['i']['id_feature_value']['raw'];
+            foreach ($update_row->getRow()['i'] as $feature_str => $feature_update) {
+                [
+                    'id_product' => $row_id_product,
+                    'value' => $id_feature_value
+                ] = $feature_update['raw'];
 
-            $this->queries .=  Query::getFeatureProductInsertQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+                $this->queries .=  Query::getFeatureProductInsertQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+            }
         }
 
         return $this;
