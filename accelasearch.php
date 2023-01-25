@@ -172,6 +172,13 @@ class AccelaSearch extends Module
         $status = $conversion->status ?? null;
         if ($status === 'ERROR') {
             throw new \Exception('An error occured during shop conversion to real');
+            Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during shop conversion to real: ' . json_encode($conversion),
+                'date_add' => date("Y-m-d H:i:s"),
+                'date_upd' => date("Y-m-d H:i:s")
+            ]);
         }
 
         return $conversion->shopIdentifier;
@@ -189,6 +196,13 @@ class AccelaSearch extends Module
         $status = $notify->status ?? null;
         if ($status === 'ERROR') {
             throw new \Exception('An error occured during shop notification to AccelaSearch');
+            Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during shop notification to AccelaSearch: ' . json_encode($notify),
+                'date_add' => date("Y-m-d H:i:s"),
+                'date_upd' => date("Y-m-d H:i:s")
+            ]);
         }
 
         return $notify;
@@ -1465,22 +1479,6 @@ class AccelaSearch extends Module
                     ]);
                 }
             }
-        }
-    }
-
-    private function disableTablesKeys(&$queries)
-    {
-        $tables = self::TABLE_KEYS;
-        foreach ($tables as $table) {
-            $queries[] = "ALTER TABLE $table DISABLE KEYS;";
-        }
-    }
-
-    private function enableTablesKeys(&$queries)
-    {
-        $tables = self::TABLE_KEYS;
-        foreach ($tables as $table) {
-            $queries[] = "ALTER TABLE $table ENABLE KEYS;";
         }
     }
 

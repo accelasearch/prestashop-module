@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -115,14 +116,14 @@ class Sync
     public static function createRepriceRule($id_shop)
     {
         $row = [
-          'id_product' => 0,
-          'id_product_attribute' => 0,
-          'type' => 'price',
-          'id_shop' => $id_shop,
-          'id_lang' => 0,
-          'name' => 'id_product',
-          'value' => 0,
-          'op' => 'i',
+            'id_product' => 0,
+            'id_product_attribute' => 0,
+            'type' => 'price',
+            'id_shop' => $id_shop,
+            'id_lang' => 0,
+            'name' => 'id_product',
+            'value' => 0,
+            'op' => 'i',
         ];
         \Db::getInstance()->insert('as_notifications', $row);
     }
@@ -139,6 +140,13 @@ class Sync
         $status = $start_sync->status ?? null;
         if ($status === 'ERROR') {
             throw new \Exception('An error occured during AccelaSearch start sync');
+            \Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during AccelaSearch start sync: ' . json_encode($start_sync),
+                'date_add' => date("Y-m-d H:i:s"),
+                'date_upd' => date("Y-m-d H:i:s")
+            ]);
         }
 
         return $start_sync;
@@ -156,6 +164,13 @@ class Sync
         $status = $end_sync->status ?? null;
         if ($status === 'ERROR') {
             throw new \Exception('An error occured during AccelaSearch termination sync');
+            \Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during AccelaSearch termination sync: ' . json_encode($end_sync),
+                'date_add' => date("Y-m-d H:i:s"),
+                'date_upd' => date("Y-m-d H:i:s")
+            ]);
         }
 
         return $end_sync;
@@ -195,6 +210,13 @@ class Sync
         $status = $indexation->status ?? null;
         if ($status === 'ERROR') {
             throw new \Exception('An error occured during get sync status on AS');
+            \Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during get sync status on AS: ' . json_encode($indexation),
+                'date_add' => date("Y-m-d H:i:s"),
+                'date_upd' => date("Y-m-d H:i:s")
+            ]);
         }
 
         return $indexation;
@@ -212,6 +234,13 @@ class Sync
         $status = $indexation->status ?? null;
         if ($status === 'ERROR') {
             throw new \Exception('An error occured during AccelaSearch termination sync');
+            \Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during AccelaSearch termination sync: ' . json_encode($indexation),
+                'date_add' => date("Y-m-d H:i:s"),
+                'date_upd' => date("Y-m-d H:i:s")
+            ]);
         }
 
         return $indexation;
@@ -222,17 +251,17 @@ class Sync
         $queries = [];
         if (in_array('products', $what)) {
             $tables = [
-              'products_images',
-              'products_attr_datetime',
-              'products_attr_float',
-              'products_attr_int',
-              'products_attr_str',
-              'products_attr_text',
-              'products_children',
-              'stocks',
-              'prices',
-              'products_categories',
-              'products',
+                'products_images',
+                'products_attr_datetime',
+                'products_attr_float',
+                'products_attr_int',
+                'products_attr_str',
+                'products_attr_text',
+                'products_children',
+                'stocks',
+                'prices',
+                'products_categories',
+                'products',
             ];
             foreach ($tables as $table) {
                 $queries[] = "DELETE FROM $table;";
