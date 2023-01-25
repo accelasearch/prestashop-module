@@ -39,6 +39,7 @@ class AdminAccelaSearchActionsController extends ModuleAdminController
     {
         $list = parent::renderList();
         Tools::redirect(Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminModules') . '&configure=accelasearch'));
+        return false;
     }
 
     private function getShopDataByIdAndLang($id_shop, $id_lang)
@@ -304,6 +305,8 @@ SQL;
     public function ajaxProcessStartRemoteChecker()
     {
         $as_shops = AccelaSearch::getAsShops();
+        $missings = [];
+        $errors = [];
         foreach ($as_shops as $as_shop) {
             [
                 'id_shop' => $id_shop,
@@ -359,7 +362,7 @@ SQL;
         if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
             return;
         }
-        $id_product = Tools::getValue("pid", null);
+        $id_product = Tools::getValue('pid', null);
         if ($id_product > 0) {
             $as_shops = AccelaSearch::getAsShops();
             $products = [];
@@ -449,7 +452,7 @@ SQL;
         $this->ajaxDie(Tools::jsonEncode(
             [
                 'success' => true,
-                'queries' => $queries
+                'queries' => $queries,
             ]
         ));
         // $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
@@ -481,7 +484,7 @@ SQL;
         $this->ajaxDie(Tools::jsonEncode(
             [
                 'success' => true,
-                'queries' => $queries
+                'queries' => $queries,
             ]
         ));
         // $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);

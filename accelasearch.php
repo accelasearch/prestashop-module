@@ -29,7 +29,7 @@ class AccelaSearch extends Module
     public static $as_shops_synced = null;
     public static $as_categories = null;
 
-    const DEFAULT_CONFIGURATION = [
+    public const DEFAULT_CONFIGURATION = [
         'ACCELASEARCH_APIKEY' => '',
         'ACCELASEARCH_COLLECTOR' => '',
         'ACCELASEARCH_SHOPS_SYNCED' => '{}',
@@ -40,7 +40,7 @@ class AccelaSearch extends Module
         'ACCELASEARCH_FULLSYNC_CREATION_PROGRESS' => 0,
     ];
 
-    const TABLE_KEYS = [
+    public const TABLE_KEYS = [
         'products',
         'prices',
         'stocks',
@@ -54,9 +54,9 @@ class AccelaSearch extends Module
         'products_attr_datetime',
     ];
 
-    const WITHOUT_IGNORE = false;
+    public const WITHOUT_IGNORE = false;
 
-    const AS_CONFIG = [
+    public const AS_CONFIG = [
         'API_ENDPOINT' => 'https://svc11.accelasearch.net/API/',
         'CMS_ID' => 99,
         'LOG_QUERY' => true,
@@ -69,7 +69,7 @@ class AccelaSearch extends Module
         ],
     ];
 
-    const DELETABLE_TABLES = [
+    public const DELETABLE_TABLES = [
         'categories',
         'products',
         'stocks',
@@ -90,7 +90,7 @@ class AccelaSearch extends Module
     {
         $this->name = 'accelasearch';
         $this->tab = 'front_office_features';
-        $this->version = '0.0.87';
+        $this->version = '0.0.89';
         $this->author = 'AccelaSearch';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
@@ -156,7 +156,7 @@ class AccelaSearch extends Module
 
     public static function triggerCronjobExternal()
     {
-        $url = _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . 'modules/accelasearch/cron.php?token=' . Configuration::get('ACCELASEARCH_CRON_TOKEN') . '&wait=false&origin=pageview';
+        $url = Tools::getShopDomainSsl(true) . __PS_BASE_URI__ . 'modules/accelasearch/cron.php?token=' . Configuration::get('ACCELASEARCH_CRON_TOKEN') . '&wait=false&origin=pageview';
         @Tools::file_get_contents($url, 0, stream_context_create(['http' => ['timeout' => 0.1]]));
     }
 
@@ -171,14 +171,14 @@ class AccelaSearch extends Module
         $conversion = json_decode($conversion);
         $status = $conversion->status ?? null;
         if ($status === 'ERROR') {
-            throw new \Exception('An error occured during shop conversion to real');
             Db::getInstance()->insert('log', [
                 'severity' => 3,
                 'error_code' => 0,
                 'message' => 'An error occured during shop conversion to real: ' . json_encode($conversion),
-                'date_add' => date("Y-m-d H:i:s"),
-                'date_upd' => date("Y-m-d H:i:s")
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             ]);
+            throw new \Exception('An error occured during shop conversion to real');
         }
 
         return $conversion->shopIdentifier;
@@ -195,14 +195,14 @@ class AccelaSearch extends Module
         $notify = json_decode($notify);
         $status = $notify->status ?? null;
         if ($status === 'ERROR') {
-            throw new \Exception('An error occured during shop notification to AccelaSearch');
             Db::getInstance()->insert('log', [
                 'severity' => 3,
                 'error_code' => 0,
                 'message' => 'An error occured during shop notification to AccelaSearch: ' . json_encode($notify),
-                'date_add' => date("Y-m-d H:i:s"),
-                'date_upd' => date("Y-m-d H:i:s")
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             ]);
+            throw new \Exception('An error occured during shop notification to AccelaSearch');
         }
 
         return $notify;
@@ -409,6 +409,7 @@ class AccelaSearch extends Module
 
         $shop_init = AS_Collector::getInstance()->query($queries);
         self::generateCategories();
+        return true;
     }
 
     /**
@@ -472,6 +473,12 @@ class AccelaSearch extends Module
         );
         // return 3;
         return (int) Db::getInstance()->getValue($query);
+    }
+
+    public static function hookActionCronjobStatic($wait = true)
+    {
+        $me =  new self;
+        return $me->hookActionCronJob($wait);
     }
 
     /**
@@ -1205,7 +1212,9 @@ class AccelaSearch extends Module
 
         // dump(implode("", $queries), $rows);die;
 
-        if ($cleanAfterComplete) self::cleanProcessedDifferentialRows($rows_id_start, $rows_id_end);
+        if ($cleanAfterComplete) {
+            self::cleanProcessedDifferentialRows($rows_id_start, $rows_id_end);
+        }
 
         return implode('', $queries);
     }
@@ -1561,7 +1570,7 @@ class AccelaSearch extends Module
         }
 
         $product_type = $ps_product['product_type'] ?? '';
-        $product_type = empty($product_type) ? self::getProductTypeById($id_product, $id_shop, $id_lang) : self::convertPrestashopTypeToAsType($product_type);
+        $product_type = empty($product_type) ? self::getProductTypeById($id_product, $id_shop) : self::convertPrestashopTypeToAsType($product_type);
 
         $typeid = $as_product_types[$product_type] ?? $as_product_types['Simple'];
         $product_external_id_str = $id_shop . '_' . $id_lang . '_' . $id_product . '_0';
@@ -1818,14 +1827,14 @@ class AccelaSearch extends Module
 
         Media::addJsDef([
             'as_admin_controller' => $accelasearch_controller_link,
-            'module_cron_url' => _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . 'modules/accelasearch/cron.php?token=' . Configuration::get('ACCELASEARCH_CRON_TOKEN'),
+            'module_cron_url' => Tools::getShopDomainSsl(true) . __PS_BASE_URI__ . 'modules/accelasearch/cron.php?token=' . Configuration::get('ACCELASEARCH_CRON_TOKEN'),
             '_AS' => [
                 'apikey' => Configuration::get('ACCELASEARCH_APIKEY'),
                 'translations' => AccelaSearch\Translator::getInstance()->translation_array,
             ],
         ]);
 
-        $configure = Tools::getValue("configure", null);
+        $configure = Tools::getValue('configure', null);
         if ($configure == 'accelasearch') {
             $this->context->controller->addCSS(
                 'modules/' . $this->name . '/views/css/output.css'

@@ -139,14 +139,14 @@ class Sync
         $start_sync = json_decode($start_sync);
         $status = $start_sync->status ?? null;
         if ($status === 'ERROR') {
-            throw new \Exception('An error occured during AccelaSearch start sync');
             \Db::getInstance()->insert('log', [
                 'severity' => 3,
                 'error_code' => 0,
                 'message' => 'An error occured during AccelaSearch start sync: ' . json_encode($start_sync),
-                'date_add' => date("Y-m-d H:i:s"),
-                'date_upd' => date("Y-m-d H:i:s")
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             ]);
+            throw new \Exception('An error occured during AccelaSearch start sync');
         }
 
         return $start_sync;
@@ -163,14 +163,14 @@ class Sync
         $end_sync = json_decode($end_sync);
         $status = $end_sync->status ?? null;
         if ($status === 'ERROR') {
-            throw new \Exception('An error occured during AccelaSearch termination sync');
             \Db::getInstance()->insert('log', [
                 'severity' => 3,
                 'error_code' => 0,
                 'message' => 'An error occured during AccelaSearch termination sync: ' . json_encode($end_sync),
-                'date_add' => date("Y-m-d H:i:s"),
-                'date_upd' => date("Y-m-d H:i:s")
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             ]);
+            throw new \Exception('An error occured during AccelaSearch termination sync');
         }
 
         return $end_sync;
@@ -209,14 +209,14 @@ class Sync
         $indexation = json_decode($indexation);
         $status = $indexation->status ?? null;
         if ($status === 'ERROR') {
-            throw new \Exception('An error occured during get sync status on AS');
             \Db::getInstance()->insert('log', [
                 'severity' => 3,
                 'error_code' => 0,
                 'message' => 'An error occured during get sync status on AS: ' . json_encode($indexation),
-                'date_add' => date("Y-m-d H:i:s"),
-                'date_upd' => date("Y-m-d H:i:s")
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             ]);
+            throw new \Exception('An error occured during get sync status on AS');
         }
 
         return $indexation;
@@ -233,14 +233,14 @@ class Sync
         $indexation = json_decode($indexation);
         $status = $indexation->status ?? null;
         if ($status === 'ERROR') {
-            throw new \Exception('An error occured during AccelaSearch termination sync');
             \Db::getInstance()->insert('log', [
                 'severity' => 3,
                 'error_code' => 0,
                 'message' => 'An error occured during AccelaSearch termination sync: ' . json_encode($indexation),
-                'date_add' => date("Y-m-d H:i:s"),
-                'date_upd' => date("Y-m-d H:i:s")
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
             ]);
+            throw new \Exception('An error occured during AccelaSearch termination sync');
         }
 
         return $indexation;

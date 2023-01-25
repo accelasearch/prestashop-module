@@ -19,15 +19,16 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 include_once dirname(__FILE__) . '/../../config/config.inc.php';
-$token = Tools::getValue("token", null);
-$wait = Tools::getValue("wait", true);
-$origin = Tools::getValue("origin", "cronjob");
+$token = Tools::getValue('token', null);
+$wait = Tools::getValue('wait', true);
+$origin = Tools::getValue('origin', 'cronjob');
 if ($token === Configuration::get('ACCELASEARCH_CRON_TOKEN')) {
     $accelasearch = Module::getInstanceByName('accelasearch');
     if ($accelasearch->active) {
         if ($origin !== 'pageview') {
             Configuration::updateGlobalValue('ACCELASEARCH_LAST_CRONJOB_EXECUTION', time());
         }
-        $accelasearch->hookActionCronJob($wait);
+        $cron = AccelaSearch::hookActionCronjobStatic($wait);
+        var_dump($cron);
     }
 }

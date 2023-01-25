@@ -34,7 +34,6 @@ class FeatureUpdate extends UpdateOperation implements Operation
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-
         if ($update_row->isDeleteOperation()) {
             foreach ($update_row->getRow()['d'] as $feature_str => $feature_update) {
                 [
@@ -47,14 +46,13 @@ class FeatureUpdate extends UpdateOperation implements Operation
         }
 
         if ($update_row->isInsertOperation()) {
-
             foreach ($update_row->getRow()['i'] as $feature_str => $feature_update) {
                 [
                     'id_product' => $row_id_product,
                     'value' => $id_feature_value
                 ] = $feature_update['raw'];
 
-                $this->queries .=  Query::getFeatureProductInsertQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+                $this->queries .= Query::getFeatureProductInsertQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
             }
         }
 

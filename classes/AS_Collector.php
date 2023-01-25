@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -28,9 +29,9 @@ class AS_Collector
         try {
             $dsn = 'mysql:host=' . $credentials->hostname . ';dbname=' . $credentials->name;
             $options = [
-              \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-              \PDO::ATTR_TIMEOUT => 5,
-              \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_TIMEOUT => 5,
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
             ];
 
             $this->pdo = new PDO(
@@ -98,9 +99,9 @@ class AS_Collector
 
         if (AccelaSearch::AS_CONFIG['LOG_QUERY']) {
             Db::getInstance()->insert('log', [
-              'severity' => 1,
-              'error_code' => 0,
-              'message' => pSQL($this->interpolateQuery($raw_query, $data)),
+                'severity' => 1,
+                'error_code' => 0,
+                'message' => pSQL($this->interpolateQuery($raw_query, $data)),
             ]);
         }
 
@@ -143,9 +144,9 @@ class AS_Collector
         $q = $this->pdo->prepare($query);
         if (AccelaSearch::AS_CONFIG['LOG_QUERY']) {
             Db::getInstance()->insert('log', [
-              'severity' => 1,
-              'error_code' => 0,
-              'message' => 'FULL_QUERY: ' . pSQL($query),
+                'severity' => 1,
+                'error_code' => 0,
+                'message' => 'FULL_QUERY: ' . pSQL($query),
             ]);
         }
 
@@ -161,6 +162,7 @@ class AS_Collector
     {
         $params = array_keys($data);
         $values = array_values($data);
+        $setSql = [];
         if (count($params) == count($values)) {
             for ($i = 0; $i < count($params); ++$i) {
                 $setSql[] = $params[$i] . "='" . $values[$i] . "'";
