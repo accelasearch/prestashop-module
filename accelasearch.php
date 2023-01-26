@@ -101,9 +101,9 @@ class AccelaSearch extends Module
 
         parent::__construct();
 
-        $this->displayName = $this->l('AccelaSearch');
-        $this->description = $this->l('Boost your search engine');
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module ?');
+        $this->displayName = $this->trans('AccelaSearch');
+        $this->description = $this->trans('Boost your search engine');
+        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall this module ?');
     }
 
     public static function generateToken($length = 10)
