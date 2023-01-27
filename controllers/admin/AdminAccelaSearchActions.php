@@ -155,7 +155,7 @@ SQL;
         }
         $token = AccelaSearch::generateToken(40);
         Configuration::updateGlobalValue('ACCELASEARCH_CRON_TOKEN', $token);
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
             ]
@@ -198,7 +198,7 @@ SQL;
         }
         $queries = implode('', $queries);
         AS_Collector::getInstance()->query($queries);
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
             ]
@@ -214,7 +214,7 @@ SQL;
             ] = $as_shop;
             \AccelaSearch\Sync::createRepriceRule($id_shop);
         }
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
             ]
@@ -254,7 +254,7 @@ SQL;
         \AccelaSearch\Sync::deleteAll();
         AccelaSearch::shopInitializations();
         Configuration::updateGlobalValue('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS', 0);
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
             ]
@@ -295,7 +295,7 @@ SQL;
                 $this->l('How I can customize Search Layer?') => $this->l("Go to console.accelasearch.io and click on 'Customize design'"),
             ],
         ];
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'faqs' => $faqs,
             ]
@@ -335,7 +335,7 @@ SQL;
                 }
             }
         }
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
                 'missings' => $missings,
@@ -350,7 +350,7 @@ SQL;
             return;
         }
         Db::getInstance()->query('DELETE FROM ' . _DB_PREFIX_ . 'as_fullsync_queue');
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
             ]
@@ -419,7 +419,7 @@ SQL;
                     }
                 }
             }
-            $this->ajaxDie(Tools::jsonEncode(
+            $this->ajaxDie(json_encode(
                 [
                     'products' => $products,
                 ]
@@ -449,7 +449,7 @@ SQL;
                 $limit
             );
         }
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
                 'queries' => $queries,
@@ -481,7 +481,7 @@ SQL;
                 false
             );
         }
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => true,
                 'queries' => $queries,
@@ -505,7 +505,7 @@ SQL;
         $shops = $_POST['shops'] ?? [];
         $shop_synced = [];
         if (count($shops) == 0) {
-            $this->ajaxDie(Tools::jsonEncode(
+            $this->ajaxDie(json_encode(
                 [
                     'success' => $success,
                 ]
@@ -549,7 +549,7 @@ SQL;
                 Configuration::updateGlobalValue('ACCELASEARCH_SHOPS_SYNCED', json_encode($shop_synced));
                 AccelaSearch::shopInitializations();
                 Configuration::updateGlobalValue('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS', 0);
-                $this->ajaxDie(Tools::jsonEncode(
+                $this->ajaxDie(json_encode(
                     [
                         'success' => $success,
                         'errors' => $errors,
@@ -560,7 +560,7 @@ SQL;
                 $errors[] = $e->getMessage();
             }
         }
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => $success,
                 'errors' => $errors,
@@ -573,7 +573,7 @@ SQL;
         $success = false;
         $apikey = $_POST['apikey'] ?? false;
         if (!$apikey) {
-            $this->ajaxDie(Tools::jsonEncode(
+            $this->ajaxDie(json_encode(
                 [
                     'success' => $success,
                 ]
@@ -589,7 +589,7 @@ SQL;
             ]
         );
         if ($credentials === false) {
-            $this->ajaxDie(Tools::jsonEncode(
+            $this->ajaxDie(json_encode(
                 [
                     'success' => false,
                     'data' => [],
@@ -603,7 +603,7 @@ SQL;
             Configuration::updateGlobalValue('ACCELASEARCH_COLLECTOR', json_encode($credentials));
         }
 
-        $this->ajaxDie(Tools::jsonEncode(
+        $this->ajaxDie(json_encode(
             [
                 'success' => $success,
                 'data' => $credentials,

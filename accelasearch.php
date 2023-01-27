@@ -101,9 +101,9 @@ class AccelaSearch extends Module
 
         parent::__construct();
 
-        $this->displayName = $this->trans('AccelaSearch');
-        $this->description = $this->trans('Boost your search engine');
-        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall this module ?');
+        $this->displayName = $this->l('AccelaSearch');
+        $this->description = $this->l('Boost your search engine');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module ?');
     }
 
     public static function generateToken($length = 10)
@@ -1959,23 +1959,77 @@ class AccelaSearch extends Module
     public function getTriggerQueries()
     {
         $trigger_data = new AccelaSearch\TriggerDataElements();
-        $t_queries = '';
-        $t_queries .= AccelaSearch\Trigger::getDeleteQueries($trigger_data->elements);
+        $t_queries = [];
         foreach ($trigger_data->elements as $trigger_def) {
             $triggerDataObject = new AccelaSearch\TriggerData($trigger_def);
             $trigger = new AccelaSearch\Trigger($triggerDataObject);
-            $t_queries .= $trigger->getQuery();
+            $t_queries[] = $trigger->getQuery();
         }
 
         return $t_queries;
     }
 
+    public function getTriggerDeleteQueries()
+    {
+        $trigger_data = new AccelaSearch\TriggerDataElements();
+        return AccelaSearch\Trigger::getDeleteQueries($trigger_data->elements);
+    }
+
+    public function split_nth($str, $delim, $n)
+    {
+        return array_map(function ($p) use ($delim) {
+            return implode($delim, $p);
+        }, array_chunk(explode($delim, $str), $n));
+    }
+
     public function install()
     {
+        file_put_contents(
+            _PS_ROOT_DIR_ . "/config/defines.inc.php",
+            str_replace(
+                "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', false)",
+                "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', true)",
+                Tools::file_get_contents(_PS_ROOT_DIR_ . "/config/defines.inc.php")
+            )
+        );
         $install_sql = str_replace('{{PREFIX}}', _DB_PREFIX_, Tools::file_get_contents(__DIR__ . '/sql/install.sql'));
-        $install_sql .= $this->getTriggerQueries();
         if (Shop::isFeatureActive()) {
             Shop::setContext(Shop::CONTEXT_ALL);
+        }
+
+        $install_sql = explode(";", $install_sql);
+
+        foreach ($install_sql as $install_sql_query) {
+            $install_sql_query = trim($install_sql_query);
+            if (empty($install_sql_query)) continue;
+            try {
+                Db::getInstance()->execute($install_sql_query, false);
+            } catch (\Throwable $th) {
+                var_dump("FIRST INSTALL QUERY ERROR", $install_sql_query);
+            }
+        }
+
+        $install_sql = $this->getTriggerQueries();
+        foreach ($install_sql as $install_sql_query) {
+            $install_sql_query = trim($install_sql_query);
+            if (empty($install_sql_query)) continue;
+            try {
+                Db::getInstance()->execute($install_sql_query, false);
+            } catch (\Throwable $th) {
+                var_dump("TRIGGER QUERIES ERROR", $install_sql_query);
+            }
+        }
+
+        $install_sql = $this->getTriggerDeleteQueries();
+        $install_sql = explode(";", $install_sql);
+        foreach ($install_sql as $install_sql_query) {
+            $install_sql_query = trim($install_sql_query);
+            if (empty($install_sql_query)) continue;
+            try {
+                Db::getInstance()->execute($install_sql_query, false);
+            } catch (\Throwable $th) {
+                var_dump("TRIGGER DELETE QUERIES ERROR", $install_sql_query);
+            }
         }
 
         return
@@ -1985,8 +2039,7 @@ class AccelaSearch extends Module
             && $this->registerHook('actionAdminControllerSetMedia')
             && $this->registerHook('actionFrontControllerSetMedia')
             && $this->registerHook('actionCronJob')
-            && $this->registerHook('actionControllerInitBefore')
-            && Db::getInstance()->query($install_sql);
+            && $this->registerHook('actionControllerInitBefore');
     }
 
     public function uninstall()
@@ -1995,10 +2048,26 @@ class AccelaSearch extends Module
         $trigger_data = new AccelaSearch\TriggerDataElements();
         $uninstall_sql .= AccelaSearch\Trigger::getDeleteQueries($trigger_data->elements);
 
+        file_put_contents(
+            _PS_ROOT_DIR_ . "/config/defines.inc.php",
+            str_replace(
+                "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', true)",
+                "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', false)",
+                Tools::file_get_contents(_PS_ROOT_DIR_ . "/config/defines.inc.php")
+            )
+        );
+
+        $uninstall_sql = explode(";", $uninstall_sql);
+
+        foreach ($uninstall_sql as $uninstall_sql_query) {
+            $uninstall_sql_query = trim($uninstall_sql_query);
+            if (empty($uninstall_sql_query)) continue;
+            Db::getInstance()->execute($uninstall_sql_query, false);
+        }
+
         return
             parent::uninstall()
-            && $this->uninstallTab()
-            && Db::getInstance()->query($uninstall_sql);
+            && $this->uninstallTab();
     }
 
     public function getContent()

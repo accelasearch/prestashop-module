@@ -1,12 +1,5 @@
-START TRANSACTION;
-
--- TABLES
-
--- TODO: Scommentare in produzione
-
-
-
 DROP TABLE IF EXISTS `{{PREFIX}}as_fullsync_queue`;
+
 DROP TABLE IF EXISTS `{{PREFIX}}as_notifications`;
 
 CREATE TABLE `{{PREFIX}}as_fullsync_queue` (
@@ -21,7 +14,7 @@ CREATE TABLE `{{PREFIX}}as_fullsync_queue` (
   `id_shop` int(11) NOT NULL,
   `id_lang` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 CREATE TABLE `{{PREFIX}}as_notifications` (
   `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -35,9 +28,4 @@ CREATE TABLE `{{PREFIX}}as_notifications` (
   `tblname` VARCHAR(255) NOT NULL,
   `op` char(1) NOT NULL,
   `timex` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
-
-COMMIT;
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
