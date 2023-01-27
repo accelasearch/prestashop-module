@@ -1286,7 +1286,7 @@ class AccelaSearch extends Module
         int $id_product,
         $id_product_attribute = null,
         $ps_product = null,
-        $link_rewrite = ""
+        $link_rewrite = ''
     ) {
         $image_response = [
             'cover' => [],
