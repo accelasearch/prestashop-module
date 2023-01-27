@@ -21,7 +21,7 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 use AccelaSearch\Queue;
 
 class PriceUpdate extends UpdateOperationAbstract implements OperationInterface

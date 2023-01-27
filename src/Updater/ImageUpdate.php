@@ -21,7 +21,7 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 
 class ImageUpdate extends UpdateOperationAbstract implements OperationInterface
 {
