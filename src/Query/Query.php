@@ -96,16 +96,16 @@ class Query
     public static function getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id, $ignore = true)
     {
         $ps_product_query = self::getByName(
-      'psProducts_query',
-      [
-        'id_shop' => $id_shop,
-        'id_lang' => $id_lang,
-        'limit' => '1',
-        'add_mpn_if_exist' => '',
-        'add_product_type_if_exist' => '',
-        'single_product' => "AND p.id_product = $id_product",
-      ]
-    );
+            'psProducts_query',
+            [
+              'id_shop' => $id_shop,
+              'id_lang' => $id_lang,
+              'limit' => '1',
+              'add_mpn_if_exist' => '',
+              'add_product_type_if_exist' => '',
+              'single_product' => "AND p.id_product = $id_product",
+            ]
+        );
         $product = \Db::getInstance()->executeS($ps_product_query);
         if (count($product) == 0) {
             return;
@@ -124,11 +124,11 @@ class Query
     public static function getProductUpdateQueryByEntity($update, $id_shop, $id_lang)
     {
         [
-      'id_product' => $id_product,
-      'id_product_attribute' => $id_product_attribute,
-      'name' => $entity_name,
-      'value' => $entity_value
-    ] = $update;
+            'id_product' => $id_product,
+            'id_product_attribute' => $id_product_attribute,
+            'name' => $entity_name,
+            'value' => $entity_value
+        ] = $update;
 
         $attributes_to_table = [
       'name' => 'products_attr_str',
@@ -198,8 +198,8 @@ class Query
         $externalidstr_cover = $externalproductidstr . '_' . $id_image . '_cover';
 
         [
-      'others' => $others_id
-    ] = self::$query_data_manager->as_attributes_ids;
+            'others' => $others_id
+        ] = self::$query_data_manager->as_attributes_ids;
 
         $image_id_association = Collector::getInstance()->executeS("SELECT id FROM products_images WHERE externalidstr = '$externalidstr' OR externalidstr = '$externalidstr_cover'");
 
@@ -246,18 +246,18 @@ class Query
         $as_product_types = $queryData->as_product_types;
 
         [
-      'name' => $name_id,
-      'short_description' => $short_description_id,
-      'description' => $description_id,
-      'brand' => $brand_id,
-      'ean13' => $ean13_id,
-      'isbn' => $isbn_id,
-      'upc' => $upc_id,
-      'mpn' => $mpn_id,
-      'cover' => $cover_id,
-      'others' => $others_id,
-      'sku' => $sku_id
-    ] = $queryData->as_attributes_ids;
+            'name' => $name_id,
+            'short_description' => $short_description_id,
+            'description' => $description_id,
+            'brand' => $brand_id,
+            'ean13' => $ean13_id,
+            'isbn' => $isbn_id,
+            'upc' => $upc_id,
+            'mpn' => $mpn_id,
+            'cover' => $cover_id,
+            'others' => $others_id,
+            'sku' => $sku_id
+        ] = $queryData->as_attributes_ids;
 
         $as_categories = $queryData->as_categories;
         $warehouse_id = $queryData->warehouse_id;
@@ -275,27 +275,27 @@ class Query
         $queries[] = "SET @generated_product_id = (SELECT id FROM products WHERE externalidstr = '$externalidstr_conf');";
 
         \AccelaSearch::addChildrensQuery(
-      $childrens,
-      $id_shop,
-      $id_lang,
-      $id_product,
-      $queries,
-      $currencies_cart,
-      $customer_groups,
-      $as_product_types,
-      $as_shop_id,
-      $warehouse_id,
-      $url,
-      $ean13_id,
-      $isbn_id,
-      $upc_id,
-      $mpn_id,
-      $ps_product,
-      $cover_id,
-      $others_id,
-      $users_groups,
-      $sku_id
-    );
+            $childrens,
+            $id_shop,
+            $id_lang,
+            $id_product,
+            $queries,
+            $currencies_cart,
+            $customer_groups,
+            $as_product_types,
+            $as_shop_id,
+            $warehouse_id,
+            $url,
+            $ean13_id,
+            $isbn_id,
+            $upc_id,
+            $mpn_id,
+            $ps_product,
+            $cover_id,
+            $others_id,
+            $users_groups,
+            $sku_id
+        );
 
         return implode('', $queries);
     }
@@ -329,14 +329,14 @@ class Query
             $externalidstr = 'feature_0_' . $id_lang . '_' . $ps_feature_value->id_feature;
             $slug = strtolower(str_replace(' ', '_', $name_feature));
             $new_feature = Query::getByName(
-        'createVariant_query',
-        [
-          'name' => $name_feature,
-          'storeview_id' => $queryData->as_shop_id,
-          'external_id_str' => $externalidstr,
-          'slug' => $slug,
-        ]
-      );
+                'createVariant_query',
+                [
+                  'name' => $name_feature,
+                  'storeview_id' => $queryData->as_shop_id,
+                  'external_id_str' => $externalidstr,
+                  'slug' => $slug,
+                ]
+            );
             Collector::getInstance()->query($new_feature);
             $as_shop_id = $queryData->as_shop_id;
             Query::$query_data_manager = null;
@@ -383,15 +383,15 @@ class Query
         $users_groups = self::$query_data_manager->users_groups;
 
         \AccelaSearch::addProductPriceToQueries(
-      $id_shop,
-      $id_lang,
-      $currencies_cart,
-      $customer_groups,
-      $users_groups,
-      $id_product,
-      $id_product_attribute,
-      $queries
-    );
+            $id_shop,
+            $id_lang,
+            $currencies_cart,
+            $customer_groups,
+            $users_groups,
+            $id_product,
+            $id_product_attribute,
+            $queries
+        );
 
         return implode('', $queries);
     }
@@ -401,11 +401,11 @@ class Query
         $queries = [];
 
         $ps_products_query = self::getByName(
-      'getProductsForGlobalPriceUpdate',
-      [
-        'id_shop' => $id_shop,
-      ]
-    );
+            'getProductsForGlobalPriceUpdate',
+            [
+              'id_shop' => $id_shop,
+            ]
+        );
 
         $ps_products = \Db::getInstance()->executeS($ps_products_query);
 
@@ -417,29 +417,29 @@ class Query
 
         foreach ($ps_products as $ps_product) {
             [
-        'id_product' => $id_product
-      ] = $ps_product;
+                'id_product' => $id_product
+            ] = $ps_product;
 
             $id_product_attribute = 0;
 
             \AccelaSearch::addProductPriceToQueries(
-        $id_shop,
-        $id_lang,
-        $currencies_cart,
-        $customer_groups,
-        $users_groups,
-        $id_product,
-        $id_product_attribute,
-        $queries
-      );
+                $id_shop,
+                $id_lang,
+                $currencies_cart,
+                $customer_groups,
+                $users_groups,
+                $id_product,
+                $id_product_attribute,
+                $queries
+            );
         }
 
         $ps_products_children_query = self::getByName(
-      'getProductsChildrenForGlobalPriceUpdate',
-      [
-        'id_shop' => $id_shop,
-      ]
-    );
+            'getProductsChildrenForGlobalPriceUpdate',
+            [
+              'id_shop' => $id_shop,
+            ]
+        );
 
         $ps_products_variants = \Db::getInstance()->executeS($ps_products_children_query);
 
@@ -447,20 +447,20 @@ class Query
 
         foreach ($ps_products_variants as $variant) {
             [
-        'id_product' => $id_product,
-        'id_product_attribute' => $id_product_attribute
-      ] = $variant;
+                'id_product' => $id_product,
+                'id_product_attribute' => $id_product_attribute
+            ] = $variant;
 
             \AccelaSearch::addProductPriceToQueries(
-        $id_shop,
-        $id_lang,
-        $currencies_cart,
-        $customer_groups,
-        $users_groups,
-        $id_product,
-        $id_product_attribute,
-        $queries
-      );
+                $id_shop,
+                $id_lang,
+                $currencies_cart,
+                $customer_groups,
+                $users_groups,
+                $id_product,
+                $id_product_attribute,
+                $queries
+            );
         }
 
         $timestamp = date('Y-m-d H:i:s');
@@ -472,9 +472,9 @@ class Query
     public static function getCategoryCreationQuery($id_category, $id_shop, $id_lang, $as_shop_id)
     {
         [
-      'name' => $name,
-      'id_parent' => $id_parent
-    ] = \Db::getInstance()->getRow('SELECT cl.name, c.id_parent FROM ' . _DB_PREFIX_ . "category_lang AS cl JOIN ps_category AS c ON c.id_category = cl.id_category WHERE cl.id_category = $id_category AND cl.id_shop = $id_shop AND cl.id_lang = $id_lang");
+            'name' => $name,
+            'id_parent' => $id_parent
+        ] = \Db::getInstance()->getRow('SELECT cl.name, c.id_parent FROM ' . _DB_PREFIX_ . "category_lang AS cl JOIN ps_category AS c ON c.id_category = cl.id_category WHERE cl.id_category = $id_category AND cl.id_shop = $id_shop AND cl.id_lang = $id_lang");
         $link = new \Link();
         $full_name = \AccelaSearch::getFullCategoryNameByIdAndLang($id_category, $id_lang);
         $url = $link->getCategoryLink($id_category, null, $id_lang, null, $id_shop);
@@ -516,10 +516,10 @@ class Query
 
         foreach ($as_shops as $as_shop) {
             [
-        'id_shop' => $id_shop,
-        'id_lang' => $id_lang,
-        'as_shop_id' => $as_shop_id
-      ] = $as_shop;
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
+                'as_shop_id' => $as_shop_id
+            ] = $as_shop;
 
             $external_id_str = $id_shop . '_' . $id_lang . '_' . $id_category;
 
@@ -551,10 +551,10 @@ class Query
             while (count($has_children) > 0) {
                 foreach ($has_children as $children) {
                     [
-            'id' => $id_category_children,
-            'categoryname' => $name,
-            'externalidstr' => $external_id_str
-          ] = $children;
+                        'id' => $id_category_children,
+                        'categoryname' => $name,
+                        'externalidstr' => $external_id_str
+                    ] = $children;
                     [$id_shop, $id_lang, $ps_id_category] = explode('_', $external_id_str);
                     $full_name = \AccelaSearch::getFullCategoryNameByIdAndLang($ps_id_category, $id_lang);
                     $url = $link->getCategoryLink($ps_id_category, null, $id_lang, null, $id_shop);
