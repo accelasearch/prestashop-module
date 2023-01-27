@@ -34,3 +34,5 @@ parameters:
     - '#Parameter \#7 \$currency_special of method PaymentModuleCore::validateOrder\(\) expects null, int given.#'
     - '#Parameter \#9 \$secure_key of method PaymentModuleCore::validateOrder\(\) expects bool, string given.#'
     - '#Property CustomerMessageCore::\$private \(int\) does not accept true.#'
+    - '#Internal error: Class 'ModuleCore' not found#'
+    - '#Class 'ModuleCore' not found#'
