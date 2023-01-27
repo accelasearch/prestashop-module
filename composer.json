@@ -1,9 +1,31 @@
 {
+  "name": "accelasearch/prestashop-accelasearch",
+  "description": "Accelasearch module core files",
+  "authors": [
+    {
+      "name": "AccelaSearch",
+      "email": "info@accelasearch.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.0.0"
+  },
   "require-dev": {
     "prestashop/php-dev-tools": "^4.3",
     "prestashop/autoindex": "^2.1",
     "phpstan/phpstan": "^1.9"
   },
-  "author": "PrestaShop",
+  "autoload": {
+    "psr-4": {
+      "AccelaSearch\\": "src/"
+    },
+    "exclude-from-classmap": []
+  },
+  "config": {
+    "preferred-install": "dist",
+    "prepend-autoloader": false
+  },
+  "type": "prestashop-module",
+  "author": "AccelaSearch",
   "license": "AFL-3.0"
 }
