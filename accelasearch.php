@@ -2047,18 +2047,7 @@ class AccelaSearch extends Module
         $uninstall_sql = str_replace('{{PREFIX}}', _DB_PREFIX_, Tools::file_get_contents(__DIR__ . '/sql/uninstall.sql'));
         $trigger_data = new AccelaSearch\TriggerDataElements();
         $uninstall_sql .= AccelaSearch\Trigger::getDeleteQueries($trigger_data->elements);
-
-        file_put_contents(
-            _PS_ROOT_DIR_ . "/config/defines.inc.php",
-            str_replace(
-                "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', true)",
-                "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', false)",
-                Tools::file_get_contents(_PS_ROOT_DIR_ . "/config/defines.inc.php")
-            )
-        );
-
         $uninstall_sql = explode(";", $uninstall_sql);
-
         foreach ($uninstall_sql as $uninstall_sql_query) {
             $uninstall_sql_query = trim($uninstall_sql_query);
             if (empty($uninstall_sql_query)) continue;
