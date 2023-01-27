@@ -90,7 +90,7 @@ class AccelaSearch extends Module
     {
         $this->name = 'accelasearch';
         $this->tab = 'front_office_features';
-        $this->version = '0.0.89';
+        $this->version = '0.0.92';
         $this->author = 'AccelaSearch';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
@@ -1402,7 +1402,7 @@ class AccelaSearch extends Module
             // scrivo il valore dell'attributo del semplice
             $attributes = Db::getInstance()->executeS('SELECT id_attribute FROM ' . _DB_PREFIX_ . "product_attribute_combination WHERE id_product_attribute = $id_product_attribute");
             foreach ($attributes as $attribute) {
-                $ps_attribute = new Attribute($attribute['id_attribute']);
+                $ps_attribute = version_compare(_PS_VERSION_, '8.0.0', '>') ? new \ProductAttribute($attribute['id_attribute']) : new \Attribute($attribute['id_attribute']);
                 $ps_attribute_group = new AttributeGroup($ps_attribute->id_attribute_group);
                 $name = $ps_attribute_group->name[$id_lang];
                 $label_id = $queryData->as_attributes_ids[$name];
@@ -2009,17 +2009,6 @@ class AccelaSearch extends Module
             }
         }
 
-        $install_sql = $this->getTriggerQueries();
-        foreach ($install_sql as $install_sql_query) {
-            $install_sql_query = trim($install_sql_query);
-            if (empty($install_sql_query)) continue;
-            try {
-                Db::getInstance()->execute($install_sql_query, false);
-            } catch (\Throwable $th) {
-                var_dump("TRIGGER QUERIES ERROR", $install_sql_query);
-            }
-        }
-
         $install_sql = $this->getTriggerDeleteQueries();
         $install_sql = explode(";", $install_sql);
         foreach ($install_sql as $install_sql_query) {
@@ -2029,6 +2018,17 @@ class AccelaSearch extends Module
                 Db::getInstance()->execute($install_sql_query, false);
             } catch (\Throwable $th) {
                 var_dump("TRIGGER DELETE QUERIES ERROR", $install_sql_query);
+            }
+        }
+
+        $install_sql = $this->getTriggerQueries();
+        foreach ($install_sql as $install_sql_query) {
+            $install_sql_query = trim($install_sql_query);
+            if (empty($install_sql_query)) continue;
+            try {
+                Db::getInstance()->execute($install_sql_query, false);
+            } catch (\Throwable $th) {
+                var_dump("TRIGGER QUERIES ERROR", $install_sql_query);
             }
         }
 
