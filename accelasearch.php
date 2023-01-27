@@ -1057,7 +1057,7 @@ class AccelaSearch extends Module
         $currencies_cart = [];
         foreach ($currencies as $currency) {
             $fake_cart = new Cart();
-            $fake_cart->id_currency = $currency['id'];
+            $fake_cart->id_currency = isset($currency['id']) ? $currency['id'] : $currency['id_currency'];
             $fake_cart->save();
             $currencies_cart[$currency['iso_code']] = $fake_cart->id;
         }
