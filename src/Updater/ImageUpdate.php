@@ -34,7 +34,6 @@ class ImageUpdate extends UpdateOperationAbstract implements OperationInterface
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-
         if ($update_row->isDeleteOperation()) {
             foreach ($update_row->getRow()['d'] as $id_image_str => $im_update) {
                 [

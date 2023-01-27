@@ -34,7 +34,6 @@ class StockUpdate extends UpdateOperationAbstract implements OperationInterface
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-
         if ($update_row->isUpdateOperation()) {
             [
                 'id_product' => $row_id_product,

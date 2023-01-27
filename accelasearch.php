@@ -417,6 +417,7 @@ class AccelaSearch extends Module
 
         $shop_init = Collector::getInstance()->query($queries);
         self::generateCategories();
+
         return true;
     }
 
@@ -485,7 +486,8 @@ class AccelaSearch extends Module
 
     public static function hookActionCronjobStatic($wait = true)
     {
-        $me =  new self;
+        $me = new self();
+
         return $me->hookActionCronJob($wait);
     }
 
@@ -1980,6 +1982,7 @@ class AccelaSearch extends Module
     public function getTriggerDeleteQueries()
     {
         $trigger_data = new TriggerDataElements();
+
         return Trigger::getDeleteQueries($trigger_data->elements);
     }
 
@@ -1993,11 +1996,11 @@ class AccelaSearch extends Module
     public function install()
     {
         file_put_contents(
-            _PS_ROOT_DIR_ . "/config/defines.inc.php",
+            _PS_ROOT_DIR_ . '/config/defines.inc.php',
             str_replace(
                 "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', false)",
                 "define('_PS_ALLOW_MULTI_STATEMENTS_QUERIES_', true)",
-                Tools::file_get_contents(_PS_ROOT_DIR_ . "/config/defines.inc.php")
+                Tools::file_get_contents(_PS_ROOT_DIR_ . '/config/defines.inc.php')
             )
         );
         $install_sql = str_replace('{{PREFIX}}', _DB_PREFIX_, Tools::file_get_contents(__DIR__ . '/sql/install.sql'));
@@ -2005,38 +2008,44 @@ class AccelaSearch extends Module
             Shop::setContext(Shop::CONTEXT_ALL);
         }
 
-        $install_sql = explode(";", $install_sql);
+        $install_sql = explode(';', $install_sql);
 
         foreach ($install_sql as $install_sql_query) {
             $install_sql_query = trim($install_sql_query);
-            if (empty($install_sql_query)) continue;
+            if (empty($install_sql_query)) {
+                continue;
+            }
             try {
                 Db::getInstance()->execute($install_sql_query, false);
             } catch (\Throwable $th) {
-                var_dump("FIRST INSTALL QUERY ERROR", $install_sql_query);
+                var_dump('FIRST INSTALL QUERY ERROR', $install_sql_query);
             }
         }
 
         $install_sql = $this->getTriggerDeleteQueries();
-        $install_sql = explode(";", $install_sql);
+        $install_sql = explode(';', $install_sql);
         foreach ($install_sql as $install_sql_query) {
             $install_sql_query = trim($install_sql_query);
-            if (empty($install_sql_query)) continue;
+            if (empty($install_sql_query)) {
+                continue;
+            }
             try {
                 Db::getInstance()->execute($install_sql_query, false);
             } catch (\Throwable $th) {
-                var_dump("TRIGGER DELETE QUERIES ERROR", $install_sql_query);
+                var_dump('TRIGGER DELETE QUERIES ERROR', $install_sql_query);
             }
         }
 
         $install_sql = $this->getTriggerQueries();
         foreach ($install_sql as $install_sql_query) {
             $install_sql_query = trim($install_sql_query);
-            if (empty($install_sql_query)) continue;
+            if (empty($install_sql_query)) {
+                continue;
+            }
             try {
                 Db::getInstance()->execute($install_sql_query, false);
             } catch (\Throwable $th) {
-                var_dump("TRIGGER QUERIES ERROR", $install_sql_query);
+                var_dump('TRIGGER QUERIES ERROR', $install_sql_query);
             }
         }
 
@@ -2055,10 +2064,12 @@ class AccelaSearch extends Module
         $uninstall_sql = str_replace('{{PREFIX}}', _DB_PREFIX_, Tools::file_get_contents(__DIR__ . '/sql/uninstall.sql'));
         $trigger_data = new TriggerDataElements();
         $uninstall_sql .= Trigger::getDeleteQueries($trigger_data->elements);
-        $uninstall_sql = explode(";", $uninstall_sql);
+        $uninstall_sql = explode(';', $uninstall_sql);
         foreach ($uninstall_sql as $uninstall_sql_query) {
             $uninstall_sql_query = trim($uninstall_sql_query);
-            if (empty($uninstall_sql_query)) continue;
+            if (empty($uninstall_sql_query)) {
+                continue;
+            }
             Db::getInstance()->execute($uninstall_sql_query, false);
         }
 

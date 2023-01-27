@@ -34,7 +34,6 @@ class AttributeImageUpdate extends UpdateOperationAbstract implements OperationI
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-
         if ($update_row->isInsertOperation()) {
             foreach ($update_row->getRow()['i'] as $id_image_str => $im_update) {
                 [

@@ -24,8 +24,8 @@ if (!defined('_PS_VERSION_')) {
 }
 
 use AccelaSearch\Collector;
-use AccelaSearch\Sync;
 use AccelaSearch\Query\Query;
+use AccelaSearch\Sync;
 
 class AdminAccelaSearchActionsController extends ModuleAdminController
 {
@@ -44,6 +44,7 @@ class AdminAccelaSearchActionsController extends ModuleAdminController
     {
         $list = parent::renderList();
         Tools::redirect(Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminModules') . '&configure=accelasearch'));
+
         return false;
     }
 
