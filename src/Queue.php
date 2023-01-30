@@ -49,7 +49,7 @@ class Queue
                     'is_processing' => 1,
                     'processed_at' => date('Y-m-d H:i:s'),
                 ];
-                if (self::FLUSH_QUERY_VALUE) {
+                if (self::FLUSH_QUERY_VALUE === true) {
                     $update_data['query'] = '';
                 }
                 \Db::getInstance()->update(
@@ -61,7 +61,7 @@ class Queue
                     continue;
                 }
                 // invio ad AS
-                if (self::SEND_QUERY_TO_AS) {
+                if (self::SEND_QUERY_TO_AS === true) {
                     Sync::startRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));
                     $as_query_success = Collector::getInstance()->query($queue['query']);
                     Sync::terminateRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));

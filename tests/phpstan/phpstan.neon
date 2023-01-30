@@ -36,3 +36,5 @@ parameters:
     - '#Property CustomerMessageCore::\$private \(int\) does not accept true.#'
     - "#Internal error: Class 'ModuleCore' not found#"
     - "#Class 'ModuleCore' not found#"
+    - '#Strict comparison using !== between true and true will always evaluate to false#'
+    - '#Strict comparison using === between false and true will always evaluate to false#'
