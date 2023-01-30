@@ -165,7 +165,7 @@ class AccelaSearch extends Module
     public static function triggerCronjobExternal()
     {
         $url = Tools::getShopDomainSsl(true) . __PS_BASE_URI__ . 'modules/accelasearch/cron.php?token=' . Configuration::get('ACCELASEARCH_CRON_TOKEN') . '&wait=false&origin=pageview';
-        @Tools::file_get_contents($url, 0, stream_context_create(['http' => ['timeout' => 0.1]]));
+        @Tools::file_get_contents($url, false, stream_context_create(['http' => ['timeout' => 0.1]]));
     }
 
     public static function convertShopIdFromCollectorVersionToReal($id)
