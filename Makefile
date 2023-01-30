@@ -2,12 +2,12 @@
 PHP = $(shell command -v php >/dev/null 2>&1 || { echo >&2 "PHP is not installed."; exit 1; } && which php)
 VERSION ?= $(shell git describe --tags 2> /dev/null || echo "0.0.0")
 SEM_VERSION ?= $(shell echo ${VERSION} | sed 's/^v//')
-PACKAGE ?= ps_eventbus-${VERSION}
+PACKAGE ?= accelasearch-${VERSION}
 BUILDPLATFORM ?= linux/amd64
 TESTING_DOCKER_IMAGE ?= ps-eventbus-testing:latest
 TESTING_DOCKER_BASE_IMAGE ?= phpdockerio/php80-cli
 PHP_VERSION ?= 8.1
-PS_VERSION ?= 1.7.8.7
+PS_VERSION ?= 8.0.1
 PS_ROOT_DIR ?= $(shell pwd)/prestashop/prestashop-${PS_VERSION}
 
 # target: default                                - Calling build by default
@@ -24,10 +24,10 @@ clean:
 # target: version                                - Replace version in files
 version:
 	@echo "...$(VERSION)..."
-	@sed -i.bak -e "s/\(VERSION = \).*/\1\'${SEM_VERSION}\';/" ps_eventbus.php
-	@sed -i.bak -e "s/\($this->version = \).*/\1\'${SEM_VERSION}\';/" ps_eventbus.php
+	@sed -i.bak -e "s/\(VERSION = \).*/\1\'${SEM_VERSION}\';/" accelasearch.php
+	@sed -i.bak -e "s/\($this->version = \).*/\1\'${SEM_VERSION}\';/" accelasearch.php
 	@sed -i.bak -e "s|\(<version><!\[CDATA\[\)[0-9a-z.-]\{1,\}]]></version>|\1${SEM_VERSION}]]></version>|" config.xml
-	@rm -f ps_eventbus.php.bak config.xml.bak
+	@rm -f accelasearch.php.bak config.xml.bak
 
 # target: zip                                    - Make zip bundles
 zip: zip-prod zip-preprod zip-inte
@@ -42,10 +42,10 @@ dist:
 
 define zip_it
 $(eval TMP_DIR := $(shell mktemp -d))
-mkdir -p ${TMP_DIR}/ps_eventbus;
-cp -r $(shell cat .zip-contents) ${TMP_DIR}/ps_eventbus;
-cp $1 ${TMP_DIR}/ps_eventbus/config/parameters.yml;
-cd ${TMP_DIR} && zip -9 -r $2 ./ps_eventbus;
+mkdir -p ${TMP_DIR}/accelasearch;
+cp -r $(shell cat .zip-contents) ${TMP_DIR}/accelasearch;
+cp $1 ${TMP_DIR}/accelasearch/config/parameters.yml;
+cd ${TMP_DIR} && zip -9 -r $2 ./accelasearch;
 mv ${TMP_DIR}/$2 ./dist;
 rm -rf ${TMP_DIR:-/dev/null};
 endef
@@ -178,7 +178,7 @@ run-docker-actions-177:
 all-tests-actions-177:
 	make rda177
 	make bps177
-	docker exec -i prestashop-177 sh -c "cd /var/www/html/modules/ps_eventbus && php vendor/bin/phpunit -c tests/phpunit.xml"
+	docker exec -i prestashop-177 sh -c "cd /var/www/html/modules/accelasearch && php vendor/bin/phpunit -c tests/phpunit.xml"
 
 allure:
 	./node_modules/.bin/allure serve build/allure-results/
