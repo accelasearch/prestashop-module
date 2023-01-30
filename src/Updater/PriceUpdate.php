@@ -21,7 +21,7 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 use AccelaSearch\Queue;
 
 class PriceUpdate extends UpdateOperationAbstract implements OperationInterface
@@ -35,7 +35,6 @@ class PriceUpdate extends UpdateOperationAbstract implements OperationInterface
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-
         // NOTE: Questa operazione deve essere splittata se le istruzioni sono più di 15k perchè altrimenti va in blocco
         if ($context->isGlobalOperation()) {
             $queries = Query::getGlobalProductPriceUpdateQuery($context->id_shop, $context->id_lang, $context->as_shop_id);

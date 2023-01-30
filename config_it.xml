@@ -2,7 +2,7 @@
 <module>
     <name>accelasearch</name>
     <displayName><![CDATA[AccelaSearch]]></displayName>
-    <version><![CDATA[0.0.89]]></version>
+    <version><![CDATA[0.0.92]]></version>
     <description><![CDATA[Boost your search engine]]></description>
     <author><![CDATA[AccelaSearch]]></author>
     <tab><![CDATA[front_office_features]]></tab>

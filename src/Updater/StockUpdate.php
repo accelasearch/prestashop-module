@@ -21,7 +21,7 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 
 class StockUpdate extends UpdateOperationAbstract implements OperationInterface
 {
@@ -34,7 +34,6 @@ class StockUpdate extends UpdateOperationAbstract implements OperationInterface
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-
         if ($update_row->isUpdateOperation()) {
             [
                 'id_product' => $row_id_product,

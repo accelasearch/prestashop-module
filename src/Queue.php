@@ -84,7 +84,7 @@ class Queue
         return \Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . "as_fullsync_queue WHERE 1 $where AND is_processing = 0 ORDER BY id desc $limit");
     }
 
-    public static function getOffsetDividerByType($type = 'PRODUCT', $nb)
+    public static function getOffsetDividerByType($type = 'PRODUCT', $nb = 0)
     {
         // key = greater than
         // value = divider

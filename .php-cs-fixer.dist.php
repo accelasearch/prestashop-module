@@ -1,7 +1,5 @@
 <?php
 
-include "./vendor/autoload.php";
-
 $config = new PrestaShop\CodingStandards\CsFixer\Config();
 
 /** @var \Symfony\Component\Finder\Finder $finder */

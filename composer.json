@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "php": ">=8.0.0"
+    "php": ">=7.1.0"
   },
   "require-dev": {
     "prestashop/php-dev-tools": "^4.3",
@@ -26,6 +26,6 @@
     "prepend-autoloader": false
   },
   "type": "prestashop-module",
-  "author": "AccelaSearch",
+  "author": "PrestaShop",
   "license": "AFL-3.0"
 }
