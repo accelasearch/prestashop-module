@@ -42,7 +42,6 @@ zip-me: local_vendor build
 	@cp -R ./views temp/accelasearch
 	@cp -R ./accelasearch.php temp/accelasearch && sed -i 's/"DEBUG_MODE" => true/"DEBUG_MODE" => false/g' temp/accelasearch/accelasearch.php
 	@cp -R ./cron.php temp/accelasearch
-	@cp -R ./autoload.php temp/accelasearch
 	@cp -R ./logo.png temp/accelasearch
 	@cp -R ./*.pdf temp/accelasearch
 	@rm -rf ./releases/accelasearch.zip
