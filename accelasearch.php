@@ -302,9 +302,9 @@ class AccelaSearch extends Module
     {
         $str = str_replace([
             'á', 'à', 'â', 'ã', 'ä', 'å', 'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó',
-            'ò', 'ô', 'õ', 'ö', 'ú', 'ù', 'û', 'ü', 'Ã'
+            'ò', 'ô', 'õ', 'ö', 'ú', 'ù', 'û', 'ü', 'Ã',
         ], [
-            'a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'a'
+            'a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'a',
         ], $str);
 
         return Tools::safeOutput($str);
@@ -1236,7 +1236,6 @@ class AccelaSearch extends Module
         $ps_product,
         array &$queries
     ) {
-
         $queryData = Query::$query_data_manager;
         if (!$queryData) {
             throw new \Exception('Cannot perform product query without query data manager instance');
