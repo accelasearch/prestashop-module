@@ -1617,7 +1617,6 @@ class AccelaSearch extends Module
             'as-layer',
             'https://svc11.accelasearch.io/API/shops/' . $this->getCurrentHash() . '/loader',
             [
-                'position' => 'head',
                 'priority' => 0,
                 'attributes' => 'async',
                 'server' => 'remote',
