@@ -329,7 +329,7 @@ class AccelaSearch extends Module
         $attributes = AttributeGroup::getAttributesGroups($id_lang);
         $queries = [];
         foreach ($attributes as $attribute) {
-            $slug = strtolower(str_replace(' ', '_', $attribute['name']));
+            $slug = strtolower(str_replace(' ', '_', self::sanitize($attribute['name'])));
             $external_id_str = 'attribute_0_' . $id_lang . '_' . $attribute['id_attribute_group'];
             $queries[] = Query::getByName(
                 'createVariant_query',
@@ -350,7 +350,7 @@ class AccelaSearch extends Module
         $features = Feature::getFeatures($id_lang);
         $queries = [];
         foreach ($features as $feature) {
-            $slug = strtolower(str_replace(' ', '_', $feature['name']));
+            $slug = strtolower(str_replace(' ', '_', self::sanitize($feature['name'])));
             $external_id_str = 'feature_0_' . $id_lang . '_' . $feature['id_feature'];
             $queries[] = Query::getByName(
                 'createVariant_query',
@@ -1130,9 +1130,9 @@ class AccelaSearch extends Module
             foreach ($attributes as $attribute) {
                 $ps_attribute = version_compare(_PS_VERSION_, '8.0.0', '>') ? new \ProductAttribute($attribute['id_attribute']) : new \Attribute($attribute['id_attribute']);
                 $ps_attribute_group = new AttributeGroup($ps_attribute->id_attribute_group);
-                $name = $ps_attribute_group->name[$id_lang];
+                $name = self::sanitize($ps_attribute_group->name[$id_lang]);
                 $label_id = $queryData->as_attributes_ids[$name];
-                $slug = strtolower(str_replace(' ', '_', $name));
+                $slug = strtolower(str_replace(' ', '_', self::sanitize($name)));
                 $external_id_str = $id_shop . '_' . $id_lang . '_' . $id_product . '_' . $id_product_attribute . '_' . $slug;
                 $queries[] = Query::getByName('addVariant_query', [
                     'label_id' => $label_id,
@@ -1351,7 +1351,7 @@ class AccelaSearch extends Module
         foreach ($features as $feature) {
             $ps_feature = new Feature($feature['id_feature']);
             $ps_feature_value = new FeatureValue($feature['id_feature_value']);
-            $name_feature = $ps_feature->name[$id_lang];
+            $name_feature = self::sanitize($ps_feature->name[$id_lang]);
             $name_feature_value = $ps_feature_value->value[$id_lang];
             $label_id = $queryData->as_attributes_ids[$name_feature];
             $slug = strtolower(str_replace(' ', '_', $name_feature));
