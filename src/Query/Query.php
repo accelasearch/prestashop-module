@@ -331,7 +331,7 @@ class Query
             $new_feature = Query::getByName(
                 'createVariant_query',
                 [
-                  'name' => $name_feature,
+                  'name' => \AccelaSearch::sanitize($name_feature),
                   'storeview_id' => $queryData->as_shop_id,
                   'external_id_str' => $externalidstr,
                   'slug' => $slug,

@@ -298,6 +298,18 @@ class AccelaSearch extends Module
         }
     }
 
+    public static function sanitize($str)
+    {
+        $str = str_replace([
+            'á', 'à', 'â', 'ã', 'ä', 'å', 'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó',
+            'ò', 'ô', 'õ', 'ö', 'ú', 'ù', 'û', 'ü',
+        ], [
+            'a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u',
+        ], $str);
+
+        return Tools::safeOutput($str);
+    }
+
     public static function generateCategories()
     {
         $as_shops = self::getAsShops();
@@ -323,7 +335,7 @@ class AccelaSearch extends Module
                 'createVariant_query',
                 [
                     'external_id_str' => $external_id_str,
-                    'name' => $attribute['name'],
+                    'name' => self::sanitize($attribute['name']),
                     'storeview_id' => $storeview_id,
                     'slug' => $slug,
                 ]
@@ -344,7 +356,7 @@ class AccelaSearch extends Module
                 'createVariant_query',
                 [
                     'external_id_str' => $external_id_str,
-                    'name' => $feature['name'],
+                    'name' => self::sanitize($feature['name']),
                     'storeview_id' => $storeview_id,
                     'slug' => $slug,
                 ]
@@ -719,299 +731,6 @@ class AccelaSearch extends Module
         }
 
         return $products;
-    }
-
-    /**
-     * Old method to manage differential queue updates (procedural)
-     */
-    public static function getDifferentialQueryByRowLegacy($id_product, $_row, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id)
-    {
-        if (!Query::$query_data_manager) {
-            throw new \Exception('Cannot perform query without query data manager instance loaded');
-        }
-
-        $queries = '';
-
-        foreach ($_row as $id_product_attribute => $row) {
-            $product_update = $row['product'] ?? false;
-            $image_update = $row['image'] ?? false;
-            $stock_update = $row['stock'] ?? false;
-            $price_update = $row['price'] ?? false;
-            $category_update = $row['category'] ?? false;
-            $category_association_update = $row['category_product'] ?? false;
-            $attribute_image_update = $row['attribute_image'] ?? false;
-            $variant_update = $row['variant'] ?? false;
-
-            // se id_product non è presente è una operazione globale
-            if (!(bool) $id_product) {
-                // global price update
-                if ($price_update) {
-                    $queries .= Query::getGlobalProductPriceUpdateQuery($id_shop, $id_lang, $as_shop_id);
-                }
-
-                // se è un aggiornamento globale non bisogna passare dagli update individuali
-                return $queries;
-            }
-
-            // potrebbe essere l'aggiunta di una variante ad un prodotto esistente ma anche il passaggio di un prodotto semplice ad un prodotto configurabile
-            if ($variant_update) {
-                if (isset($variant_update['i']) && isset($variant_update['d'])) {
-                    continue;
-                }
-                if (isset($variant_update['i'])) {
-                    $queries .= Query::transformProductAndCreateVariant($id_product, $id_product_attribute, $id_shop, $id_lang, $as_shop_id);
-                }
-                if (isset($variant_update['d'])) {
-                    $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_product . '_' . $id_product_attribute;
-                    $queries .= "UPDATE products SET deleted = 1 WHERE externalidstr = '$externalidstr';";
-                }
-            }
-
-            // se il prodotto è stato aggiornato
-            if ($product_update) {
-                // se il prodotto andrà eliminato
-                if (isset($product_update['d'])) {
-                    $queries .= Query::getByName('remote_product_delete', [
-                        'product_external_id_str' => $id_shop . '_' . $id_lang . '_' . $id_product . '_0',
-                    ]);
-                }
-
-                // se il prodotto è da creare, conviene skippare gli update presenti in coda e recuperare le informazioni aggiornate da PS, rimuovendo tutta la parte di update
-                if (isset($product_update['i'])) {
-                    if (isset($product_update['u'])) {
-                        unset($product_update['u']);
-                    }
-                    $image_update = false;
-                    $stock_update = false;
-                    $price_update = false;
-                    $category_association_update = false;
-                    $attribute_image_update = false;
-                    $variant_update = false;
-                    $queries .= Query::getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
-                }
-
-                // ...se invece ci sono aggiornamenti
-                if (isset($product_update['u'])) {
-                    foreach ($product_update['u'] as $entity => $update) {
-                        $queries .= Query::getProductUpdateQueryByEntity($update['raw'], $id_shop, $id_lang);
-                    }
-                }
-            }
-
-            // se le immagini sono state aggiornate
-            if ($image_update) {
-                // elimino le image delete se c'è almeno un insert o un update
-                // if(isset($image_update["i"]) || isset($image_update["u"])) unset($image_update["d"]);
-
-                if (isset($image_update['d'])) {
-                    foreach ($image_update['d'] as $id_image_str => $im_update) {
-                        [
-                            'id_product' => $row_id_product,
-                            'id_product_attribute' => $row_id_product_attribute,
-                            'value' => $id_image
-                        ] = $im_update['raw'];
-
-                        $image_external_id_cover = $id_shop . '_' . $id_lang . '_' . $row_id_product . '_' . $row_id_product_attribute . '_' . $id_image . '_cover';
-                        $image_external_id_others = $id_shop . '_' . $id_lang . '_' . $row_id_product . '_' . $row_id_product_attribute . '_' . $id_image . '_others';
-                        $queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_cover';";
-                        $queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_others';";
-                    }
-                }
-
-                if (isset($image_update['i'])) {
-                    foreach ($image_update['i'] as $id_image_str => $im_update) {
-                        [
-                            'id_product' => $row_id_product,
-                            'id_product_attribute' => $row_id_product_attribute,
-                            'value' => $id_image
-                        ] = $im_update['raw'];
-
-                        $queries .= Query::getProductImageByIdQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $id_image);
-                    }
-                }
-
-                if (isset($image_update['u'])) {
-                    foreach ($image_update['u'] as $id_image_str => $im_update) {
-                        [
-                            'id_product' => $row_id_product,
-                            'id_product_attribute' => $row_id_product_attribute,
-                            'value' => $id_image
-                        ] = $im_update['raw'];
-                        $queries .= Query::getProductImageByIdQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $id_image);
-                    }
-                }
-            }
-
-            // se le quantità sono cambiate
-            if ($stock_update) {
-                if (isset($stock_update['u'])) {
-                    [
-                        'id_product' => $row_id_product,
-                        'id_product_attribute' => $row_id_product_attribute,
-                        'value' => $quantity
-                    ] = $stock_update['u']['quantity']['raw'];
-
-                    $queries .= Query::getProductStockUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $quantity);
-                }
-            }
-
-            // se ci sono state regole di prezzo per questo prodotto, bisogna ricalcolare ed aggiornare i prezzi
-            if ($price_update) {
-                if (isset($price_update['i'])) {
-                    [
-                        'id_product' => $row_id_product,
-                        'id_product_attribute' => $row_id_product_attribute
-                    ] = $price_update['i']['id_product']['raw'];
-
-                    $queries .= Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang);
-                }
-
-                if (isset($price_update['d'])) {
-                    [
-                        'id_product' => $row_id_product,
-                        'id_product_attribute' => $row_id_product_attribute
-                    ] = $price_update['d']['id_specific_price']['raw'];
-
-                    $queries .= Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang);
-                }
-
-                if (isset($price_update['u'])) {
-                    [
-                        'id_product' => $row_id_product,
-                        'id_product_attribute' => $row_id_product_attribute
-                    ] = $price_update['u']['id_product']['raw'];
-
-                    $queries .= Query::getProductPriceUpdateQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang);
-                }
-            }
-
-            // variazioni nelle categorie
-            if ($category_update) {
-                // se la categoria andrà eliminata è inutile fare le altre operazioni di update
-                if (isset($category_update['d'])) {
-                    $queries .= Query::getCategoryDeleteQuery($id_product, $id_shop, $id_lang, $as_shop_id);
-                    if (isset($category_update['i'])) {
-                        unset($category_update['i']);
-                    }
-                    if (isset($category_update['u'])) {
-                        unset($category_update['u']);
-                    }
-                }
-
-                // se la cat è da creare, conviene skippare gli update presenti in coda e recuperare le informazioni aggiornate da PS, rimuovendo tutta la parte di update
-                if (isset($category_update['i'])) {
-                    if (isset($category_update['u'])) {
-                        unset($category_update['u']);
-                    }
-                    $queries .= Query::getCategoryCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id);
-                }
-
-                // ... se la cat è da aggiornare
-                if (isset($category_update['u'])) {
-                    $op_name = array_keys($category_update['u'])[0];
-                    $new_value = $category_update['u'][$op_name]['value'];
-                    $queries .= Query::getCategoryUpdateQuery($id_product, $new_value, $id_shop, $id_lang, $as_shop_id, $op_name);
-                }
-            }
-
-            // variazioni nelle categorie associate al prodotto
-
-            if ($category_association_update) {
-                // l'associazione della categoria è stata rimossa
-                if (isset($category_association_update['d'])) {
-                    foreach ($category_association_update['d'] as $id_category_str => $cat_update) {
-                        [
-                            'value' => $id_category,
-                            'id_product' => $id_product
-                        ] = $cat_update['raw'];
-                        $lastupdate = date('Y-m-d H:i:s');
-                        $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_category;
-                        $ext_product_idstr = $id_shop . '_' . $id_lang . '_' . $id_product . '_0';
-                        $queries .= "UPDATE products_categories SET deleted = 1, lastupdate = '$lastupdate' WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr');";
-                    }
-                }
-
-                // c'è una nuova categoria associata
-                if (isset($category_association_update['i'])) {
-                    foreach ($category_association_update['i'] as $id_category_str => $cat_update) {
-                        [
-                            'value' => $id_category,
-                            'id_product' => $id_product
-                        ] = $cat_update['raw'];
-                        $lastupdate = date('Y-m-d H:i:s');
-                        $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_category;
-                        $ext_product_idstr = $id_shop . '_' . $id_lang . '_' . $id_product . '_0';
-                        $id_association = Collector::getInstance()->getValue("SELECT id FROM products_categories WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr')");
-                        if (!$id_association) {
-                            $queries .= "INSERT INTO products_categories (categoryid, productid) VALUES ((SELECT id FROM categories WHERE externalidstr = '$externalidstr'),(SELECT id FROM products WHERE externalidstr = '$ext_product_idstr'));";
-                        } else {
-                            $queries .= "UPDATE products_categories SET deleted = 0, lastupdate = '$lastupdate' WHERE id = $id_association;";
-                        }
-                    }
-                }
-            }
-
-            if ($attribute_image_update) {
-                // NOTE: Questo codice rimuove gli stessi delete ed update dagli aggiornamenti delle immagini delle varianti - rimosso perchè dato che PS quando salva il prodotto elimina e re-inserisce le immagini delle varianti poteva creare conflitto con operazioni reali successive di insert o delete ed andrebbero perse.
-
-                // if(isset($attribute_image_update["d"]) && isset($attribute_image_update["i"])){
-                // 	$all_deletes = array_keys($attribute_image_update["d"]);
-                // 	$all_inserts = array_keys($attribute_image_update["i"]);
-                //
-                // 	foreach($all_deletes as $delete_op){
-                // 		if(in_array($delete_op, $all_inserts)){
-                // 			unset($attribute_image_update["d"][$delete_op]);
-                // 			unset($attribute_image_update["i"][$delete_op]);
-                // 		}
-                // 	}
-                // }
-
-                if (isset($attribute_image_update['i'])) {
-                    foreach ($attribute_image_update['i'] as $id_image_str => $im_update) {
-                        [
-                            'id_product' => $row_id_product,
-                            'id_product_attribute' => $row_id_product_attribute,
-                            'value' => $id_image
-                        ] = $im_update['raw'];
-
-                        $queries .= Query::getProductImageByIdQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $id_image);
-                    }
-                }
-
-                if (isset($attribute_image_update['d'])) {
-                    foreach ($attribute_image_update['d'] as $id_image_str => $im_update) {
-                        [
-                            'id_product' => $row_id_product,
-                            'id_product_attribute' => $row_id_product_attribute,
-                            'value' => $id_image
-                        ] = $im_update['raw'];
-
-                        $image_external_id_cover = $id_shop . '_' . $id_lang . '_' . $row_id_product . '_' . $row_id_product_attribute . '_' . $id_image . '_cover';
-                        $image_external_id_others = $id_shop . '_' . $id_lang . '_' . $row_id_product . '_' . $row_id_product_attribute . '_' . $id_image . '_others';
-                        $queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_cover';";
-                        $queries .= "UPDATE products_images SET deleted = 1 WHERE externalidstr = '$image_external_id_others';";
-                    }
-                }
-
-                if (isset($attribute_image_update['u'])) {
-                    [
-                        'id_product' => $row_id_product,
-                        'id_product_attribute' => $row_id_product_attribute,
-                        'value' => $id_image
-                    ] = $attribute_image_update['u']['id_image']['raw'];
-
-                    $queries .= Query::getProductImageByIdQuery($row_id_product, $row_id_product_attribute, $id_shop, $id_lang, $id_image);
-                }
-            }
-
-            if ((bool) $id_product && !empty($queries)) {
-                $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_product . '_';
-                $timestamp = date('Y-m-d H:i:s');
-                $queries .= "UPDATE products SET lastupdate = '$timestamp' WHERE externalidstr LIKE '$externalidstr%';";
-            }
-        }
-
-        return $queries;
     }
 
     public static function getDifferentialQueryByRow($id_product, $_row, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id)
