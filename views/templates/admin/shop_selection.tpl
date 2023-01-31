@@ -31,8 +31,8 @@
         </div>
         <form class="mt-6 space-y-6" action="#" method="POST" id="as_shop_selection_form">
           <div>
-            {foreach from=$as_shops item=$cur_shop}
-              {foreach from=$cur_shop.languages item=$lang}
+            {foreach from=$as_shops item=cur_shop}
+              {foreach from=$cur_shop.languages item=lang}
               <div class="flex items-center">
                   <input id="as_shop_to_sync_{$cur_shop.id_shop}_{$lang.id_lang}" name="as_shop_to_sync_{$cur_shop.id_shop}_{$lang.id_lang}" type="checkbox" class="h-4 w-4 text-as-primary-400 focus:ring-as-primary-400 border-gray-300 rounded as_shop_to_sync" data-id-shop="{$cur_shop.id_shop}" data-id-lang="{$lang.id_lang}">
                   <label for="as_shop_to_sync_{$cur_shop.id_shop}_{$lang.id_lang}" class="ml-3 block mt-2 text-gray-600">

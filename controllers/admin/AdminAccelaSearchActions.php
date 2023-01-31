@@ -22,6 +22,11 @@ ignore_user_abort(true);
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
+use AccelaSearch\Collector;
+use AccelaSearch\Query\Query;
+use AccelaSearch\Sync;
+
 class AdminAccelaSearchActionsController extends ModuleAdminController
 {
     public function get_constant($name)
@@ -39,6 +44,7 @@ class AdminAccelaSearchActionsController extends ModuleAdminController
     {
         $list = parent::renderList();
         Tools::redirect(Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminModules') . '&configure=accelasearch'));
+
         return false;
     }
 
@@ -103,7 +109,7 @@ SQL;
             'disabled' => 0,
             'lastupdate' => date('Y-m-d H:i:s'),
         ];
-        $as_shop_insert = AS_Collector::getInstance()->insert('storeviews', $data);
+        $as_shop_insert = Collector::getInstance()->insert('storeviews', $data);
         if (!(bool) $as_shop_insert) {
             throw new \Exception('An error occured during shop creation on AccelaSearch');
         }
@@ -113,12 +119,12 @@ SQL;
 
     private function shopExistOnAccelaSearch($hash)
     {
-        return (bool) AS_Collector::getInstance()->getValue("SELECT COUNT(*) FROM storeviews WHERE hash = '$hash'");
+        return (bool) Collector::getInstance()->getValue("SELECT COUNT(*) FROM storeviews WHERE hash = '$hash'");
     }
 
     public function ajaxProcessDisconnectApikey()
     {
-        \AccelaSearch\Sync::softDeleteAll();
+        Sync::softDeleteAll();
         $as_shops = \AccelaSearch::getAsShops();
         foreach ($as_shops as $as_shop) {
             [
@@ -127,7 +133,7 @@ SQL;
                 'as_shop_id' => $as_shop_id,
                 'as_shop_real_id' => $as_shop_real_id
             ] = $as_shop;
-            \AccelaSearch\Sync::reindex($as_shop_real_id);
+            Sync::reindex($as_shop_real_id);
         }
         foreach ($as_shops as $as_shop) {
             [
@@ -144,12 +150,12 @@ SQL;
                     break;
                 }
                 sleep(5);
-                $isIndexCall = \AccelaSearch\Sync::isIndexing($as_shop_real_id);
+                $isIndexCall = Sync::isIndexing($as_shop_real_id);
                 $isIndexing = $isIndexCall->isIndexing;
                 ++$nb_execution;
             }
         }
-        \AccelaSearch\Sync::deleteAll();
+        Sync::deleteAll();
         foreach (AccelaSearch::DEFAULT_CONFIGURATION as $key => $value) {
             Configuration::updateGlobalValue($key, $value);
         }
@@ -164,7 +170,7 @@ SQL;
 
     public function ajaxProcessShopInitializations()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         echo AccelaSearch::shopInitializations();
@@ -185,10 +191,10 @@ SQL;
             foreach ($customer_groups as $customer_group) {
                 $id_group = $customer_group['id_group'];
                 $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_group;
-                $group_on_as = (bool) AS_Collector::getInstance()->getValue("SELECT COUNT(*) FROM users_groups WHERE externalidstr = '$externalidstr'");
+                $group_on_as = (bool) Collector::getInstance()->getValue("SELECT COUNT(*) FROM users_groups WHERE externalidstr = '$externalidstr'");
                 if (!$group_on_as) {
                     $name = $customer_group['name'];
-                    $queries[] = AccelaSearch\Query::getByName('shopInitializationsCustomerGroup_query', [
+                    $queries[] = Query::getByName('shopInitializationsCustomerGroup_query', [
                         'name' => pSQL($name),
                         'externalidstr' => $externalidstr,
                         'storeview_id' => $as_shop_id,
@@ -197,7 +203,7 @@ SQL;
             }
         }
         $queries = implode('', $queries);
-        AS_Collector::getInstance()->query($queries);
+        Collector::getInstance()->query($queries);
         $this->ajaxDie(json_encode(
             [
                 'success' => true,
@@ -212,7 +218,7 @@ SQL;
             [
                 'id_shop' => $id_shop
             ] = $as_shop;
-            \AccelaSearch\Sync::createRepriceRule($id_shop);
+            Sync::createRepriceRule($id_shop);
         }
         $this->ajaxDie(json_encode(
             [
@@ -223,7 +229,7 @@ SQL;
 
     public function ajaxProcessResyncAll()
     {
-        \AccelaSearch\Sync::softDeleteAll();
+        Sync::softDeleteAll();
         $as_shops = \AccelaSearch::getAsShops();
         foreach ($as_shops as $as_shop) {
             [
@@ -232,7 +238,7 @@ SQL;
                 'as_shop_id' => $as_shop_id,
                 'as_shop_real_id' => $as_shop_real_id
             ] = $as_shop;
-            \AccelaSearch\Sync::reindex($as_shop_real_id);
+            Sync::reindex($as_shop_real_id);
         }
         foreach ($as_shops as $as_shop) {
             [
@@ -246,12 +252,12 @@ SQL;
             $nb_execution = 0;
             while ($isIndexing || ($nb_execution < $max_attempts)) {
                 sleep(5);
-                $isIndexCall = \AccelaSearch\Sync::isIndexing($as_shop_real_id);
+                $isIndexCall = Sync::isIndexing($as_shop_real_id);
                 $isIndexing = $isIndexCall->isIndexing;
                 ++$nb_execution;
             }
         }
-        \AccelaSearch\Sync::deleteAll();
+        Sync::deleteAll();
         AccelaSearch::shopInitializations();
         Configuration::updateGlobalValue('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS', 0);
         $this->ajaxDie(json_encode(
@@ -263,10 +269,10 @@ SQL;
 
     public function ajaxProcessSoftDeleteAndCleanupProducts()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
-        \AccelaSearch\Sync::softDeleteAll();
+        Sync::softDeleteAll();
         $as_shops = \AccelaSearch::getAsShops();
         foreach ($as_shops as $as_shop) {
             [
@@ -275,10 +281,10 @@ SQL;
                 'as_shop_id' => $as_shop_id,
                 'as_shop_real_id' => $as_shop_real_id
             ] = $as_shop;
-            \AccelaSearch\Sync::reindex($as_shop_real_id);
+            Sync::reindex($as_shop_real_id);
         }
         sleep(30);
-        \AccelaSearch\Sync::deleteAll();
+        Sync::deleteAll();
     }
 
     public function ajaxProcessGetFaqs()
@@ -325,8 +331,8 @@ SQL;
                     continue;
                 }
                 try {
-                    $product_query = \AccelaSearch\Query::getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id, AccelaSearch::WITHOUT_IGNORE);
-                    AS_Collector::getInstance()->query($product_query);
+                    $product_query = Query::getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id, AccelaSearch::WITHOUT_IGNORE);
+                    Collector::getInstance()->query($product_query);
                 } catch (\Exception $e) {
                     $errors[$missing] = $e->getMessage();
                 }
@@ -346,7 +352,7 @@ SQL;
 
     public function ajaxProcessDeleteQueue()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         Db::getInstance()->query('DELETE FROM ' . _DB_PREFIX_ . 'as_fullsync_queue');
@@ -359,7 +365,7 @@ SQL;
 
     public function ajaxProcessGetAsProductInformations()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         $id_product = Tools::getValue('pid', null);
@@ -375,7 +381,7 @@ SQL;
                 ] = $as_shop;
 
                 $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_product . '_';
-                $_products = AS_Collector::getInstance()->executeS("SELECT * FROM products WHERE externalidstr LIKE '$externalidstr%' AND deleted = 0");
+                $_products = Collector::getInstance()->executeS("SELECT * FROM products WHERE externalidstr LIKE '$externalidstr%' AND deleted = 0");
 
                 foreach ($_products as $_product) {
                     [
@@ -395,12 +401,12 @@ SQL;
 
                     $products[$typeid_key]['basics'] = $_product;
 
-                    $prices = AS_Collector::getInstance()->executeS("SELECT * FROM prices WHERE productid = $as_pid AND deleted = 0");
-                    $images = AS_Collector::getInstance()->executeS("SELECT * FROM products_images WHERE productid = $as_pid AND deleted = 0");
-                    $categories = AS_Collector::getInstance()->executeS("SELECT * FROM products_categories WHERE productid = $as_pid AND deleted = 0");
-                    $stocks = AS_Collector::getInstance()->executeS("SELECT * FROM stocks WHERE productid = $as_pid AND deleted = 0");
-                    $attr_str = AS_Collector::getInstance()->executeS("SELECT pas.*, pal.label FROM products_attr_str pas JOIN products_attr_label pal ON pal.id = pas.labelid WHERE pas.productid = $as_pid");
-                    $attr_text = AS_Collector::getInstance()->executeS("SELECT pat.*, pal.label FROM products_attr_text pat JOIN products_attr_label pal ON pal.id = pat.labelid WHERE pat.productid = $as_pid");
+                    $prices = Collector::getInstance()->executeS("SELECT * FROM prices WHERE productid = $as_pid AND deleted = 0");
+                    $images = Collector::getInstance()->executeS("SELECT * FROM products_images WHERE productid = $as_pid AND deleted = 0");
+                    $categories = Collector::getInstance()->executeS("SELECT * FROM products_categories WHERE productid = $as_pid AND deleted = 0");
+                    $stocks = Collector::getInstance()->executeS("SELECT * FROM stocks WHERE productid = $as_pid AND deleted = 0");
+                    $attr_str = Collector::getInstance()->executeS("SELECT pas.*, pal.label FROM products_attr_str pas JOIN products_attr_label pal ON pal.id = pas.labelid WHERE pas.productid = $as_pid");
+                    $attr_text = Collector::getInstance()->executeS("SELECT pat.*, pal.label FROM products_attr_text pat JOIN products_attr_label pal ON pal.id = pat.labelid WHERE pat.productid = $as_pid");
 
                     $products[$typeid_key]['prices'] = $prices;
                     $products[$typeid_key]['images'] = $images;
@@ -434,7 +440,7 @@ SQL;
 
     public function ajaxProcessGenerateProductsQuery()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         $as_shops = AccelaSearch::getAsShops();
@@ -455,12 +461,12 @@ SQL;
                 'queries' => $queries,
             ]
         ));
-        // $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
+        // $queries = Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
     }
 
     public function ajaxProcessGenerateProductsQueueQuery()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         $as_shops = AccelaSearch::getAsShops();
@@ -487,12 +493,12 @@ SQL;
                 'queries' => $queries,
             ]
         ));
-        // $queries = \AccelaSearch\Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
+        // $queries = Query::getProductCreationQuery(4356, 1, 1, $as_shops["1_1"]["as_shop_id"], $as_shops["1_1"]["as_shop_real_id"]);
     }
 
     public function ajaxProcessCleanupProducts()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         AccelaSearch\Sync::DbCleanup();
@@ -530,7 +536,7 @@ SQL;
         if ($success) {
             try {
                 AccelaSearch::notifyShops();
-                $as_shops = AS_Collector::getInstance()->executeS('SELECT * FROM storeviews');
+                $as_shops = Collector::getInstance()->executeS('SELECT * FROM storeviews');
                 foreach ($as_shops as $as_shop) {
                     [
                         'id' => $as_shop_id,

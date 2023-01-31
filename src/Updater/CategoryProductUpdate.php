@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -20,7 +21,9 @@
 
 namespace AccelaSearch\Updater;
 
-class CategoryProductUpdate extends UpdateOperation implements Operation
+use AccelaSearch\Collector;
+
+class CategoryProductUpdate extends UpdateOperationAbstract implements OperationInterface
 {
     private $queries = '';
 
@@ -32,7 +35,6 @@ class CategoryProductUpdate extends UpdateOperation implements Operation
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
         $id_product = $context->id_product;
-        $id_product_attribute = $context->id_product_attribute;
 
         if ($update_row->isDeleteOperation()) {
             foreach ($update_row->getRow()['d'] as $id_category_str => $cat_update) {
@@ -56,7 +58,7 @@ class CategoryProductUpdate extends UpdateOperation implements Operation
                 $lastupdate = date('Y-m-d H:i:s');
                 $externalidstr = $context->buildExternalId([$id_category]);
                 $ext_product_idstr = $context->buildExternalId([$id_product, 0]);
-                $id_association = \AS_Collector::getInstance()->getValue("SELECT id FROM products_categories WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr')");
+                $id_association = Collector::getInstance()->getValue("SELECT id FROM products_categories WHERE productid = (SELECT id FROM products WHERE externalidstr = '$ext_product_idstr') AND categoryid = (SELECT id FROM categories WHERE externalidstr = '$externalidstr')");
                 if (!$id_association) {
                     $this->queries .= "INSERT INTO products_categories (categoryid, productid) VALUES ((SELECT id FROM categories WHERE externalidstr = '$externalidstr'),(SELECT id FROM products WHERE externalidstr = '$ext_product_idstr'));";
                 } else {

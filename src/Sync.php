@@ -183,7 +183,7 @@ class Sync
         foreach ($tables as $table) {
             $query .= "UPDATE $table SET deleted = 1, lastupdate = NOW();";
         }
-        \AS_Collector::getInstance()->query($query);
+        Collector::getInstance()->query($query);
     }
 
     public static function deleteAll()
@@ -194,7 +194,7 @@ class Sync
             $query .= "DELETE FROM $table;";
         }
         $query .= 'SET FOREIGN_KEY_CHECKS = 1;';
-        \AS_Collector::getInstance()->query($query);
+        Collector::getInstance()->query($query);
     }
 
     // TODO: Verificare codice del metodo
@@ -267,7 +267,7 @@ class Sync
                 $queries[] = "DELETE FROM $table;";
             }
         }
-        \AS_Collector::getInstance()->query(implode('', $queries));
+        Collector::getInstance()->query(implode('', $queries));
     }
 
     public function terminate()

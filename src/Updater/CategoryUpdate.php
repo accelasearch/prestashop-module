@@ -21,39 +21,36 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 
-class FeatureUpdate extends UpdateOperation implements Operation
+class CategoryUpdate extends UpdateOperationAbstract implements OperationInterface
 {
     private $queries = '';
 
     public function __construct()
     {
-        $this->setName('feature_product');
+        $this->setName('category');
     }
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-        if ($update_row->isDeleteOperation()) {
-            foreach ($update_row->getRow()['d'] as $feature_str => $feature_update) {
-                [
-                    'id_product' => $row_id_product,
-                    'value' => $id_feature_value
-                ] = $feature_update['raw'];
+        $id_product = $context->id_product;
 
-                $this->queries .= Query::getFeatureProductDeleteQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
-            }
+        if ($update_row->isDeleteOperation()) {
+            $this->queries .= Query::getCategoryDeleteQuery($id_product, $context->id_shop, $context->id_lang, $context->as_shop_id);
+            $update_row->unsetOperationIfExist('i');
+            $update_row->unsetOperationIfExist('u');
         }
 
         if ($update_row->isInsertOperation()) {
-            foreach ($update_row->getRow()['i'] as $feature_str => $feature_update) {
-                [
-                    'id_product' => $row_id_product,
-                    'value' => $id_feature_value
-                ] = $feature_update['raw'];
+            $update_row->unsetOperationIfExist('u');
+            $this->queries .= Query::getCategoryCreationQuery($id_product, $context->id_shop, $context->id_lang, $context->as_shop_id);
+        }
 
-                $this->queries .= Query::getFeatureProductInsertQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
-            }
+        if ($update_row->isUpdateOperation()) {
+            $op_name = array_keys($update_row->getRow()['u'])[0];
+            $new_value = $update_row->getRow()['u'][$op_name]['value'];
+            $this->queries .= Query::getCategoryUpdateQuery($id_product, $new_value, $context->id_shop, $context->id_lang, $context->as_shop_id, $op_name);
         }
 
         return $this;

@@ -21,31 +21,39 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 
-class VariantUpdate extends UpdateOperation implements Operation
+class FeatureUpdate extends UpdateOperationAbstract implements OperationInterface
 {
     private $queries = '';
 
     public function __construct()
     {
-        $this->setName('variant');
+        $this->setName('feature_product');
     }
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-        $id_product = $context->id_product;
-        $id_product_attribute = $context->id_product_attribute;
+        if ($update_row->isDeleteOperation()) {
+            foreach ($update_row->getRow()['d'] as $feature_str => $feature_update) {
+                [
+                    'id_product' => $row_id_product,
+                    'value' => $id_feature_value
+                ] = $feature_update['raw'];
 
-        if ($update_row->isInsertOperation()) {
-            $this->queries .= Query::transformProductAndCreateVariant($id_product, $id_product_attribute, $context->id_shop, $context->id_lang, $context->as_shop_id);
-            $externalidstr = $context->buildExternalId([$id_product, $id_product_attribute]);
-            $this->queries .= "UPDATE products SET deleted = 0 WHERE externalidstr = '$externalidstr';";
+                $this->queries .= Query::getFeatureProductDeleteQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+            }
         }
 
-        if ($update_row->isDeleteOperation()) {
-            $externalidstr = $context->buildExternalId([$id_product, $id_product_attribute]);
-            $this->queries .= "UPDATE products SET deleted = 1 WHERE externalidstr = '$externalidstr';";
+        if ($update_row->isInsertOperation()) {
+            foreach ($update_row->getRow()['i'] as $feature_str => $feature_update) {
+                [
+                    'id_product' => $row_id_product,
+                    'value' => $id_feature_value
+                ] = $feature_update['raw'];
+
+                $this->queries .= Query::getFeatureProductInsertQuery($row_id_product, $context->id_shop, $context->id_lang, $id_feature_value);
+            }
         }
 
         return $this;
