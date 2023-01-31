@@ -364,7 +364,6 @@ class AccelaSearch extends Module
     {
         $as_shops = self::getAsShops();
         $queries = [];
-        $queries[] = 'BEGIN;';
         $link = new Link();
         $queries[] = 'DELETE FROM products_attr_label;';
         $queries[] = 'DELETE FROM users_groups;';
@@ -404,8 +403,6 @@ class AccelaSearch extends Module
             }
         }
 
-        $queries[] = 'COMMIT;';
-
         $queries = implode('', $queries);
         /* @phpstan-ignore-next-line */
         if (AccelaSearch::AS_CONFIG['LOG_QUERY']) {
@@ -415,7 +412,6 @@ class AccelaSearch extends Module
                 'message' => pSQL($queries),
             ]);
         }
-
         $shop_init = Collector::getInstance()->query($queries);
         self::generateCategories();
 
