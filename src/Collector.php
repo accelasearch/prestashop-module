@@ -18,7 +18,10 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-class AS_Collector
+
+namespace AccelaSearch;
+
+class Collector
 {
     private static $instance = null;
     private $pdo;
@@ -34,13 +37,13 @@ class AS_Collector
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
             ];
 
-            $this->pdo = new PDO(
+            $this->pdo = new \PDO(
                 $dsn,
                 $credentials->username,
                 $credentials->password,
                 $options
             );
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo 'MySql Connection Error: ' . $e->getMessage();
         }
     }
@@ -48,12 +51,12 @@ class AS_Collector
     public static function getInstance()
     {
         if (!self::$instance) {
-            $credentials = Configuration::get('ACCELASEARCH_COLLECTOR');
+            $credentials = \Configuration::get('ACCELASEARCH_COLLECTOR');
             if (empty($credentials)) {
                 throw new \Exception('Cannot connect to collector without credentials');
             }
             $credentials = json_decode($credentials);
-            self::$instance = new AS_Collector($credentials);
+            self::$instance = new Collector($credentials);
         }
 
         return self::$instance;
@@ -97,8 +100,8 @@ class AS_Collector
 
         $raw_query = 'INSERT ' . $ignore . ' INTO ' . $table . ' (' . $params . ') VALUES (' . $bind . ')';
 
-        if (AccelaSearch::AS_CONFIG['LOG_QUERY']) {
-            Db::getInstance()->insert('log', [
+        if (\AccelaSearch::AS_CONFIG['LOG_QUERY'] === true) {
+            \Db::getInstance()->insert('log', [
                 'severity' => 1,
                 'error_code' => 0,
                 'message' => pSQL($this->interpolateQuery($raw_query, $data)),
@@ -142,8 +145,8 @@ class AS_Collector
     public function query($query)
     {
         $q = $this->pdo->prepare($query);
-        if (AccelaSearch::AS_CONFIG['LOG_QUERY']) {
-            Db::getInstance()->insert('log', [
+        if (\AccelaSearch::AS_CONFIG['LOG_QUERY'] === true) {
+            \Db::getInstance()->insert('log', [
                 'severity' => 1,
                 'error_code' => 0,
                 'message' => 'FULL_QUERY: ' . pSQL($query),

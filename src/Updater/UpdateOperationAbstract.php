@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -20,9 +21,17 @@
 
 namespace AccelaSearch\Updater;
 
-interface Operation
+abstract class UpdateOperationAbstract
 {
-    public function generateQueries(UpdateRow $update_row, UpdateContext $context);
+    private $name;
 
-    public function getQueries(): string;
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
 }

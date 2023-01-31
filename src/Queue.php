@@ -49,7 +49,7 @@ class Queue
                     'is_processing' => 1,
                     'processed_at' => date('Y-m-d H:i:s'),
                 ];
-                if (self::FLUSH_QUERY_VALUE) {
+                if (self::FLUSH_QUERY_VALUE === true) {
                     $update_data['query'] = '';
                 }
                 \Db::getInstance()->update(
@@ -61,9 +61,9 @@ class Queue
                     continue;
                 }
                 // invio ad AS
-                if (self::SEND_QUERY_TO_AS) {
+                if (self::SEND_QUERY_TO_AS === true) {
                     Sync::startRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));
-                    $as_query_success = \AS_Collector::getInstance()->query($queue['query']);
+                    $as_query_success = Collector::getInstance()->query($queue['query']);
                     Sync::terminateRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));
                 }
             }
@@ -84,7 +84,7 @@ class Queue
         return \Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . "as_fullsync_queue WHERE 1 $where AND is_processing = 0 ORDER BY id desc $limit");
     }
 
-    public static function getOffsetDividerByType($type = 'PRODUCT', $nb)
+    public static function getOffsetDividerByType($type = 'PRODUCT', $nb = 0)
     {
         // key = greater than
         // value = divider

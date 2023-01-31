@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -20,7 +21,7 @@
 
 namespace AccelaSearch\Updater;
 
-class UpdateRow implements RowOperations
+class UpdateRow implements RowOperationsInterface
 {
     private $row;
     private $entity;

@@ -92,12 +92,12 @@ class Updater
         return $this->context;
     }
 
-    public function addToStack(UpdateOperation $operation)
+    public function addToStack(UpdateOperationAbstract $operation)
     {
         $this->update_stack[$operation->getName()] = $operation;
     }
 
-    public function removeFromStack(UpdateOperation $operation)
+    public function removeFromStack(UpdateOperationAbstract $operation)
     {
         unset($this->update_stack[$operation->getName()]);
     }

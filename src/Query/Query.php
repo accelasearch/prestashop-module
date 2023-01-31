@@ -19,9 +19,9 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
-namespace AccelaSearch;
+namespace AccelaSearch\Query;
 
-use AccelaSearch;
+use AccelaSearch\Collector;
 
 /**
  * Create and manage SQL query
@@ -82,7 +82,7 @@ class Query
             }
         }
         $cleaned_query = preg_replace("/\r|\n/", '', str_replace($placement_keys, array_values($placement), $query));
-        if (\AccelaSearch::AS_CONFIG['LOG_QUERY']) {
+        if (\AccelaSearch::AS_CONFIG['LOG_QUERY'] === true) {
             \Db::getInstance()->insert('log', [
               'severity' => 1,
               'error_code' => 0,
@@ -201,7 +201,7 @@ class Query
             'others' => $others_id
         ] = self::$query_data_manager->as_attributes_ids;
 
-        $image_id_association = \AS_Collector::getInstance()->executeS("SELECT id FROM products_images WHERE externalidstr = '$externalidstr' OR externalidstr = '$externalidstr_cover'");
+        $image_id_association = Collector::getInstance()->executeS("SELECT id FROM products_images WHERE externalidstr = '$externalidstr' OR externalidstr = '$externalidstr_cover'");
 
         if (!(bool) count($image_id_association)) {
             return self::getByName('addImageToProductQuery', [
@@ -229,7 +229,7 @@ class Query
 
     public static function transformProductAndCreateVariant($id_product, $id_product_attribute, $id_shop, $id_lang, $as_shop_id)
     {
-        $queryData = \AccelaSearch\Query::$query_data_manager;
+        $queryData = Query::$query_data_manager;
         if (!$queryData) {
             throw new \Exception('Cannot perform product query without query data manager instance');
         }
@@ -302,7 +302,7 @@ class Query
 
     public static function getFeatureProductDeleteQuery($id_product, $id_shop, $id_lang, $id_feature_value)
     {
-        $queryData = \AccelaSearch\Query::$query_data_manager;
+        $queryData = Query::$query_data_manager;
         if (!$queryData) {
             throw new \Exception('Cannot perform product query without query data manager instance');
         }
@@ -318,7 +318,7 @@ class Query
 
     public static function getFeatureProductInsertQuery($id_product, $id_shop, $id_lang, $id_feature_value)
     {
-        $queryData = \AccelaSearch\Query::$query_data_manager;
+        $queryData = Query::$query_data_manager;
         if (!$queryData) {
             throw new \Exception('Cannot perform product query without query data manager instance');
         }
@@ -337,11 +337,11 @@ class Query
                   'slug' => $slug,
                 ]
             );
-            \AS_Collector::getInstance()->query($new_feature);
+            Collector::getInstance()->query($new_feature);
             $as_shop_id = $queryData->as_shop_id;
-            AccelaSearch\Query::$query_data_manager = null;
+            Query::$query_data_manager = null;
             \AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id);
-            $queryData = \AccelaSearch\Query::$query_data_manager;
+            $queryData = Query::$query_data_manager;
         }
 
         $label_id = $queryData->as_attributes_ids[$name_feature];
@@ -350,7 +350,7 @@ class Query
         $external_id_str_product = $id_shop . '_' . $id_lang . '_' . $id_product . '_0';
         $feature_value = $ps_feature_value->value[$id_lang];
 
-        $query = AccelaSearch\Query::getByName('addFeature_query', [
+        $query = Query::getByName('addFeature_query', [
           'label_id' => $label_id,
           'value' => $feature_value,
           'is_configurable' => 0,
@@ -527,18 +527,18 @@ class Query
             // comporta anche la riscrittura di tutta l'alberatura
             if ($op_name == 'id_parent') {
                 $cat_external_id_str_parent = $id_shop . '_' . $id_lang . '_' . $name;
-                \AS_Collector::getInstance()->query("UPDATE categories SET lastupdate = NOW(), parentid = (SELECT id FROM (select * from categories) as c WHERE c.externalidstr = '$cat_external_id_str_parent') WHERE externalidstr = '$external_id_str'");
+                Collector::getInstance()->query("UPDATE categories SET lastupdate = NOW(), parentid = (SELECT id FROM (select * from categories) as c WHERE c.externalidstr = '$cat_external_id_str_parent') WHERE externalidstr = '$external_id_str'");
             }
 
             if ($op_name == 'id_parent' || $op_name == 'link_rewrite') {
-                $name = \AS_Collector::getInstance()->getValue("SELECT categoryname FROM categories WHERE externalidstr = '$external_id_str'");
+                $name = Collector::getInstance()->getValue("SELECT categoryname FROM categories WHERE externalidstr = '$external_id_str'");
             }
 
             $link = new \Link();
             $full_name = \AccelaSearch::getFullCategoryNameByIdAndLang($id_category, $id_lang);
             $url = $link->getCategoryLink($id_category, null, $id_lang, null, $id_shop);
 
-            $has_children = \AS_Collector::getInstance()->executeS("SELECT * FROM categories WHERE parentid = (SELECT id FROM categories WHERE externalidstr = '$external_id_str')");
+            $has_children = Collector::getInstance()->executeS("SELECT * FROM categories WHERE parentid = (SELECT id FROM categories WHERE externalidstr = '$external_id_str')");
 
             $queries .= self::getByName('categoryUpdate_query', [
               'storeviewid' => $as_shop_id,
@@ -557,7 +557,7 @@ class Query
                     ] = $children;
                     [$id_shop, $id_lang, $ps_id_category] = explode('_', $external_id_str);
                     $full_name = \AccelaSearch::getFullCategoryNameByIdAndLang($ps_id_category, $id_lang);
-                    $url = $link->getCategoryLink($ps_id_category, null, $id_lang, null, $id_shop);
+                    $url = $link->getCategoryLink((int) $ps_id_category, null, (int) $id_lang, null, (int) $id_shop);
                     $queries .= self::getByName('categoryUpdate_query', [
                       'storeviewid' => $as_shop_id,
                       'categoryname' => $name,
@@ -565,7 +565,7 @@ class Query
                       'externalidstr' => $external_id_str,
                       'url' => $url,
                     ]);
-                    $has_children = \AS_Collector::getInstance()->executeS("SELECT * FROM categories WHERE parentid = (SELECT id FROM categories WHERE externalidstr = '$external_id_str')");
+                    $has_children = Collector::getInstance()->executeS("SELECT * FROM categories WHERE parentid = (SELECT id FROM categories WHERE externalidstr = '$external_id_str')");
                 }
             }
         }

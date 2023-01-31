@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -20,10 +21,10 @@
 
 namespace AccelaSearch\Updater;
 
-use AccelaSearch\Query;
+use AccelaSearch\Query\Query;
 use AccelaSearch\Queue;
 
-class PriceUpdate extends UpdateOperation implements Operation
+class PriceUpdate extends UpdateOperationAbstract implements OperationInterface
 {
     private $queries = '';
 
@@ -34,9 +35,6 @@ class PriceUpdate extends UpdateOperation implements Operation
 
     public function generateQueries(UpdateRow $update_row, UpdateContext $context)
     {
-        $id_product = $context->id_product;
-        $id_product_attribute = $context->id_product_attribute;
-
         // NOTE: Questa operazione deve essere splittata se le istruzioni sono più di 15k perchè altrimenti va in blocco
         if ($context->isGlobalOperation()) {
             $queries = Query::getGlobalProductPriceUpdateQuery($context->id_shop, $context->id_lang, $context->as_shop_id);

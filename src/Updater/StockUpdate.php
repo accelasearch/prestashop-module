@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -20,11 +21,34 @@
 
 namespace AccelaSearch\Updater;
 
-interface RowOperations
+use AccelaSearch\Query\Query;
+
+class StockUpdate extends UpdateOperationAbstract implements OperationInterface
 {
-    public function isDeleteOperation(): bool;
+    private $queries = '';
 
-    public function isInsertOperation(): bool;
+    public function __construct()
+    {
+        $this->setName('stock');
+    }
 
-    public function isUpdateOperation(): bool;
+    public function generateQueries(UpdateRow $update_row, UpdateContext $context)
+    {
+        if ($update_row->isUpdateOperation()) {
+            [
+                'id_product' => $row_id_product,
+                'id_product_attribute' => $row_id_product_attribute,
+                'value' => $quantity
+            ] = $update_row->getRow()['u']['quantity']['raw'];
+
+            $this->queries .= Query::getProductStockUpdateQuery($row_id_product, $row_id_product_attribute, $context->id_shop, $context->id_lang, $quantity);
+        }
+
+        return $this;
+    }
+
+    public function getQueries(): string
+    {
+        return $this->queries;
+    }
 }
