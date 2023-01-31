@@ -302,9 +302,9 @@ class AccelaSearch extends Module
     {
         $str = str_replace([
             'á', 'à', 'â', 'ã', 'ä', 'å', 'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó',
-            'ò', 'ô', 'õ', 'ö', 'ú', 'ù', 'û', 'ü',
+            'ò', 'ô', 'õ', 'ö', 'ú', 'ù', 'û', 'ü', 'Ã'
         ], [
-            'a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u',
+            'a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'a'
         ], $str);
 
         return Tools::safeOutput($str);
@@ -1236,7 +1236,6 @@ class AccelaSearch extends Module
         $ps_product,
         array &$queries
     ) {
-        // $queries[] = "BEGIN;";
 
         $queryData = Query::$query_data_manager;
         if (!$queryData) {
@@ -1483,8 +1482,6 @@ class AccelaSearch extends Module
                 ]);
             }
         }
-
-        // $queries[] = "COMMIT;";
     }
 
     private function generateProductsQuery($id_shop, $id_lang, $as_shop_id, $as_shop_real_id, $limit = '0,1000')
@@ -1511,13 +1508,9 @@ class AccelaSearch extends Module
 
         $queries = [];
 
-        $queries[] = 'BEGIN;';
-
         foreach ($ps_products as $ps_product) {
             self::generateProductQueryByProductRow($id_shop, $id_lang, $as_shop_id, $as_shop_real_id, $ps_product, $queries);
         }
-
-        $queries[] = 'COMMIT;';
 
         return implode('', $queries);
     }
