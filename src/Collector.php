@@ -100,7 +100,7 @@ class Collector
 
         $raw_query = 'INSERT ' . $ignore . ' INTO ' . $table . ' (' . $params . ') VALUES (' . $bind . ')';
 
-        if (\AccelaSearch::AS_CONFIG['LOG_QUERY']) {
+        if (\AccelaSearch::AS_CONFIG['LOG_QUERY'] === true) {
             \Db::getInstance()->insert('log', [
                 'severity' => 1,
                 'error_code' => 0,
@@ -145,7 +145,7 @@ class Collector
     public function query($query)
     {
         $q = $this->pdo->prepare($query);
-        if (\AccelaSearch::AS_CONFIG['LOG_QUERY']) {
+        if (\AccelaSearch::AS_CONFIG['LOG_QUERY'] === true) {
             \Db::getInstance()->insert('log', [
                 'severity' => 1,
                 'error_code' => 0,

@@ -67,7 +67,7 @@ class AccelaSearch extends Module
     public const AS_CONFIG = [
         'API_ENDPOINT' => 'https://svc11.accelasearch.net/API/',
         'CMS_ID' => 99,
-        'LOG_QUERY' => true,
+        'LOG_QUERY' => false,
         'DEBUG_MODE' => true,
         'CRONJOB_DRYRUN' => false,
         'ACCEPTED_METHODS' => [
@@ -407,6 +407,7 @@ class AccelaSearch extends Module
         $queries[] = 'COMMIT;';
 
         $queries = implode('', $queries);
+        /* @phpstan-ignore-next-line */
         if (AccelaSearch::AS_CONFIG['LOG_QUERY']) {
             Db::getInstance()->insert('log', [
                 'severity' => 1,
@@ -424,7 +425,7 @@ class AccelaSearch extends Module
     /**
      * Crea un array chiave valore degli attributi impostati su AS
      *
-     * @param int storeviewid di AccelaSearch
+     * @param int $storeviewid di AccelaSearch
      *
      * @return array ["label" => id]
      */
@@ -626,7 +627,7 @@ class AccelaSearch extends Module
                             $limit = $divider * $limit_starter . ',' . $divider;
                             $log_stack[] = "Genero le query e le scrivo nella coda per id shop: $id_shop, id lingua: $id_lang con limit: $limit e start: $start<br><br>";
 
-                            if (!$dryrun) {
+                            if ($dryrun === false) {
                                 $query = AccelaSearch::generateProductsQueryStatic(
                                     $id_shop,
                                     $id_lang,
@@ -646,7 +647,7 @@ class AccelaSearch extends Module
                 $this->hookActionCronJob();
             }
         }
-
+        /* @phpstan-ignore-next-line */
         if ($dryrun) {
             echo implode('<br>', $log_stack);
         }
@@ -1594,31 +1595,40 @@ class AccelaSearch extends Module
             'url' => $url,
             'name_id' => $name_id,
             'product_name' => $product_name,
+            /* @phpstan-ignore-next-line */
             'name_external' => $name_external,
             'short_description_id' => $short_description_id,
             'product_short_description' => $product_short_description,
+            /* @phpstan-ignore-next-line */
             'short_description_external' => $short_description_external,
             'description_id' => $description_id,
             'product_description' => $product_description,
+            /* @phpstan-ignore-next-line */
             'description_external' => $description_external,
             'brand_id' => $brand_id,
             'brand' => $brand,
+            /* @phpstan-ignore-next-line */
             'brand_external' => $brand_external,
             'warehouse_id' => $warehouse_id,
             'qty' => $qty,
             'ean13' => $ean13,
             'ean13_id' => $ean13_id,
+            /* @phpstan-ignore-next-line */
             'ean13_external' => $ean13_external,
             'isbn' => $isbn,
             'isbn_id' => $isbn_id,
+            /* @phpstan-ignore-next-line */
             'isbn_external' => $isbn_external,
             'upc' => $upc,
             'upc_id' => $upc_id,
+            /* @phpstan-ignore-next-line */
             'upc_external' => $upc_external,
             'mpn' => $mpn,
             'mpn_id' => $mpn_id,
+            /* @phpstan-ignore-next-line */
             'mpn_external' => $mpn_external,
             'sku_id' => $sku_id,
+            /* @phpstan-ignore-next-line */
             'sku_external' => $sku_external,
         ]);
 
@@ -1684,7 +1694,7 @@ class AccelaSearch extends Module
 
         // Immagini del prodotto semplice / configurabile
         $id_product_attribute = null;
-        $id_product_attribute_to_add = (!(bool) $id_product_attribute) ? '_0' : '_' . $id_product_attribute;
+        $id_product_attribute_to_add = '_0';
         $product_external_id_str = $id_shop . '_' . $id_lang . '_' . $id_product . $id_product_attribute_to_add;
 
         $images = self::getProductImages($id_shop, $id_lang, $id_product, $id_product_attribute, $ps_product, $ps_product['link_rewrite']);
@@ -1795,11 +1805,6 @@ class AccelaSearch extends Module
         $queries[] = 'COMMIT;';
 
         return implode('', $queries);
-    }
-
-    private function hasApiKey(): bool
-    {
-        return !empty(Configuration::get('ACCELASEARCH_APIKEY'));
     }
 
     private function isValidApikey($key)

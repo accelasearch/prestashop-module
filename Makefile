@@ -4,7 +4,7 @@ VERSION ?= $(shell git describe --tags 2> /dev/null || echo "0.0.0")
 SEM_VERSION ?= $(shell echo ${VERSION} | sed 's/^v//')
 PACKAGE ?= accelasearch-${VERSION}
 BUILDPLATFORM ?= linux/amd64
-TESTING_DOCKER_IMAGE ?= ps-eventbus-testing:latest
+TESTING_DOCKER_IMAGE ?= accelasearch-testing:latest 
 TESTING_DOCKER_BASE_IMAGE ?= phpdockerio/php80-cli
 PHP_VERSION ?= 8.1
 PS_VERSION ?= 8.0.1
@@ -29,41 +29,31 @@ version:
 	@sed -i.bak -e "s|\(<version><!\[CDATA\[\)[0-9a-z.-]\{1,\}]]></version>|\1${SEM_VERSION}]]></version>|" config.xml
 	@rm -f accelasearch.php.bak config.xml.bak
 
-# target: zip                                    - Make zip bundles
-zip: zip-prod zip-preprod zip-inte
-dist:
-	@mkdir -p ./dist
-.config.inte.yml:
-	@echo ".config.inte.yml file is missing, please create it. Exiting" && exit 1;
-.config.preprod.yml:
-	@echo ".config.preprod.yml file is missing, please create it. Exiting" && exit 1;
-.config.prod.yml:
-	@echo ".config.prod.yml file is missing, please create it. Exiting" && exit 1;
+#target: zip-me									 - Create a prod zip arhicve
+zip-me: local_vendor build
+	@mkdir -p ./temp
+	@mkdir -p ./temp/accelasearch
+	@mkdir -p ./releases
 
-define zip_it
-$(eval TMP_DIR := $(shell mktemp -d))
-mkdir -p ${TMP_DIR}/accelasearch;
-cp -r $(shell cat .zip-contents) ${TMP_DIR}/accelasearch;
-cp $1 ${TMP_DIR}/accelasearch/config/parameters.yml;
-cd ${TMP_DIR} && zip -9 -r $2 ./accelasearch;
-mv ${TMP_DIR}/$2 ./dist;
-rm -rf ${TMP_DIR:-/dev/null};
-endef
-
-# target: zip-inte                               - Bundle an integration zip
-zip-inte: vendor dist .config.inte.yml
-	@$(call zip_it,.config.inte.yml,${PACKAGE}_integration.zip)
-
-# target: zip-preprod                            - Bundle a preproduction zip
-zip-preprod: vendor dist .config.preprod.yml
-	@$(call zip_it,.config.preprod.yml,${PACKAGE}_preproduction.zip)
-
-# target: zip-prod                               - Bundle a production zip
-zip-prod: vendor dist .config.prod.yml
-	@$(call zip_it,.config.prod.yml,${PACKAGE}.zip)
+	@cp -R ./src temp/accelasearch
+	@cp -R ./controllers temp/accelasearch
+	@cp -R ./vendor temp/accelasearch
+	@cp -R ./sql temp/accelasearch
+	@cp -R ./views temp/accelasearch
+	@cp -R ./accelasearch.php temp/accelasearch && sed -i 's/"DEBUG_MODE" => true/"DEBUG_MODE" => false/g' temp/accelasearch/accelasearch.php
+	@cp -R ./cron.php temp/accelasearch
+	@cp -R ./autoload.php temp/accelasearch
+	@cp -R ./logo.png temp/accelasearch
+	@cp -R ./*.pdf temp/accelasearch
+	@rm -rf ./releases/accelasearch.zip
+	@cd temp && zip -rq ../releases/accelasearch.zip accelasearch && cd ..
+	@rm -rf ./temp
 
 # target: build                                  - Setup PHP & Node.js locally
 build: vendor
+
+local_vendor:
+	./composer.phar dump-autoload -o --no-dev
 
 composer.phar:
 	@php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');";
@@ -114,21 +104,9 @@ php-lint:
 	@git ls-files | grep -E '.*\.(php)' | xargs -n1 php -l -n | (! grep -v "No syntax errors" );
 	@echo "php $(shell php -r 'echo PHP_VERSION;') lint passed";
 
-# target: phpunit                                - Run phpunit tests
-phpunit: vendor/bin/phpunit
-	vendor/bin/phpunit --configuration=./tests/phpunit.xml;
-
-# target: phpunit-coverage                       - Run phpunit with coverage and allure
-phpunit-coverage: vendor/bin/phpunit
-	php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-html ./coverage-reports/coverage-html --configuration=./tests/phpunit-coverage.xml;
-
 # target: phpstan                                - Run phpstan
 phpstan: vendor/bin/phpstan prestashop/prestashop-${PS_VERSION}
 	_PS_ROOT_DIR_=${PS_ROOT_DIR} vendor/bin/phpstan analyse --memory-limit=256M --configuration=./tests/phpstan/phpstan.neon;
-
-# target: phpstan-baseline                       - Generate a phpstan baseline to ignore all errors
-phpstan-baseline: prestashop/prestashop-${PS_VERSION} vendor/bin/phpstan
-	_PS_ROOT_DIR_=${PS_ROOT_DIR} vendor/bin/phpstan analyse --generate-baseline --memory-limit=256M --configuration=./tests/phpstan/phpstan.neon;
 
 # target: docker-test                            - Static and unit testing in docker
 docker-test: docker-lint docker-phpstan docker-phpunit
@@ -148,40 +126,7 @@ docker-php-lint:
 	docker build --build-arg BUILDPLATFORM=${BUILDPLATFORM} --build-arg PHP_VERSION=${PHP_VERSION} -t ${TESTING_DOCKER_IMAGE} -f dev-tools.Dockerfile .;
 	docker run --rm -v $(shell pwd):/src ${TESTING_DOCKER_IMAGE} php-lint;
 
-# target: docker-phpunit                         - Run phpunit in docker
-docker-phpunit: prestashop/prestashop-${PS_VERSION}
-	docker build --build-arg BUILDPLATFORM=${BUILDPLATFORM} --build-arg PHP_VERSION=${PHP_VERSION} -t ${TESTING_DOCKER_IMAGE} -f dev-tools.Dockerfile .;
-	docker run --rm -e _PS_ROOT_DIR_=/src/prestashop/prestashop-${PS_VERSION} -v $(shell pwd):/src ${TESTING_DOCKER_IMAGE} phpunit;
-
-# target: docker-phpunit                         - Run phpunit in docker
-docker-phpunit-coverage: prestashop/prestashop-${PS_VERSION}
-	docker build --build-arg BUILDPLATFORM=${BUILDPLATFORM} --build-arg PHP_VERSION=${PHP_VERSION} -t ${TESTING_DOCKER_IMAGE} -f dev-tools.Dockerfile .;
-	docker run --rm -e _PS_ROOT_DIR_=/src/prestashop/prestashop-${PS_VERSION} -v $(shell pwd):/src ${TESTING_DOCKER_IMAGE} phpunit-coverage;
-
 # target: docker-phpstan                         - Run phpstan in docker
 docker-phpstan: prestashop/prestashop-${PS_VERSION}
 	docker build --build-arg BUILDPLATFORM=${BUILDPLATFORM} --build-arg PHP_VERSION=${PHP_VERSION} -t ${TESTING_DOCKER_IMAGE} -f dev-tools.Dockerfile .;
 	docker run --rm -e _PS_ROOT_DIR_=/src/prestashop/prestashop-${PS_VERSION} -v $(shell pwd):/src ${TESTING_DOCKER_IMAGE} phpstan;
-
-bps177: build-ps-177
-ata177: all-tests-actions-177
-rda177: run-docker-actions-177
-build-ps-177:
-	docker exec -i prestashop-177 sh -c "rm -rf /var/www/html/install"
-	docker exec -i prestashop-177 sh -c "mv /var/www/html/admin /var/www/html/admin1"
-	mysql -h 127.0.0.1 -P 9001 --protocol=tcp -u root -pprestashop prestashop < $(shell pwd)/tests/System/Seed/Database/177.sql
-	docker exec -i prestashop-177 sh -c "cd /var/www/html && php  bin/console prestashop:module install eventBus"
-
-run-docker-actions-177:
-	docker-compose up -d --build --force-recreate prestashop-177
-
-all-tests-actions-177:
-	make rda177
-	make bps177
-	docker exec -i prestashop-177 sh -c "cd /var/www/html/modules/accelasearch && php vendor/bin/phpunit -c tests/phpunit.xml"
-
-allure:
-	./node_modules/.bin/allure serve build/allure-results/
-
-allure-report:
-	./node_modules/.bin/allure generate build/allure-results/

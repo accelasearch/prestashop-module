@@ -82,12 +82,12 @@ class Query
             }
         }
         $cleaned_query = preg_replace("/\r|\n/", '', str_replace($placement_keys, array_values($placement), $query));
-        if (\AccelaSearch::AS_CONFIG['LOG_QUERY']) {
+        if (\AccelaSearch::AS_CONFIG['LOG_QUERY'] === true) {
             \Db::getInstance()->insert('log', [
-        'severity' => 1,
-        'error_code' => 0,
-        'message' => $name . ': ' . pSQL($cleaned_query),
-      ]);
+              'severity' => 1,
+              'error_code' => 0,
+              'message' => $name . ': ' . pSQL($cleaned_query),
+            ]);
         }
 
         return $cleaned_query;
@@ -131,16 +131,16 @@ class Query
         ] = $update;
 
         $attributes_to_table = [
-      'name' => 'products_attr_str',
-      'brand' => 'products_attr_str',
-      'ean13' => 'products_attr_str',
-      'isbn' => 'products_attr_str',
-      'upc' => 'products_attr_str',
-      'mpn' => 'products_attr_str',
-      'short_description' => 'products_attr_text',
-      'description' => 'products_attr_text',
-      'sku' => 'products_attr_str',
-    ];
+          'name' => 'products_attr_str',
+          'brand' => 'products_attr_str',
+          'ean13' => 'products_attr_str',
+          'isbn' => 'products_attr_str',
+          'upc' => 'products_attr_str',
+          'mpn' => 'products_attr_str',
+          'short_description' => 'products_attr_text',
+          'description' => 'products_attr_text',
+          'sku' => 'products_attr_str',
+        ];
 
         if ($entity_name == 'price') {
             $query = self::getProductPriceUpdateQuery($id_product, $id_product_attribute, $id_shop, $id_lang);
@@ -205,12 +205,12 @@ class Query
 
         if (!(bool) count($image_id_association)) {
             return self::getByName('addImageToProductQuery', [
-        'id_product' => $id_product,
-        'product_external_id_str' => $externalproductidstr,
-        'other_url' => \Tools::getShopProtocol() . $image_url,
-        'others_url_idstr' => $externalidstr,
-        'others_id' => $others_id,
-      ]);
+              'id_product' => $id_product,
+              'product_external_id_str' => $externalproductidstr,
+              'other_url' => \Tools::getShopProtocol() . $image_url,
+              'others_url_idstr' => $externalidstr,
+              'others_id' => $others_id,
+            ]);
         } else {
             $queries = '';
             foreach ($image_id_association as $im_id_assoc) {
@@ -239,9 +239,9 @@ class Query
         $queries[] = "UPDATE products SET typeid = 30 WHERE externalidstr = '$externalidstr_conf';";
 
         $childrens = \Db::getInstance()->executeS(self::getByName('getProductChildren_query', [
-      'id_shop' => $id_shop,
-      'id_product_attribute' => $id_product_attribute,
-    ]));
+          'id_shop' => $id_shop,
+          'id_product_attribute' => $id_product_attribute,
+        ]));
 
         $as_product_types = $queryData->as_product_types;
 
@@ -269,8 +269,8 @@ class Query
         $url = $link->getProductLink($id_product, null, null, null, $id_lang, $id_shop);
 
         $ps_product = [
-      'link_rewrite' => $childrens[0]['link_rewrite'],
-    ];
+          'link_rewrite' => $childrens[0]['link_rewrite'],
+        ];
 
         $queries[] = "SET @generated_product_id = (SELECT id FROM products WHERE externalidstr = '$externalidstr_conf');";
 
@@ -351,12 +351,12 @@ class Query
         $feature_value = $ps_feature_value->value[$id_lang];
 
         $query = Query::getByName('addFeature_query', [
-      'label_id' => $label_id,
-      'value' => $feature_value,
-      'is_configurable' => 0,
-      'external_id_str' => $external_id_str,
-      'external_id_str_product' => $external_id_str_product,
-    ]);
+          'label_id' => $label_id,
+          'value' => $feature_value,
+          'is_configurable' => 0,
+          'external_id_str' => $external_id_str,
+          'external_id_str_product' => $external_id_str_product,
+        ]);
 
         $query .= "UPDATE products_attr_str SET deleted = 0 WHERE externalidstr = '$external_id_str';";
         $query .= "UPDATE products_attr_str SET value = '$feature_value' WHERE externalidstr = '$external_id_str';";
@@ -482,13 +482,13 @@ class Query
         $external_id_str_parent = $id_shop . '_' . $id_lang . '_' . $id_parent;
 
         return self::getByName('categoryCreation_query', [
-      'storeviewid' => $as_shop_id,
-      'categoryname' => $name,
-      'fullcategoryname' => $full_name,
-      'externalidstr' => $external_id_str,
-      'externalidstr_parent' => $external_id_str_parent,
-      'url' => $url,
-    ]);
+          'storeviewid' => $as_shop_id,
+          'categoryname' => $name,
+          'fullcategoryname' => $full_name,
+          'externalidstr' => $external_id_str,
+          'externalidstr_parent' => $external_id_str_parent,
+          'url' => $url,
+        ]);
     }
 
     public static function getCategoryDeleteQuery($id_category, $id_shop, $id_lang, $as_shop_id)
@@ -506,12 +506,12 @@ class Query
             $as_shops = \AccelaSearch::getAsShops();
         } else {
             $as_shops = [
-        $id_shop . '_' . $id_lang => [
-          'id_shop' => $id_shop,
-          'id_lang' => $id_lang,
-          'as_shop_id' => $as_shop_id,
-        ],
-      ];
+              $id_shop . '_' . $id_lang => [
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
+                'as_shop_id' => $as_shop_id,
+              ],
+            ];
         }
 
         foreach ($as_shops as $as_shop) {
@@ -541,12 +541,12 @@ class Query
             $has_children = Collector::getInstance()->executeS("SELECT * FROM categories WHERE parentid = (SELECT id FROM categories WHERE externalidstr = '$external_id_str')");
 
             $queries .= self::getByName('categoryUpdate_query', [
-        'storeviewid' => $as_shop_id,
-        'categoryname' => $name,
-        'fullcategoryname' => $full_name,
-        'externalidstr' => $external_id_str,
-        'url' => $url,
-      ]);
+              'storeviewid' => $as_shop_id,
+              'categoryname' => $name,
+              'fullcategoryname' => $full_name,
+              'externalidstr' => $external_id_str,
+              'url' => $url,
+            ]);
 
             while (count($has_children) > 0) {
                 foreach ($has_children as $children) {
@@ -557,14 +557,14 @@ class Query
                     ] = $children;
                     [$id_shop, $id_lang, $ps_id_category] = explode('_', $external_id_str);
                     $full_name = \AccelaSearch::getFullCategoryNameByIdAndLang($ps_id_category, $id_lang);
-                    $url = $link->getCategoryLink($ps_id_category, null, $id_lang, null, $id_shop);
+                    $url = $link->getCategoryLink((int) $ps_id_category, null, (int) $id_lang, null, (int) $id_shop);
                     $queries .= self::getByName('categoryUpdate_query', [
-            'storeviewid' => $as_shop_id,
-            'categoryname' => $name,
-            'fullcategoryname' => $full_name,
-            'externalidstr' => $external_id_str,
-            'url' => $url,
-          ]);
+                      'storeviewid' => $as_shop_id,
+                      'categoryname' => $name,
+                      'fullcategoryname' => $full_name,
+                      'externalidstr' => $external_id_str,
+                      'url' => $url,
+                    ]);
                     $has_children = Collector::getInstance()->executeS("SELECT * FROM categories WHERE parentid = (SELECT id FROM categories WHERE externalidstr = '$external_id_str')");
                 }
             }

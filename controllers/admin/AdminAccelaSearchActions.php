@@ -170,7 +170,7 @@ SQL;
 
     public function ajaxProcessShopInitializations()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         echo AccelaSearch::shopInitializations();
@@ -269,7 +269,7 @@ SQL;
 
     public function ajaxProcessSoftDeleteAndCleanupProducts()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         Sync::softDeleteAll();
@@ -352,7 +352,7 @@ SQL;
 
     public function ajaxProcessDeleteQueue()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         Db::getInstance()->query('DELETE FROM ' . _DB_PREFIX_ . 'as_fullsync_queue');
@@ -365,7 +365,7 @@ SQL;
 
     public function ajaxProcessGetAsProductInformations()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         $id_product = Tools::getValue('pid', null);
@@ -440,7 +440,7 @@ SQL;
 
     public function ajaxProcessGenerateProductsQuery()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         $as_shops = AccelaSearch::getAsShops();
@@ -466,7 +466,7 @@ SQL;
 
     public function ajaxProcessGenerateProductsQueueQuery()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         $as_shops = AccelaSearch::getAsShops();
@@ -498,7 +498,7 @@ SQL;
 
     public function ajaxProcessCleanupProducts()
     {
-        if (!AccelaSearch::AS_CONFIG['DEBUG_MODE']) {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
             return;
         }
         AccelaSearch\Sync::DbCleanup();
