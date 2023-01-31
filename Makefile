@@ -29,8 +29,28 @@ version:
 	@sed -i.bak -e "s|\(<version><!\[CDATA\[\)[0-9a-z.-]\{1,\}]]></version>|\1${SEM_VERSION}]]></version>|" config.xml
 	@rm -f accelasearch.php.bak config.xml.bak
 
-#target: zip-me									 - Create a prod zip arhicve
+#target: zip-me									 - Create a local zip arhicve
 zip-me: local_vendor build
+	@mkdir -p ./temp
+	@mkdir -p ./temp/accelasearch
+	@mkdir -p ./releases
+
+	@cp -R ./src temp/accelasearch
+	@cp -R ./controllers temp/accelasearch
+	@cp -R ./vendor temp/accelasearch
+	@cp -R ./sql temp/accelasearch
+	@cp -R ./views temp/accelasearch
+	@cp -R ./accelasearch.php temp/accelasearch && sed -i 's/"DEBUG_MODE" => true/"DEBUG_MODE" => false/g' temp/accelasearch/accelasearch.php
+	@cp -R ./cron.php temp/accelasearch
+	@cp -R ./autoload.php temp/accelasearch
+	@cp -R ./logo.png temp/accelasearch
+	@cp -R ./*.pdf temp/accelasearch
+	@rm -rf ./releases/accelasearch.zip
+	@cd temp && zip -rq ../releases/accelasearch.zip accelasearch && cd ..
+	@rm -rf ./temp
+
+#target: zip-me-prod									 - Create a prod zip arhicve
+zip-me-prod:
 	@mkdir -p ./temp
 	@mkdir -p ./temp/accelasearch
 	@mkdir -p ./releases
