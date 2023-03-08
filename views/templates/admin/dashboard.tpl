@@ -73,6 +73,11 @@
                     <p class="text-sm font-medium text-gray-900" role="none">{$AS_apikey}</p>
                   </div>
                   <div class="py-1" role="none">
+                    <button id="trigger_add_shops" type="submit"
+                      class="text-indigo-600 block w-full text-left px-4 py-2 text-sm" role="menuitem"
+                      tabindex="-1">{l s='Add new shops/languages to Sync' mod='accelasearch'}</button>
+                  </div>
+                  <div class="py-1" role="none">
                     <button id="disconnect_apikey" type="submit"
                       class="text-red-600 block w-full text-left px-4 py-2 text-sm" role="menuitem"
                       tabindex="-1">{l s='Disconnect Api Key' mod='accelasearch'}</button>
@@ -406,6 +411,41 @@
                   <button type="button"
                     class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-600 mr-2"
                     id="resync_all_prices">{l s='RESYNC ALL PRICES' mod='accelasearch'}</button>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white overflow-hidden shadow-md rounded-lg">
+              <div class="p-5">
+                <div class="flex items-center">
+                  <div class="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt class="text-xl font-bold text-gray-700 truncate mb-2">{l s='Shops Synced' mod='accelasearch'}
+                      </dt>
+                      <dd>
+                        {if count($MISSING_SHOPS) > 0}
+                          <div class="md:flex md:items-center md:justify-between">
+                            <div class="flex-1 min-w-0">
+                              <p class="text-sm text-gray-500">
+                                {l s='There are some shops/languages that are not configured on AccelaSearch, if this was your choice don\'t take any action.' mod='accelasearch'}
+                              </p>
+                            </div>
+                            <div class="mt-4 flex md:mt-0 md:ml-4">
+                              <button id="trigger_shop_selections" type="button"
+                                class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-as-primary-400 hover:bg-as-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-as-primary-400">{l s='Select newests' mod='accelasearch'}</button>
+                            </div>
+                          </div>
+                        {else}
+                          <div class="md:flex md:items-center md:justify-between">
+                            <div class="flex-1 min-w-0">
+                              <p class="text-sm text-gray-500">
+                                {l s='You have synced all shops/languages available on your e-commerce, good job!' mod='accelasearch'}
+                              </p>
+                            </div>
+                          </div>
+                        {/if}
+                      </dd>
+                    </dl>
+                  </div>
                 </div>
               </div>
             </div>

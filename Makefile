@@ -59,7 +59,7 @@ zip-me-prod:
 	@cp -R ./vendor temp/accelasearch
 	@cp -R ./sql temp/accelasearch
 	@cp -R ./views temp/accelasearch
-	@cp -R ./accelasearch.php temp/accelasearch && sed -i 's/"DEBUG_MODE" => true/"DEBUG_MODE" => false/g' temp/accelasearch/accelasearch.php
+	@cp -R ./accelasearch.php temp/accelasearch && sed -i 's/'DEBUG_MODE' => true/'DEBUG_MODE' => false/g' temp/accelasearch/accelasearch.php
 	@cp -R ./cron.php temp/accelasearch
 	@cp -R ./logo.png temp/accelasearch
 	@cp -R ./*.pdf temp/accelasearch

@@ -54,6 +54,7 @@ class Translator extends \Module
             'cancel' => $this->l('Cancel'),
             'disconnect_apikey_title' => $this->l('Disconnect ApiKey'),
             'disconnect_success' => $this->l('Your disconnect process is started, now you can put a new ApiKey to this instance, wait a seconds...'),
+            'retrigger_success' => $this->l('You are redirecting to shop selection page...'),
             'apikey_connection_success' => $this->l('ApiKey connected successfully! Wait a seconds...'),
             'disconnect_areusure' => $this->l('Are you sure you want to disconnect ApiKey? This process remove all products from AccelaSearch and all of your configuration will be reset. Type'),
         ];

@@ -36,7 +36,6 @@ class AccelaSearch extends Module
 {
     public static $as_shops_synced = null;
     public static $as_categories = null;
-
     public const DEFAULT_CONFIGURATION = [
         'ACCELASEARCH_APIKEY' => '',
         'ACCELASEARCH_COLLECTOR' => '',
@@ -1792,8 +1791,8 @@ class AccelaSearch extends Module
     public function getContent()
     {
         Shop::setContext(Shop::CONTEXT_ALL);
-        $shops = Shop::getShops();
-        $languages = Language::getLanguages();
+        $shops = Shop::getShops(true);
+        $languages = Language::getLanguages(true);
         $shops_with_languages = [];
 
         foreach ($shops as $key => $shop) {
@@ -1855,6 +1854,42 @@ class AccelaSearch extends Module
             }
         }
 
+
+        $missing_shops = [];
+        if (isset($as_shops)) {
+            foreach (Collector::getInstance()->executeS("SELECT url FROM storeviews") as $__shop) $as_shop_urls[] = $__shop["url"];
+            $link = new Link();
+
+            foreach ($shops as $shop) {
+                $id = $shop["id_shop"];
+                foreach ($shop["languages"] as $lang) {
+                    $id_lang = $lang["id_lang"];
+                    $url = $link->getBaseLink($id) . $this->getLangLink($id_lang, null, $id);
+                    if (!in_array($url, $as_shop_urls)) $missing_shops[] = $url;
+                }
+            }
+        }
+
+        if (isset($as_shops)) {
+            foreach ($as_shops as $as_shop) {
+                [
+                    'id_shop' => $id_shop,
+                    'id_lang' => $id_lang,
+                    'as_shop_id' => $as_shop_id,
+                    'as_shop_real_id' => $as_shop_real_id
+                ] = $as_shop;
+                $customer_groups = Group::getGroups($id_lang, $id_shop);
+                foreach ($customer_groups as $customer_group) {
+                    $id_group = $customer_group['id_group'];
+                    $externalidstr = $id_shop . '_' . $id_lang . '_' . $id_group;
+                    $group_on_as = (bool) Collector::getInstance()->getValue("SELECT COUNT(*) FROM users_groups WHERE externalidstr = '$externalidstr'");
+                    if (!$group_on_as) {
+                        $missing_users_groups[] = $externalidstr;
+                    }
+                }
+            }
+        }
+
         $this->context->smarty->assign([
             'tpl_to_render' => $tpl,
             'DEBUG_MODE' => self::AS_CONFIG['DEBUG_MODE'],
@@ -1864,6 +1899,7 @@ class AccelaSearch extends Module
             'PRODUCTS_SYNC_PROGRESS' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 1),
             'PRODUCTS_SYNC_COMPLETED' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 2),
             'MISSING_USERS_GROUPS' => $missing_users_groups,
+            "MISSING_SHOPS" => $missing_shops
         ]);
 
         $output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/' . $tpl . '.tpl');
