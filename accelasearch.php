@@ -1854,18 +1854,22 @@ class AccelaSearch extends Module
             }
         }
 
-
         $missing_shops = [];
         if (isset($as_shops)) {
-            foreach (Collector::getInstance()->executeS("SELECT url FROM storeviews") as $__shop) $as_shop_urls[] = $__shop["url"];
+            $as_shop_urls = [];
+            foreach (Collector::getInstance()->executeS('SELECT url FROM storeviews') as $__shop) {
+                $as_shop_urls[] = $__shop['url'];
+            }
             $link = new Link();
 
             foreach ($shops as $shop) {
-                $id = $shop["id_shop"];
-                foreach ($shop["languages"] as $lang) {
-                    $id_lang = $lang["id_lang"];
+                $id = $shop['id_shop'];
+                foreach ($shop['languages'] as $lang) {
+                    $id_lang = $lang['id_lang'];
                     $url = $link->getBaseLink($id) . $this->getLangLink($id_lang, null, $id);
-                    if (!in_array($url, $as_shop_urls)) $missing_shops[] = $url;
+                    if (!in_array($url, $as_shop_urls)) {
+                        $missing_shops[] = $url;
+                    }
                 }
             }
         }
@@ -1899,7 +1903,7 @@ class AccelaSearch extends Module
             'PRODUCTS_SYNC_PROGRESS' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 1),
             'PRODUCTS_SYNC_COMPLETED' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 2),
             'MISSING_USERS_GROUPS' => $missing_users_groups,
-            "MISSING_SHOPS" => $missing_shops
+            'MISSING_SHOPS' => $missing_shops,
         ]);
 
         $output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/' . $tpl . '.tpl');
