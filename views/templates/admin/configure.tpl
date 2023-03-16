@@ -138,7 +138,7 @@
                   <div>
                     <label for="email-address" class="sr-only">{l s='Api Key' mod='accelasearch'}</label>
                     <input id="apikey" name="apikey" type="text" required
-                      class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      class="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-as-primary-400 focus:border-as-primary-400 focus:z-10 sm:text-sm"
                       placeholder="Api Key">
                   </div>
                 </div>
@@ -149,8 +149,8 @@
                 </div>
                 <div class="mt-6">
                   <p class="text-center">
-                    <a
-                      href="https://console.accelasearch.io/signup">{l s='Do you need an ApiKey? Try AccelaSearch for free for 30 days' mod='accelasearch'}</a>
+                    <a href="https://console.accelasearch.io/signup"
+                      class="text-as-primary-400">{l s='Do you need an ApiKey? Try AccelaSearch for free for 30 days' mod='accelasearch'}</a>
                   </p>
                 </div>
               </form>

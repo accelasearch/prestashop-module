@@ -122,6 +122,16 @@ SQL;
         return (bool) Collector::getInstance()->getValue("SELECT COUNT(*) FROM storeviews WHERE hash = '$hash'");
     }
 
+    public function ajaxProcessRetriggerShopSync()
+    {
+        Configuration::updateGlobalValue('ACCELASEARCH_SHOPS_SYNCED', '{}');
+        $this->ajaxDie(json_encode(
+            [
+                'success' => true,
+            ]
+        ));
+    }
+
     public function ajaxProcessDisconnectApikey()
     {
         Sync::softDeleteAll();

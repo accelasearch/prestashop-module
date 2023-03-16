@@ -546,7 +546,7 @@ const AS = {
 
     $("#trigger_shop_selections").on("click", function () {
       AS.helpers.load("#trigger_shop_selections");
-      AS.controller("disconnectapikey", "POST").then((r) => {
+      AS.controller("retriggershopsync", "POST").then((r) => {
         AS.helpers.unload("#trigger_shop_selections");
         AS.helpers.toast(_AS.translations.disconnect_success);
         $(".dismiss-modal").trigger("click");

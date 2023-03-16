@@ -73,11 +73,6 @@
                     <p class="text-sm font-medium text-gray-900" role="none">{$AS_apikey}</p>
                   </div>
                   <div class="py-1" role="none">
-                    <button id="trigger_add_shops" type="submit"
-                      class="text-indigo-600 block w-full text-left px-4 py-2 text-sm" role="menuitem"
-                      tabindex="-1">{l s='Add new shops/languages to Sync' mod='accelasearch'}</button>
-                  </div>
-                  <div class="py-1" role="none">
                     <button id="disconnect_apikey" type="submit"
                       class="text-red-600 block w-full text-left px-4 py-2 text-sm" role="menuitem"
                       tabindex="-1">{l s='Disconnect Api Key' mod='accelasearch'}</button>
