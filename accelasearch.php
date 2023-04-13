@@ -344,12 +344,18 @@ class AccelaSearch extends Module
         return implode('', $queries);
     }
 
+    // Convert all non letter and non number characters to underscore
+    public static function slugify($str)
+    {
+        return preg_replace('/[^A-Za-z0-9-]+/', '_', $str);
+    }
+
     public static function generateFeaturesQuery($storeview_id, $id_lang)
     {
         $features = Feature::getFeatures($id_lang);
         $queries = [];
         foreach ($features as $feature) {
-            $slug = strtolower(str_replace(' ', '_', self::sanitize($feature['name'])));
+            $slug = strtolower(str_replace([' ', '-'], ['_', '_'], self::slugify($feature['name'])));
             $external_id_str = 'feature_0_' . $id_lang . '_' . $feature['id_feature'];
             $queries[] = Query::getByName(
                 'createVariant_query',
