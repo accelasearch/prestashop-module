@@ -518,7 +518,7 @@ SQL;
     {
         $success = false;
         $errors = [];
-        $shops = $_POST['shops'] ?? [];
+        $shops = Tools::getValue('shops', []);
         $shop_synced = [];
         if (count($shops) == 0) {
             $this->ajaxDie(json_encode(
@@ -587,7 +587,7 @@ SQL;
     public function ajaxProcessSubmitApikey()
     {
         $success = false;
-        $apikey = $_POST['apikey'] ?? false;
+        $apikey = Tools::getValue('apikey', []);
         if (!$apikey) {
             $this->ajaxDie(json_encode(
                 [
