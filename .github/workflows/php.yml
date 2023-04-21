@@ -74,11 +74,6 @@ jobs:
           coverage: xdebug
           tools: php-cs-fixer, phpunit
 
-      - name: Setup PHP 8.1
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.1"
-
       - name: Cache vendor folder
         uses: actions/cache@v1
         with:
