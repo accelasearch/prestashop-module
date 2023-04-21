@@ -2,11 +2,13 @@ name: PHP tests
 on: [push, pull_request]
 jobs:
   php-linter:
-    name: PHP Syntax check 7.2|7.3|8.1
+    name: PHP Syntax check 7.1|7.2|7.3|8.1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2.0.0
+      - name: PHP syntax checker 7.1
+        uses: prestashop/github-action-php-lint/7.1@master
       - name: PHP syntax checker 7.2
         uses: prestashop/github-action-php-lint/7.2@master
       - name: PHP syntax checker 7.3

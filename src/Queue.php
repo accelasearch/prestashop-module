@@ -138,7 +138,7 @@ class Queue
         $query = preg_replace("/\r|\n|\t/", ' ', pSQL($query));
 
         // rimuove caratteri speciali che impattano sull'exec della query
-        $query = str_replace("´", "", $query);
+        $query = str_replace('´', '', $query);
 
         $queue = \Db::getInstance()->insert(
             'as_fullsync_queue',

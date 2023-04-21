@@ -1,31 +1,32 @@
 {
-  "name": "accelasearch/prestashop-accelasearch",
-  "description": "Accelasearch module core files",
-  "authors": [
-    {
-      "name": "AccelaSearch",
-      "email": "info@accelasearch.com"
-    }
-  ],
-  "require": {
-    "php": ">=7.1.0"
-  },
-  "require-dev": {
-    "prestashop/php-dev-tools": "^4.3",
-    "prestashop/autoindex": "^2.1",
-    "phpstan/phpstan": "^1.9"
-  },
-  "autoload": {
-    "psr-4": {
-      "AccelaSearch\\": "src/"
+    "name": "accelasearch/prestashop-accelasearch",
+    "description": "Accelasearch module core files",
+    "authors": [
+        {
+            "name": "AccelaSearch",
+            "email": "info@accelasearch.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0"
     },
-    "exclude-from-classmap": []
-  },
-  "config": {
-    "preferred-install": "dist",
-    "prepend-autoloader": false
-  },
-  "type": "prestashop-module",
-  "author": "PrestaShop",
-  "license": "AFL-3.0"
+    "require-dev": {
+        "prestashop/php-dev-tools": "^4.3",
+        "prestashop/autoindex": "^2.1",
+        "phpstan/phpstan": "^1.9",
+        "phpunit/phpunit": "5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "AccelaSearch\\": "src/"
+        },
+        "exclude-from-classmap": []
+    },
+    "config": {
+        "preferred-install": "dist",
+        "prepend-autoloader": false
+    },
+    "type": "prestashop-module",
+    "author": "PrestaShop",
+    "license": "AFL-3.0"
 }
