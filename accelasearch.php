@@ -1888,7 +1888,7 @@ class AccelaSearch extends Module
             'tpl_to_render' => $tpl,
             'DEBUG_MODE' => self::AS_CONFIG['DEBUG_MODE'],
             'CRONJOB_EXECUTED' => (bool) Configuration::get('ACCELASEARCH_LAST_CRONJOB_EXECUTION'),
-            'CRONJOB_EXECUTED_RECENTLY' => (bool) Configuration::get('ACCELASEARCH_LAST_CRONJOB_EXECUTION') ? ((time() - (int)Configuration::get('ACCELASEARCH_LAST_CRONJOB_EXECUTION')) < 600) : false,
+            'CRONJOB_EXECUTED_RECENTLY' => (bool) Configuration::get('ACCELASEARCH_LAST_CRONJOB_EXECUTION') ? ((time() - (int) Configuration::get('ACCELASEARCH_LAST_CRONJOB_EXECUTION')) < 600) : false,
             'PRODUCTS_SYNC_NEVER_STARTED' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 0),
             'PRODUCTS_SYNC_PROGRESS' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 1),
             'PRODUCTS_SYNC_COMPLETED' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 2),
