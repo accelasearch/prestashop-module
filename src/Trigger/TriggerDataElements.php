@@ -18,8 +18,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
-
-
 /**
  * Contiene le definizioni ed i dati dei trigger da creare che verranno
  * passati alla classe Trigger ed ai suoi metodi di generazione
