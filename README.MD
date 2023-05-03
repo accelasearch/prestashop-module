@@ -69,4 +69,7 @@ Le classi presenti src/Updater/* si occupano della sync differenziale, il patter
 ## TODO
 
 ⬜️ Scrivere Unit Tests
+
 ⬜️ Refactoring entrypoint modulo ed aggiungere una classe Core separata
+
+⬜️ Aggiungere il supporto al prodotto bundle e virtuale
