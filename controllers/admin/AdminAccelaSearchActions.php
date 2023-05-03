@@ -16,7 +16,9 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- */
+ */
+
+
 ignore_user_abort(true);
 if (!defined('_PS_VERSION_')) {
     exit;
