@@ -1,4 +1,4 @@
-.PHONY: help build version zip zip-inte zip-preprod zip-prod build test composer-validate lint php-lint lint-fix phpunit phpstan phpstan-baseline docker-test docker-lint docker-lint docker-phpunit docker-phpstan
+.PHONY: help build version zip zip-inte zip-preprod zip-prod build test composer-validate lint php-lint lint-fix phpunit phpstan phpstan-baseline docker-test docker-lint docker-lint docker-phpunit docker-phpstan remove_second_lines
 PHP = $(shell command -v php >/dev/null 2>&1 || { echo >&2 "PHP is not installed."; exit 1; } && which php)
 VERSION ?= $(shell git describe --tags 2> /dev/null || echo "0.0.0")
 SEM_VERSION ?= $(shell echo ${VERSION} | sed 's/^v//')
@@ -148,3 +148,11 @@ docker-php-lint:
 docker-phpstan: prestashop/prestashop-${PS_VERSION}
 	docker build --build-arg BUILDPLATFORM=${BUILDPLATFORM} --build-arg PHP_VERSION=${PHP_VERSION} -t ${TESTING_DOCKER_IMAGE} -f dev-tools.Dockerfile .;
 	docker run --rm -e _PS_ROOT_DIR_=/src/prestashop/prestashop-${PS_VERSION} -v $(shell pwd):/src ${TESTING_DOCKER_IMAGE} phpstan;
+
+# target: remove_second_lines                    - Remove second lines in all php files
+remove_second_lines:
+ifeq ($(DRY_RUN), 1)
+	find . -type f -name "*.php" -not -path "./vendor/*" -exec sh -c 'awk "NR == 2 && /^[\r]*$$/ { gsub(\"\\r\", \"\"); printf \"%s\", $$0; next } { gsub(\"\\r\", \"\"); print }" "{}" > "{}.dryrun"' \;
+else
+	find . -type f -name "*.php" -not -path "./vendor/*" -exec sh -c 'awk "NR == 2 && /^[\r]*$$/ { gsub(\"\\r\", \"\"); printf \"%s\", $$0; next } { gsub(\"\\r\", \"\"); print }" "{}" > "{}.tmp" && mv "{}.tmp" "{}"' \;
+endif
