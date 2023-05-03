@@ -15,7 +15,7 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- */
+ */
 const AS = {
   endpoint: "https://svc11.accelasearch.net/API/",
   controller: async (action = "", method = "GET", data) => {
