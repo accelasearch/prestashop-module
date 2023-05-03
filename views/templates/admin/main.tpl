@@ -15,7 +15,7 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- *}
+ */}
 <div id="accelasearch-app" class="mb-5">
   <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-[501]" id="as-backdrop" style="display:none"></div>
   <div id="as-modals"></div>
