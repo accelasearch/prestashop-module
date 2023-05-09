@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -244,7 +245,7 @@ class AccelaSearch extends Module
             ++$executions;
         }
 
-        return implode(' > ', array_reverse($category_tree));
+        return implode(' / ', array_reverse($category_tree));
     }
 
     public static function getCategoryById($id, $categories)
