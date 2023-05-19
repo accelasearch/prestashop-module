@@ -15,7 +15,8 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- */
+ */
+
 const AS = {
   endpoint: "https://svc11.accelasearch.net/API/",
   controller: async (action = "", method = "GET", data) => {
@@ -487,6 +488,12 @@ const AS = {
     });
   }
 
+  function showQueries(q) {
+    $("#product-queries").html(
+      "<textarea rows='6' id='query_text'>" + q + "</textarea>"
+    );
+  }
+
   $(document).ready(function () {
     renderFaqs();
 
@@ -652,6 +659,17 @@ const AS = {
         console.log(r);
         if (!Object.keys(r.products)) alert("Nessun prodotto trovato");
         updateProductView(r.products);
+      });
+    });
+
+    $("#get_as_queries").on("click", function (e) {
+      e.preventDefault();
+      const pid = $("#as_pid_query").val();
+      if (!pid) return alert("Inserisci un ID prodotto");
+      AS.controller("getasqueries", "POST", {
+        pid,
+      }).then((r) => {
+        showQueries(r.queries);
       });
     });
 

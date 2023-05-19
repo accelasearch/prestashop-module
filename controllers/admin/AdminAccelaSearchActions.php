@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -440,6 +441,45 @@ SQL;
                 ]
             ));
         }
+    }
+
+    public function ajaxProcessGetAsQueries()
+    {
+        if (AccelaSearch::AS_CONFIG['DEBUG_MODE'] !== true) {
+            return;
+        }
+        $id_product = Tools::getValue('pid', null);
+        $id_product = explode(',', $id_product);
+        $queries = [];
+        if (count($id_product) > 0) {
+            $as_shops = AccelaSearch::getAsShops();
+            foreach ($as_shops as $as_shop) {
+                [
+                    'id_shop' => $id_shop,
+                    'id_lang' => $id_lang,
+                    'as_shop_id' => $as_shop_id,
+                    'as_shop_real_id' => $as_shop_real_id
+                ] = $as_shop;
+                AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
+                foreach ($id_product as $id_product_single) {
+                    if (!is_numeric($id_product_single)) {
+                        continue;
+                    }
+                    $queries[] = Query::getProductCreationQuery(
+                        $id_product_single,
+                        $id_shop,
+                        $id_lang,
+                        $as_shop_id,
+                        $as_shop_real_id
+                    );
+                }
+            }
+        }
+        $this->ajaxDie(json_encode(
+            [
+                'queries' => implode("\n", $queries),
+            ]
+        ));
     }
 
     public function ajaxProcessCronManager()
