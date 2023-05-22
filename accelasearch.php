@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -762,9 +763,6 @@ class AccelaSearch extends Module
      */
     public static function createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id = 0)
     {
-        if (Query::$query_data_manager) {
-            return;
-        }
         $link = new Link();
         // un cart ID è obbligatorio per il calcolo dei prezzi
         $currencies = Currency::getCurrenciesByIdShop($id_shop);
@@ -1169,6 +1167,7 @@ class AccelaSearch extends Module
                 // prezzi specifici della variante
                 foreach ($customer_groups as $customer_group) {
                     $id_group = $customer_group['id_group'];
+
                     $as_id_group = $users_groups[$id_shop . '_' . $id_lang . '_' . $id_group];
 
                     $price = Product::getPriceStatic(

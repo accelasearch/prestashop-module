@@ -141,6 +141,26 @@ class Collector
         return $query;
     }
 
+    public function beginTransaction()
+    {
+        $this->pdo->beginTransaction();
+    }
+
+    public function commit()
+    {
+        $this->pdo->commit();
+    }
+
+    public function rollBack()
+    {
+        $this->pdo->rollBack();
+    }
+
+    public function exec($queries)
+    {
+        $this->pdo->exec($queries);
+    }
+
     public function query($query)
     {
         $q = $this->pdo->prepare($query);

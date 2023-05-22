@@ -62,7 +62,19 @@ class Queue
                 // invio ad AS
                 if (self::SEND_QUERY_TO_AS === true) {
                     Sync::startRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));
-                    $as_query_success = Collector::getInstance()->query($queue['query']);
+                    try {
+                        $queries = $queue['query'];
+                        Collector::getInstance()->beginTransaction();
+                        Collector::getInstance()->exec($queries);
+                        Collector::getInstance()->commit();
+                    } catch (\Exception $e) {
+                        Collector::getInstance()->rollBack();
+                        \Db::getInstance()->insert('log', [
+                            'severity' => 1,
+                            'error_code' => 0,
+                            'message' => "Errore durante exec query: " . pSQL($e->getMessage()),
+                        ]);
+                    }
                     Sync::terminateRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));
                 }
             }
