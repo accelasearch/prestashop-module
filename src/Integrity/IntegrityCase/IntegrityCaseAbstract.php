@@ -35,7 +35,7 @@ abstract class IntegrityCaseAbstract implements Check
     public $fix_results = [];
     public $context = [];
     const FIX_ALLOWED = true;
-    const NAME = "Default integrity case name";
+    const NAME = 'Default integrity case name';
 
     public function __construct()
     {

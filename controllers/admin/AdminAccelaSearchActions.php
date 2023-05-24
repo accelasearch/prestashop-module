@@ -513,7 +513,6 @@ SQL;
             }
         }
 
-
         try {
             Collector::getInstance()->beginTransaction();
             $queries = implode("\n", $queries);
