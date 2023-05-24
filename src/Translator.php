@@ -56,6 +56,8 @@ class Translator extends \Module
             'retrigger_success' => $this->l('You are redirecting to shop selection page...'),
             'apikey_connection_success' => $this->l('ApiKey connected successfully! Wait a seconds...'),
             'disconnect_areusure' => $this->l('Are you sure you want to disconnect ApiKey? This process remove all products from AccelaSearch and all of your configuration will be reset. Type'),
+            'status_fix_error' => $this->l('An error occurred with status fix, try again'),
+            'status_fix_success' => $this->l('Status fixed successfully! Checking new status...'),
         ];
     }
 

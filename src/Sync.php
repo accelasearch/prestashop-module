@@ -188,12 +188,24 @@ class Sync
     public static function deleteAll()
     {
         $tables = \AccelaSearch::DELETABLE_TABLES;
-        $query = 'SET FOREIGN_KEY_CHECKS = 0;';
+        $query = '';
         foreach ($tables as $table) {
             $query .= "DELETE FROM $table;";
         }
-        $query .= 'SET FOREIGN_KEY_CHECKS = 1;';
-        Collector::getInstance()->query($query);
+        try {
+            Collector::getInstance()->beginTransaction();
+            Collector::getInstance()->exec($query);
+            Collector::getInstance()->commit();
+        } catch (\Exception $e) {
+            Collector::getInstance()->rollBack();
+            \Db::getInstance()->insert('log', [
+                'severity' => 3,
+                'error_code' => 0,
+                'message' => 'An error occured during delete all: ' . pSQL($e->getMessage()),
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_upd' => date('Y-m-d H:i:s'),
+            ]);
+        }
     }
 
     // TODO: Verificare codice del metodo

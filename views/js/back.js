@@ -142,6 +142,7 @@ const AS = {
       $(el).html(originalButtonContent);
     },
   },
+  checkOperations: ["asApiStatus", "productAttribute"],
 };
 
 (function () {
@@ -158,6 +159,93 @@ const AS = {
   function copyInput(el) {
     $(el).select();
     document.execCommand("copy");
+  }
+
+  function createCheckNode(operation) {
+    const opClass = "op-" + operation;
+    $(".status-response").append(
+      `<div class="${opClass}">
+        <div class="flex items-center mb-2">
+          <div class="op-icon">
+            <div class="lds-ring branded">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+          <div class="ml-4">
+            <span class="text-gray-500 op-text">
+              Check ${operation}
+            </span>
+          </div>
+        </div>
+      </div>`
+    );
+    return opClass;
+  }
+
+  async function performCheck(operation) {
+    const opClass = createCheckNode(operation);
+    const op = await AS.controller("performcheck", "POST", { operation });
+    appendResultOp(opClass, op, operation);
+  }
+
+  async function performFix(operation) {
+    const op = await AS.controller("performcheck", "POST", {
+      operation,
+      fix: true,
+    });
+    const toastMsg = op.success
+      ? _AS.translations.status_fix_success
+      : _AS.translations.status_fix_error;
+    AS.helpers.toast(toastMsg, op.success ? "SUCCESS" : "ERROR");
+    if (op.success) $("#start_status_checker").trigger("click");
+  }
+
+  function getFlagIcon(id_shop, id_lang) {
+    return (
+      _AS.base_url + "img/tmp/lang_mini_" + id_lang + "_" + id_shop + ".jpg"
+    );
+  }
+
+  function appendResultOp(opClass, op, opFullName) {
+    let opSingle = "";
+    for (const context of op.success) {
+      const { result, id_shop, id_lang } = context;
+
+      const resultClasses = result
+        ? "text-green-700 bg-green-50 ring-green-600/20"
+        : "text-red-700 bg-red-50 ring-red-600/20";
+
+      opSingle += `
+      <li class="flex items-center justify-between gap-x-6 py-2">
+          <div class="min-w-0">
+            <div class="flex items-start gap-x-3 items-center">
+              <p>
+                <img src="${getFlagIcon(id_shop, id_lang)}" />
+              </p>
+              <p class="text-sm font-semibold leading-6 text-gray-900">${
+                op.operation
+              }</p>
+              <p class="rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ${resultClasses}">
+              ${result ? "OK" : "KO"}
+              </p>
+              ${
+                !result && op.fixAllowed
+                  ? `<p>
+                <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-400 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 fix_this_check" data-op="${opFullName}">
+                  FIX ISSUE
+                </button>
+              </p>`
+                  : ""
+              }
+            </div>
+          </div>
+        </li>
+      `;
+    }
+    $(`.${opClass}`).html(opSingle);
   }
 
   function showCronModal() {
@@ -649,6 +737,22 @@ const AS = {
         $("#no-issues").show(0);
         AS.helpers.toast(_AS.translations.start_remote_checker_success);
       });
+    });
+
+    $(document).on("click", ".fix_this_check", function (e) {
+      const op = $(this).attr("data-op");
+      AS.helpers.load($(this));
+      performFix(op);
+    });
+
+    $("#start_status_checker").on("click", async function (e) {
+      e.preventDefault();
+      AS.helpers.load("#start_status_checker");
+      $(".status-response").html("");
+      for (const op of AS.checkOperations) {
+        await performCheck(op);
+      }
+      AS.helpers.unload("#start_status_checker");
     });
 
     $("#get_as_informations").on("click", function (e) {

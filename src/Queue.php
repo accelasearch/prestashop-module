@@ -72,7 +72,7 @@ class Queue
                         \Db::getInstance()->insert('log', [
                             'severity' => 1,
                             'error_code' => 0,
-                            'message' => "Errore durante exec query: " . pSQL($e->getMessage()),
+                            'message' => 'Errore durante exec query: ' . pSQL($e->getMessage()),
                         ]);
                     }
                     Sync::terminateRemoteSync(\AccelaSearch::getRealShopIdByIdShopAndLang($queue['id_shop'], $queue['id_lang']));

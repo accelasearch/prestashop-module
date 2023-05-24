@@ -29,13 +29,13 @@ if ($token === Configuration::get('ACCELASEARCH_CRON_TOKEN')) {
         if ($origin !== 'pageview') {
             Configuration::updateGlobalValue('ACCELASEARCH_LAST_CRONJOB_EXECUTION', time());
         }
-        $last_hourly_check = (int)Configuration::get('ACCELASEARCH_LAST_HOURLY_CHECK');
+        $last_hourly_check = (int) Configuration::get('ACCELASEARCH_LAST_HOURLY_CHECK');
         // if initial sync was completed and has passed more than 1 hour since last hourly check
         if ((!$last_hourly_check || $last_hourly_check < time() - 3600) && (int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 2) {
             Configuration::updateGlobalValue('ACCELASEARCH_LAST_HOURLY_CHECK', time());
             $as_shops = AccelaSearch::getAsShops();
-            $missings = [];
             $processed = [];
+            $queries = [];
             foreach ($as_shops as $as_shop) {
                 [
                     'id_shop' => $id_shop,
@@ -45,12 +45,15 @@ if ($token === Configuration::get('ACCELASEARCH_CRON_TOKEN')) {
                 ] = $as_shop;
                 AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
                 $missings = AccelaSearch::getMissingProductsOnAs($id_shop, $id_lang);
-                $queries = [];
                 foreach ($missings as $missing) {
                     [$id_shop, $id_lang, $id_product, $id_product_attribute] = explode('_', $missing);
-                    if (in_array($id_product, $processed)) continue;
-                    $queries[$id_shop . "_" . $id_lang][] = AccelaSearch\Query\Query::getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id, AccelaSearch::WITHOUT_IGNORE);
-                    if (!(bool) $id_product_attribute) $processed[] = $id_product;
+                    if (in_array($id_product, $processed)) {
+                        continue;
+                    }
+                    $queries[$id_shop . '_' . $id_lang][] = AccelaSearch\Query\Query::getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id, AccelaSearch::WITHOUT_IGNORE);
+                    if (!(bool) $id_product_attribute) {
+                        $processed[] = $id_product;
+                    }
                 }
             }
 
@@ -62,8 +65,8 @@ if ($token === Configuration::get('ACCELASEARCH_CRON_TOKEN')) {
                 $end_cycle = count($queries_set);
                 foreach ($queries_set as $query) {
                     $limit = $divider * ($i - 1) . ',' . $divider;
-                    AccelaSearch\Queue::create(implode("", $query), $limit, $i, $end_cycle, $id_shop, $id_lang);
-                    $i++;
+                    AccelaSearch\Queue::create(implode('', $query), $limit, $i, $end_cycle, $id_shop, $id_lang);
+                    ++$i;
                 }
             }
             exit('Hourly check executed');

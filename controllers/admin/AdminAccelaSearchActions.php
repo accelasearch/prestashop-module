@@ -331,11 +331,12 @@ SQL;
                 'as_shop_real_id' => $as_shop_real_id
             ] = $as_shop;
             AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
-            $missings = AccelaSearch::getMissingProductsOnAs($id_shop, $id_lang);
-            $missings = array_slice($missings, 0, 500);
+            $missings_scope = AccelaSearch::getMissingProductsOnAs($id_shop, $id_lang);
+            $missings_scope = array_slice($missings_scope, 0, 500);
             $processed = [];
             $errors = [];
-            foreach ($missings as $missing) {
+            foreach ($missings_scope as $missing) {
+                $missings[] = $missing;
                 [$id_shop, $id_lang, $id_product, $id_product_attribute] = explode('_', $missing);
                 if (in_array($id_product, $processed)) {
                     continue;
@@ -451,30 +452,29 @@ SQL;
         $id_product = Tools::getValue('pid', null);
         $id_product = explode(',', $id_product);
         $queries = [];
-        if (count($id_product) > 0) {
-            $as_shops = AccelaSearch::getAsShops();
-            foreach ($as_shops as $as_shop) {
-                [
-                    'id_shop' => $id_shop,
-                    'id_lang' => $id_lang,
-                    'as_shop_id' => $as_shop_id,
-                    'as_shop_real_id' => $as_shop_real_id
-                ] = $as_shop;
-                AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
-                foreach ($id_product as $id_product_single) {
-                    if (!is_numeric($id_product_single)) {
-                        continue;
-                    }
-                    $queries[] = Query::getProductCreationQuery(
-                        $id_product_single,
-                        $id_shop,
-                        $id_lang,
-                        $as_shop_id,
-                        $as_shop_real_id
-                    );
+        $as_shops = AccelaSearch::getAsShops();
+        foreach ($as_shops as $as_shop) {
+            [
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
+                'as_shop_id' => $as_shop_id,
+                'as_shop_real_id' => $as_shop_real_id
+            ] = $as_shop;
+            AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
+            foreach ($id_product as $id_product_single) {
+                if (!is_numeric($id_product_single)) {
+                    continue;
                 }
+                $queries[] = Query::getProductCreationQuery(
+                    $id_product_single,
+                    $id_shop,
+                    $id_lang,
+                    $as_shop_id,
+                    $as_shop_real_id
+                );
             }
         }
+
         $this->ajaxDie(json_encode(
             [
                 'queries' => implode("\n", $queries),
@@ -490,30 +490,29 @@ SQL;
         $id_product = Tools::getValue('pid', null);
         $id_product = explode(',', $id_product);
         $queries = [];
-        if (count($id_product) > 0) {
-            $as_shops = AccelaSearch::getAsShops();
-            foreach ($as_shops as $as_shop) {
-                [
-                    'id_shop' => $id_shop,
-                    'id_lang' => $id_lang,
-                    'as_shop_id' => $as_shop_id,
-                    'as_shop_real_id' => $as_shop_real_id
-                ] = $as_shop;
-                AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
-                foreach ($id_product as $id_product_single) {
-                    if (!is_numeric($id_product_single)) {
-                        continue;
-                    }
-                    $queries[] = Query::getProductCreationQuery(
-                        $id_product_single,
-                        $id_shop,
-                        $id_lang,
-                        $as_shop_id,
-                        $as_shop_real_id
-                    );
+        $as_shops = AccelaSearch::getAsShops();
+        foreach ($as_shops as $as_shop) {
+            [
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
+                'as_shop_id' => $as_shop_id,
+                'as_shop_real_id' => $as_shop_real_id
+            ] = $as_shop;
+            AccelaSearch::createQueryDataInstanceByIdShopAndLang($id_shop, $id_lang, $as_shop_id, $as_shop_real_id);
+            foreach ($id_product as $id_product_single) {
+                if (!is_numeric($id_product_single)) {
+                    continue;
                 }
+                $queries[] = Query::getProductCreationQuery(
+                    $id_product_single,
+                    $id_shop,
+                    $id_lang,
+                    $as_shop_id,
+                    $as_shop_real_id
+                );
             }
         }
+
 
         try {
             Collector::getInstance()->beginTransaction();
@@ -716,6 +715,37 @@ SQL;
             [
                 'success' => $success,
                 'data' => $credentials,
+            ]
+        ));
+    }
+
+    public function ajaxProcessPerformCheck()
+    {
+        $operation = Tools::getValue('operation', '');
+        $toFix = Tools::getValue('fix', false);
+
+        $operation = "AccelaSearch\Integrity\IntegrityCase\\" . $operation;
+
+        if (!class_exists($operation) || !is_subclass_of($operation, 'AccelaSearch\Integrity\IntegrityCase\IntegrityCaseAbstract')) {
+            throw new \Exception('Operation not found');
+        }
+
+        $operationClass = new $operation();
+        $contexts = $operationClass->check();
+
+        if ($toFix) {
+            foreach ($contexts as $context) {
+                if (!$context->getResult()) {
+                    $operationClass->fix($context);
+                }
+            }
+        }
+
+        $this->ajaxDie(json_encode(
+            [
+                'success' => $contexts,
+                'operation' => $operationClass::NAME,
+                'fixAllowed' => $operationClass::FIX_ALLOWED,
             ]
         ));
     }

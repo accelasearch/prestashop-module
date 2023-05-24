@@ -40,6 +40,9 @@
                 <a href="javascript:void(0)"
                   class="no-underline text-gray-100 hover:bg-as-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                   page="support">{l s='Support' mod='accelasearch'}</a>
+                <a href="javascript:void(0)"
+                  class="no-underline text-gray-100 hover:bg-as-primary-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                  page="status">{l s='Status' mod='accelasearch'}</a>
               </div>
             </div>
             <div class="ml-auto">
@@ -71,6 +74,28 @@
                     </div>
                     </p>
                     <p class="text-sm font-medium text-gray-900" role="none">{$AS_apikey}</p>
+                  </div>
+                  <div class="px-4 py-3" role="none">
+                    <p class="text-sm" role="none">
+                    <div class="flex">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
+                      </svg>
+                      <span class="ml-2">{l s='Synced Shops and languages' mod='accelasearch'}</span>
+                    </div>
+                    </p>
+                    <ul class="text-sm font-medium text-gray-900 p-1">
+                      {foreach from=$AS_SHOPS_SYNCED item=as_shop}
+                        <li class="flex items-center mb-1">
+                          <span class="mr-2 rounded border">
+                            <img src="{$as_shop.flag}" />
+                          </span>
+                          <span>{$as_shop.name}</span>
+                        </li>
+                      {/foreach}
+                    </ul>
                   </div>
                   <div class="py-1" role="none">
                     <button id="disconnect_apikey" type="submit"
@@ -568,6 +593,42 @@
                       <div></div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="as-page as-hidden" page="status">
+        <header>
+          <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-gray-900">{l s='Status' mod='accelasearch'}</h1>
+            <p>
+              {l s='Check the AccelaSearch and Prestashop System status, this check help you to prevent common configuration mistakes' mod='accelasearch'}
+            </p>
+          </div>
+        </header>
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <div class="px-4 pb-6 sm:px-0">
+            <div class="">
+              <div class="">
+                <div class="mt-2">
+                  <button id="start_status_checker" type="button"
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-as-primary-400 hover:bg-as-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-as-primary-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path
+                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
+                      <path fill-rule="evenodd"
+                        d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.414 1.415l1.261-1.261A4 4 0 108 10zm-2 4a2 2 0 114 0 2 2 0 01-4 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    {l s='Start Check' mod='accelasearch'}
+                  </button>
+                </div>
+                <div class="mt-8">
+                  <ul role="list" class="divide-y divide-gray-100 status-response">
+
+                  </ul>
                 </div>
               </div>
             </div>

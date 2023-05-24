@@ -93,6 +93,13 @@ class AccelaSearch extends Module
         'products_categories',
     ];
 
+    const HOOKS = [
+        'actionAdminControllerSetMedia',
+        'actionFrontControllerSetMedia',
+        'actionCronJob',
+        'actionControllerInitBefore',
+    ];
+
     private function initializeModule()
     {
         $this->name = 'accelasearch';
@@ -429,7 +436,20 @@ class AccelaSearch extends Module
                 'message' => pSQL($queries),
             ]);
         }
-        $shop_init = Collector::getInstance()->query($queries);
+
+        try {
+            Collector::getInstance()->beginTransaction();
+            Collector::getInstance()->exec($queries);
+            Collector::getInstance()->commit();
+        } catch (Exception $e) {
+            Collector::getInstance()->rollBack();
+            Db::getInstance()->insert('log', [
+                'severity' => 1,
+                'error_code' => 0,
+                'message' => pSQL($e->getMessage()),
+            ]);
+        }
+
         self::generateCategories();
 
         return true;
@@ -915,6 +935,10 @@ class AccelaSearch extends Module
 
         $rows = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . "as_notifications ORDER BY id ASC LIMIT $limit");
 
+        if (empty($rows)) {
+            return;
+        }
+
         $rows_id_start = $rows[0]['id'];
         $rows_end = end($rows);
         $rows_id_end = $rows_end['id'];
@@ -1258,8 +1282,8 @@ class AccelaSearch extends Module
         $link = $queryData->link;
         $currencies_cart = $queryData->currencies_cart;
 
-        $sku = $ps_product['reference'];
         $id_product = $ps_product['id_product'];
+        $sku = !empty($ps_product['reference']) ? $ps_product['reference'] : md5("SKU_$id_product");
         $product_name = $ps_product['name'];
         $product_short_description = $ps_product['description_short'];
         $product_description = $ps_product['description'];
@@ -1543,6 +1567,7 @@ class AccelaSearch extends Module
             '_AS' => [
                 'apikey' => Configuration::get('ACCELASEARCH_APIKEY'),
                 'translations' => AccelaSearch\Translator::getInstance()->translation_array,
+                'base_url' => Tools::getShopDomainSsl(true) . __PS_BASE_URI__,
             ],
         ]);
 
@@ -1694,7 +1719,7 @@ class AccelaSearch extends Module
         }, array_chunk(explode($delim, $str), $n));
     }
 
-    public function install()
+    public function enableMultiStatement()
     {
         file_put_contents(
             _PS_ROOT_DIR_ . '/config/defines.inc.php',
@@ -1704,13 +1729,12 @@ class AccelaSearch extends Module
                 Tools::file_get_contents(_PS_ROOT_DIR_ . '/config/defines.inc.php')
             )
         );
+    }
+
+    public function installSql()
+    {
         $install_sql = str_replace('{{PREFIX}}', _DB_PREFIX_, Tools::file_get_contents(__DIR__ . '/sql/install.sql'));
-        if (Shop::isFeatureActive()) {
-            Shop::setContext(Shop::CONTEXT_ALL);
-        }
-
         $install_sql = explode(';', $install_sql);
-
         foreach ($install_sql as $install_sql_query) {
             $install_sql_query = trim($install_sql_query);
             if (empty($install_sql_query)) {
@@ -1722,7 +1746,6 @@ class AccelaSearch extends Module
                 var_dump('FIRST INSTALL QUERY ERROR', $install_sql_query);
             }
         }
-
         $install_sql = $this->getTriggerDeleteQueries();
         $install_sql = explode(';', $install_sql);
         foreach ($install_sql as $install_sql_query) {
@@ -1736,7 +1759,6 @@ class AccelaSearch extends Module
                 var_dump('TRIGGER DELETE QUERIES ERROR', $install_sql_query);
             }
         }
-
         $install_sql = $this->getTriggerQueries();
         foreach ($install_sql as $install_sql_query) {
             $install_sql_query = trim($install_sql_query);
@@ -1749,18 +1771,9 @@ class AccelaSearch extends Module
                 var_dump('TRIGGER QUERIES ERROR', $install_sql_query);
             }
         }
-
-        return
-            parent::install()
-            && $this->initDefaultConfigurationValues()
-            && $this->installTab()
-            && $this->registerHook('actionAdminControllerSetMedia')
-            && $this->registerHook('actionFrontControllerSetMedia')
-            && $this->registerHook('actionCronJob')
-            && $this->registerHook('actionControllerInitBefore');
     }
 
-    public function uninstall()
+    public function uninstallSql()
     {
         $uninstall_sql = str_replace('{{PREFIX}}', _DB_PREFIX_, Tools::file_get_contents(__DIR__ . '/sql/uninstall.sql'));
         $trigger_data = new TriggerDataElements();
@@ -1773,6 +1786,37 @@ class AccelaSearch extends Module
             }
             Db::getInstance()->execute($uninstall_sql_query, false);
         }
+    }
+
+    public function registerHooks()
+    {
+        foreach (self::HOOKS as $hook) {
+            if (!$this->registerHook($hook)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function install()
+    {
+        $this->enableMultiStatement();
+        if (Shop::isFeatureActive()) {
+            Shop::setContext(Shop::CONTEXT_ALL);
+        }
+        $this->installSql();
+
+        return
+            parent::install()
+            && $this->initDefaultConfigurationValues()
+            && $this->installTab()
+            && $this->registerHooks();
+    }
+
+    public function uninstall()
+    {
+        $this->uninstallSql();
 
         return
             parent::uninstall()
@@ -1882,6 +1926,26 @@ class AccelaSearch extends Module
             }
         }
 
+        $as_shops_synced = [];
+
+        // build shops object from shops synced and get flag icon
+        foreach ($as_shops as $as_shop) {
+            [$id_shop, $id_lang, $as_shop_id, $as_shop_real_id] = array_values($as_shop);
+            $shop = new Shop($id_shop);
+            $language = new Language($id_lang);
+            $languageCode = $language->iso_code;
+            $flagIcon = Tools::getShopDomainSsl(true) . __PS_BASE_URI__ . 'img/tmp/lang_mini_' . $id_lang . '_' . $id_shop . '.jpg';
+            $as_shops_synced[] = [
+                'id_shop' => $id_shop,
+                'id_lang' => $id_lang,
+                'as_shop_id' => $as_shop_id,
+                'as_shop_real_id' => $as_shop_real_id,
+                'name' => $shop->name,
+                'iso_code' => $languageCode,
+                'flag' => $flagIcon,
+            ];
+        }
+
         $this->context->smarty->assign([
             'tpl_to_render' => $tpl,
             'DEBUG_MODE' => self::AS_CONFIG['DEBUG_MODE'],
@@ -1892,6 +1956,7 @@ class AccelaSearch extends Module
             'PRODUCTS_SYNC_COMPLETED' => ((int) Configuration::get('ACCELASEARCH_FULLSYNC_CREATION_PROGRESS') === 2),
             'MISSING_USERS_GROUPS' => $missing_users_groups,
             'MISSING_SHOPS' => $missing_shops,
+            'AS_SHOPS_SYNCED' => $as_shops_synced,
         ]);
 
         $output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/' . $tpl . '.tpl');
