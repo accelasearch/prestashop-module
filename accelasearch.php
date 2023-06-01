@@ -1930,7 +1930,10 @@ class AccelaSearch extends Module
 
         // build shops object from shops synced and get flag icon
         foreach ($as_shops as $as_shop) {
-            [$id_shop, $id_lang, $as_shop_id, $as_shop_real_id] = array_values($as_shop);
+            $id_shop = $as_shop['id_shop'];
+            $id_lang = $as_shop['id_lang'];
+            $as_shop_id = $as_shop['as_shop_id'];
+            $as_shop_real_id = $as_shop['as_shop_real_id'];
             $shop = new Shop($id_shop);
             $language = new Language($id_lang);
             $languageCode = $language->iso_code;
