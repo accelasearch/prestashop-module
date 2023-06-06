@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -330,12 +329,20 @@ class AccelaSearch extends Module
         Shop::setContext(Shop::CONTEXT_ALL);
     }
 
+    public static function sqlSlug($name)
+    {
+        // Convert all non A-Z characters to _
+        $name = preg_replace('/[^A-Za-z0-9]/', '_', $name);
+        return $name;
+    }
+
     public static function generateVariantsQuery($storeview_id, $id_lang)
     {
         $attributes = AttributeGroup::getAttributesGroups($id_lang);
         $queries = [];
         foreach ($attributes as $attribute) {
-            $slug = strtolower(str_replace(' ', '_', self::sanitize($attribute['name'])));
+
+            $slug = self::sqlSlug($attribute['name']);
             $external_id_str = 'attribute_0_' . $id_lang . '_' . $attribute['id_attribute_group'];
             $queries[] = Query::getByName(
                 'createVariant_query',
