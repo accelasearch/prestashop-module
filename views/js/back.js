@@ -142,7 +142,7 @@ const AS = {
       $(el).html(originalButtonContent);
     },
   },
-  checkOperations: ["asApiStatus", "productAttribute"],
+  checkOperations: ["AsApiStatus", "ProductAttribute"],
 };
 
 (function () {
