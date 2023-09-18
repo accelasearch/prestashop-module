@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -396,17 +397,19 @@ class AccelaSearch extends Module
         $as_shops = self::getAsShops();
         $queries = [];
         $link = new Link();
-        $queries[] = 'DELETE FROM products_attr_label;';
-        $queries[] = 'DELETE FROM users_groups;';
-        $queries[] = 'DELETE FROM warehouses;';
-        $queries[] = 'DELETE FROM products_images_lbl;';
-        $queries[] = 'DELETE FROM products_categories;';
-        $queries[] = 'DELETE FROM categories;';
         foreach ($as_shops as $id_shop_and_lang => $as_shop) {
             $storeview_id = $as_shop['as_shop_id'];
             $id_shop = $as_shop['id_shop'];
             $id_lang = $as_shop['id_lang'];
             $externalidstr_warehouse = $id_shop . '_' . $id_lang;
+
+            $queries[] = 'DELETE FROM products_attr_label WHERE storeviewid ="' . $storeview_id . '";';
+            $queries[] = 'DELETE FROM users_groups WHERE storeviewid ="' . $storeview_id . '";';
+            $queries[] = 'DELETE FROM warehouses WHERE storeviewid ="' . $storeview_id . '";';
+            $queries[] = 'DELETE FROM products_images_lbl WHERE storeviewid ="' . $storeview_id . '";';
+            $queries[] = 'DELETE FROM products_categories;';
+            $queries[] = 'DELETE FROM categories WHERE storeviewid ="' . $storeview_id . '";';
+
 
             $customer_groups = Group::getGroups($id_lang, $id_shop);
 
