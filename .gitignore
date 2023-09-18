@@ -4,3 +4,5 @@ classes/_dev
 config_it.xml
 vendor/
 old_vendor/
+
+.env

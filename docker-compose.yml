@@ -15,7 +15,7 @@ services:
     depends_on:
       - psmysql
     ports:
-      - 8081:80
+      - 8083:80
     volumes:
       - .:/var/www/html/modules/${PS_MODULE_NAME}
     environment:
@@ -27,7 +27,7 @@ services:
       - DB_PASSWD=${DB_PASSWD}
       - DB_NAME=${DB_NAME}
       - PS_FOLDER_ADMIN=${PS_FOLDER_ADMIN}
-      - PS_DOMAIN=${PS_DOMAIN}:8081
+      - PS_DOMAIN=${PS_DOMAIN}:8083
       - PS_LANGUAGE=${PS_LANGUAGE}
       - PS_COUNTRY=${PS_COUNTRY}
       - PS_FOLDER_INSTALL=installed
@@ -41,6 +41,6 @@ services:
       ports:
         - 9002:80
       environment:
-        - PMA_HOST=collector1.accelasearch.net
-        - PMA_USER=user_171
-        - PMA_PASSWORD=xG9945nNdtTFd37zTI7CmbYRo29JM8Uk
+        - PMA_HOST=${PMA_HOST_COLLECTOR}
+        - PMA_USER=${PMA_USER_COLLECTOR}
+        - PMA_PASSWORD=${PMA_PASSWORD_COLLECTOR}
