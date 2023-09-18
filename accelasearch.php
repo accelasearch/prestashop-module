@@ -334,6 +334,7 @@ class AccelaSearch extends Module
     {
         // Convert all non A-Z characters to _
         $name = preg_replace('/[^A-Za-z0-9]/', '_', $name);
+
         return $name;
     }
 
@@ -342,7 +343,6 @@ class AccelaSearch extends Module
         $attributes = AttributeGroup::getAttributesGroups($id_lang);
         $queries = [];
         foreach ($attributes as $attribute) {
-
             $slug = self::sqlSlug($attribute['name']);
             $external_id_str = 'attribute_0_' . $id_lang . '_' . $attribute['id_attribute_group'];
             $queries[] = Query::getByName(
@@ -409,7 +409,6 @@ class AccelaSearch extends Module
             $queries[] = 'DELETE FROM products_images_lbl WHERE storeviewid ="' . $storeview_id . '";';
             $queries[] = 'DELETE FROM products_categories;';
             $queries[] = 'DELETE FROM categories WHERE storeviewid ="' . $storeview_id . '";';
-
 
             $customer_groups = Group::getGroups($id_lang, $id_shop);
 
