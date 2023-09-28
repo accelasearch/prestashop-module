@@ -336,11 +336,11 @@ SQL;
             $processed = [];
             $errors = [];
             foreach ($missings_scope as $missing) {
-                $missings[] = $missing;
                 [$id_shop, $id_lang, $id_product, $id_product_attribute] = explode('_', $missing);
-                if (in_array($id_product, $processed)) {
+                if (in_array($id_product, $processed) || empty($id_product)) {
                     continue;
                 }
+                $missings[] = $missing;
                 try {
                     $product_query = Query::getProductCreationQuery($id_product, $id_shop, $id_lang, $as_shop_id, $as_shop_real_id, AccelaSearch::WITHOUT_IGNORE);
                     Collector::getInstance()->query($product_query);
