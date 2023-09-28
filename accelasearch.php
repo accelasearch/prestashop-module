@@ -935,7 +935,7 @@ class AccelaSearch extends Module
         $queries = [];
 
         // Delete all id_product => 0 | It will cause a bug if a product with id 0 exists
-        Db::getInstance()->query('DELETE FROM ' . _DB_PREFIX_ . "as_notifications WHERE id_product = 0");
+        Db::getInstance()->query('DELETE FROM ' . _DB_PREFIX_ . 'as_notifications WHERE id_product = 0');
 
         // elimino gli aggiornamenti di prezzo singoli se è presente un aggiornamento globale
         $global_price_rule_exist = (bool) Db::getInstance()->getValue('SELECT COUNT(*) FROM ' . _DB_PREFIX_ . "as_notifications WHERE id_product = 0 AND type = 'price' AND id_shop = $id_shop");
