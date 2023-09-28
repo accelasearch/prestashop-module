@@ -124,8 +124,8 @@ php-lint:
 	@echo "php $(shell php -r 'echo PHP_VERSION;') lint passed";
 
 # target: phpstan                                - Run phpstan
-phpstan: vendor/bin/phpstan prestashop/prestashop-${PS_VERSION}
-	_PS_ROOT_DIR_=${PS_ROOT_DIR} vendor/bin/phpstan analyse --memory-limit=256M --configuration=./tests/phpstan/phpstan.neon;
+phpstan:
+_PS_ROOT_DIR_=/var/www/html vendor/bin/phpstan analyse --configuration=tests/phpstan/phpstan.neon
 
 # target: docker-test                            - Static and unit testing in docker
 docker-test: docker-lint docker-phpstan docker-phpunit

@@ -888,8 +888,8 @@ class AccelaSearch extends Module
      */
     public static function getMissingProductsOnAs($id_shop, $id_lang): array
     {
-        $_products = Db::getInstance()->executeS('SELECT id_product FROM ' . _DB_PREFIX_ . "product_shop WHERE active = 1 AND id_shop = $id_shop");
-        $_product_attributes = Db::getInstance()->executeS('SELECT id_product, id_product_attribute FROM ' . _DB_PREFIX_ . "product_attribute_shop WHERE id_shop = $id_shop");
+        $_products = Db::getInstance()->executeS('SELECT id_product FROM ' . _DB_PREFIX_ . "product_shop WHERE active = 1 AND id_shop = $id_shop AND id_product != 0");
+        $_product_attributes = Db::getInstance()->executeS('SELECT id_product, id_product_attribute FROM ' . _DB_PREFIX_ . "product_attribute_shop WHERE id_shop = $id_shop AND id_product != 0");
         $product_attributes = [];
         foreach ($_product_attributes as $_product_attribute) {
             $id_product = $_product_attribute['id_product'];
@@ -933,6 +933,9 @@ class AccelaSearch extends Module
         $cleanAfterComplete = true
     ) {
         $queries = [];
+
+        // Delete all id_product => 0 | It will cause a bug if a product with id 0 exists
+        Db::getInstance()->query('DELETE FROM ' . _DB_PREFIX_ . "as_notifications WHERE id_product = 0");
 
         // elimino gli aggiornamenti di prezzo singoli se è presente un aggiornamento globale
         $global_price_rule_exist = (bool) Db::getInstance()->getValue('SELECT COUNT(*) FROM ' . _DB_PREFIX_ . "as_notifications WHERE id_product = 0 AND type = 'price' AND id_shop = $id_shop");
