@@ -1,46 +1,46 @@
 version: "3"
 
 services:
-  psmysql:
+
+  mysql:
     image: mysql/mysql-server:5.7
     restart: always
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=1
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWD}
-      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
 
-  prestashop_1.7.6.9:
-    image: prestashop/prestashop:1.7.6.9-7.2-apache
-    depends_on:
-      - psmysql
-    ports:
-      - 8083:80
-    volumes:
-      - .:/var/www/html/modules/${PS_MODULE_NAME}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
     environment:
-      - DB_SERVER=psmysql
-      - DB_PREFIX=ps1769_
-      - PS_DEV_MODE=${PS_DEV_MODE}
-      - PS_INSTALL_AUTO=1
+      PMA_HOST: mysql
+      PMA_USER: ${PMA_USER}
+      PMA_PASSWORD: ${PMA_PASSWORD}
+    ports:
+      - "10001:80"
+
+  prestashop_latest:
+    container_name: accelasearch-module
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    ports:
+      - 8199:80
+    volumes:
+      - .:/var/www/html/modules/accelasearch
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_PREFIX=${DB_PREFIX}
+      - PS_INSTALL_AUTO=${PS_INSTALL_AUTO}
       - DB_USER=${DB_USER}
       - DB_PASSWD=${DB_PASSWD}
       - DB_NAME=${DB_NAME}
       - PS_FOLDER_ADMIN=${PS_FOLDER_ADMIN}
-      - PS_DOMAIN=${PS_DOMAIN}:8083
+      - PS_DOMAIN=${PS_DOMAIN}
       - PS_LANGUAGE=${PS_LANGUAGE}
       - PS_COUNTRY=${PS_COUNTRY}
-      - PS_FOLDER_INSTALL=installed
-  phpmyadmin:
-      image: phpmyadmin/phpmyadmin
-      ports:
-        - 9001:80
-      env_file: .env
-  phpmyadmin_collector:
-      image: phpmyadmin/phpmyadmin
-      ports:
-        - 9002:80
-      environment:
-        - PMA_HOST=${PMA_HOST_COLLECTOR}
-        - PMA_USER=${PMA_USER_COLLECTOR}
-        - PMA_PASSWORD=${PMA_PASSWORD_COLLECTOR}
+      - PS_FOLDER_INSTALL=${PS_FOLDER_INSTALL}

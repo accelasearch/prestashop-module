@@ -1,20 +1,18 @@
 name: PHP tests
-on: [push, pull_request]
+on: [push]
 jobs:
   php-linter:
-    name: PHP Syntax check 7.1|7.2|7.3|8.1
+    name: PHP Syntax check 5.6|7.2|7.3
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2.0.0
-      - name: PHP syntax checker 7.1
-        uses: prestashop/github-action-php-lint/7.1@master
+      - name: PHP syntax checker 5.6
+        uses: prestashop/github-action-php-lint/5.6@master
       - name: PHP syntax checker 7.2
         uses: prestashop/github-action-php-lint/7.2@master
       - name: PHP syntax checker 7.3
         uses: prestashop/github-action-php-lint/7.3@master
-      - name: PHP syntax checker 8.1
-        uses: prestashop/github-action-php-lint/8.1@master
   php-cs-fixer:
     name: PHP-CS-Fixer
     runs-on: ubuntu-latest
@@ -28,19 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        presta-versions: ["8.0.1"]
+        presta-versions: ['1.6.1.0', '1.6.1.21', '1.7.0.3', 'latest']
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.2'
-          extensions: mbstring, intl
-          ini-values: post_max_size=256M, max_execution_time=180
-          coverage: xdebug
-          tools: php-cs-fixer, phpunit
+        uses: actions/checkout@v2.0.0
 
       - name: Cache vendor folder
         uses: actions/cache@v1
@@ -56,8 +45,17 @@ jobs:
 
       - run: composer install
 
-      - name: Run PHPStan
-        run: make phpstan
+      - name: Pull PrestaShop files (Tag ${{ matrix.presta-versions }})
+        run: docker run -tid --rm -v ps-volume:/var/www/html --name temp-ps prestashop/prestashop:${{ matrix.presta-versions }}
+
+      - name: Select .neon file to run with PHPStan
+        id: neon
+        run: |
+          PS_VERSION=$(docker exec temp-ps bash -c 'echo "$PS_VERSION"')
+          [[ "${PS_VERSION:0:3}" != '1.7' ]] && echo ::set-output name=filename::phpstan-PS-1.6.neon || echo ::set-output name=filename::phpstan-PS-1.7.neon
+
+      - name : Run PHPStan
+        run: docker run --rm --volumes-from temp-ps -v $PWD:/web/module -e _PS_ROOT_DIR_=/var/www/html --workdir=/web/module phpstan/phpstan:0.12 analyse --configuration=/web/module/tests/phpstan/${{steps.neon.outputs.filename}} --error-format github
   header-stamp:
     name: Check license headers
     runs-on: ubuntu-latest
@@ -65,14 +63,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup PHP
+      - name: Setup PHP 7.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.2'
-          extensions: mbstring, intl
-          ini-values: post_max_size=256M, max_execution_time=180
-          coverage: xdebug
-          tools: php-cs-fixer, phpunit
+          php-version: '7.4'
 
       - name: Cache vendor folder
         uses: actions/cache@v1

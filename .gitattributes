@@ -1,1 +1,2 @@
-* text=auto eol=lf
+entrypoint.sh eol=lf
+index.js eol=lf

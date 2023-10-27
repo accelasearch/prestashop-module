@@ -1,0 +1,15 @@
+# START ADMINCONTROLLER #
+./controllers
+# END ADMINCONTROLLER #
+./views
+# START COMPOSER #
+./src
+./vendor
+# END COMPOSER #
+# START REACT #
+./react/dist/react
+./react/public/react
+# END REACT #
+./*.php
+./*.md
+./*.png

@@ -11,17 +11,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install composer dependencies
-        run: composer install --no-dev -o
-
       - name: Install composer local modules
-        run: composer dump-autoload -o --no-dev
+        run: composer install && composer dump-autoload -o --no-dev
 
       - name: Copy index.php to new composer vendor folder
         run: cp index.php vendor/ && cp index.php vendor/composer/
 
+      - name: Build plugin and zip
+        env:
+          CI: false
+        run: |
+          cd react
+          npm ci
+          npm run build
+          rm -rf ./build/index.html
+          rm -rf ./node_modules/
+          cd ..
+
       - name: Bump version
-        run: make version
+        run: accelasearch=${{ github.event.repository.name }} make version
         env:
           VERSION: ${{ github.event.release.tag_name }}
 
@@ -70,7 +78,7 @@ jobs:
         run: |
           cd ${{ github.event.repository.name }}
           echo "$CONFIG_FILE" >> .config.prod.yml
-          make zip-me-prod
+          accelasearch=${{ github.event.repository.name }} make zip-me
 
       - name: Publish the production zip
         uses: actions/upload-release-asset@v1.0.1
@@ -78,6 +86,41 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GA_ACCESS_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./${{ github.event.repository.name }}/releases/accelasearch.zip
-          asset_name: accelasearch.zip
+          asset_path: ./${{ github.event.repository.name }}/releases/${{ github.event.repository.name }}.zip
+          asset_name: ${{ github.event.repository.name }}.zip
           asset_content_type: application/zip
+
+  changelog:
+    runs-on: ubuntu-latest
+    needs: [build, clean-artifacts, upload_release_asset_production]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GA_ACCESS_TOKEN }}
+
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ secrets.GA_ACCESS_TOKEN }}
+          tag: ${{ github.ref_name }}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ secrets.GA_ACCESS_TOKEN }}
+
+      - name: Commit CHANGELOG.md
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: master
+          commit_message: "docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]"
+          file_pattern: CHANGELOG.md
+

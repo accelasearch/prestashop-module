@@ -1,75 +1,75 @@
-# Avvio dell'environment di sviluppo
+# AccelaSearch Prestashop Module
 
-Se si vuole cambiare versione di PS o aggiungerne di nuove ed avviarle contemporaneamente basta modificare il docker-compose ed aggiornare le proprie env variables.
+AccelaSearch Prestashop Module is a Prestashop module that allows you to add a powerful search engine to your store.
 
-    docker-compose-up -d
+## Start a local tunnel
 
-Accesso backend: /adminPS
+You can use localtunnel to expose your local Prestashop installation to the internet.
 
-Credenziali: demo@prestashop.com - prestashop_demo
+```bash
+npx localtunnel --port 8199
+```
 
-## Running tests
+## Make Commands
 
-Step preliminare: **composer install** sulla root del modulo
+All commands needs to be run inside the container.
 
-### PHP-CS FIXER CODING STANDARD
+### Lint view
 
-    php vendor/bin/php-cs-fixer fix --dry-run
+```bash
+make lint
+```
 
-### LICENSE HEADERS
+### Lint fix
 
-    php vendor/bin/header-stamp --license=vendor/prestashop/header-stamp/assets/afl.txt --exclude=vendor,tests,_dev
+```bash
+make lint-fix
+```
 
-### PHP STAN
+### PHP Lint
 
-    _PS_ROOT_DIR_=/var/www/html vendor/bin/phpstan analyse --configuration=tests/phpstan/phpstan.neon
+```bash
+make php-lint
+```
 
-### UNIT TESTS
+### PHP Stan (static analysis)
 
-    php vendor/bin/phpunit tests
+```bash
+make phpstan
+```
 
-## Traduzioni
+### Header check
 
-Gestione delle traduzioni nei file .js
+```bash
+make header-check
+```
 
-## Come aggiungere nuove frasi e passarle al contesto Javascript
+### Header fix
 
-Modificare la classe
+```bash
+make header-fix
+```
 
-    classes/translator.php
+### Run phpunit tests
 
-e leggere dall'oggetto JS **_AS.translations**
+```bash
+make run-tests
+```
 
-Per tradurre fare riferimento al sistema di traduzione nativo di Prestashop
+### Run autoindex file generation
 
-## Modalità DEBUG
+```bash
+make autoindex
+```
 
-Per attivare la modalità debug impostare il flag **DEBUG_MODE** dentro
+## Write new tests
 
-    accelasearch.php
+Create a file in the `tests/Unit` folder with the name of the class you want to test and add the suffix `Test.php`.
 
-a **true**.
+Take a look at the `tests/Unit/ManagerTest.php` file for an example.
 
-La modalità debug mostra dei comandi aggiuntivi nella sezione advanced per debuggare le informazioni dei prodotti o triggerare eventi specifici.
+## Backoffice login
 
-## Log Query
-
-Per attivare il log delle query impostare il flag **LOG_QUERY** dentro
-
-    accelasearch.php
-
-a **true**.
-
-Le query verranno loggate dentro i log nativi di Prestashop della tabella ps_log.
-
-## Sync differenziale
-
-Le classi presenti src/Updater/* si occupano della sync differenziale, il pattern usato è Strategy in funzione del tipo di aggiornamento vengono performate le corrispondenti azioni in caso di "update/create/delete".
-
-## TODO
-
-⬜️ Scrivere Unit Tests
-
-⬜️ Refactoring entrypoint modulo ed aggiungere una classe Core separata
-
-⬜️ Aggiungere il supporto al prodotto bundle e virtuale
+- URL: <http://localhost:8199/adminPS>
+- Username: <demo@prestashop.com>
+- Password: prestashop_demo

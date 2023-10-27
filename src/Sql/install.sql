@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS __DB_PREFIX__sample_table (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_shop INT NOT NULL,
+    id_product INT NOT NULL
+);
