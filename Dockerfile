@@ -1,4 +1,4 @@
-FROM prestashop/prestashop
+FROM prestashop/prestashop:1.7.6.9
 
 RUN apt update && apt install -y nano wget curl sshpass git unzip zip
 

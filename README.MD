@@ -2,6 +2,11 @@
 
 AccelaSearch Prestashop Module is a Prestashop module that allows you to add a powerful search engine to your store.
 
+## Compatibility
+
+Minimum Prestashop version: 1.7.0 or higher
+Minimum PHP version: 7.1 or higher
+
 ## Start a local tunnel
 
 You can use localtunnel to expose your local Prestashop installation to the internet.
