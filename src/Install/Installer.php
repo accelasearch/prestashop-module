@@ -2,6 +2,7 @@
 
 namespace Accelasearch\Accelasearch\Install;
 
+use Accelasearch\Accelasearch\Config\Config;
 use Module;
 use \Accelasearch\Accelasearch\Sql\Manager;
 
@@ -44,7 +45,17 @@ class Installer
         if (!$this->initDefaultConfigurationValues()) {
             return false;
         }
+
+        $this->createToken();
+
         return true;
+    }
+
+    public function createToken()
+    {
+        $token = \Tools::passwdGen(16);
+        if (!Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN"))
+            Config::updateValue('_ACCELASEARCH_FEED_RANDOM_TOKEN', $token);
     }
 
     public function uninstall()
@@ -100,7 +111,7 @@ class Installer
         $tab = new \Tab();
         $tab->class_name = 'AccelasearchAdmin';
         $tab->module = $this->module->name;
-        $tab->id_parent = (int)\Tab::getIdFromClassName('AdminCatalog');
+        $tab->id_parent = (int) \Tab::getIdFromClassName('AdminCatalog');
         foreach ($languages as $lang) {
             $tab->name[$lang['id_lang']] = 'Accelasearch';
         }
@@ -128,16 +139,14 @@ class Installer
     }
     # END ADMINCONTROLLER #
 
-    const DEFAULT_CONFIGURATION = [
-        "_accelasearch_SAMPLE_" => "TEST",
-    ];
+
 
     /** Set module default configuration into database */
     private function initDefaultConfigurationValues()
     {
-        foreach (self::DEFAULT_CONFIGURATION as $key => $value) {
-            if (!\Configuration::get($key)) {
-                \Configuration::updateValue($key, $value);
+        foreach (Config::DEFAULT_CONFIGURATION as $key => $value) {
+            if (!Config::get($key)) {
+                Config::updateValue($key, $value);
             }
         }
 

@@ -58,8 +58,7 @@ class Accelasearch extends Module
             return false;
 
         if (!$this->checkPhpVersion()) {
-            $this->context->controller->errors[] = $this->l('This module requires PHP version 7.1 or higher');
-            return false;
+            throw new Exception('This module requires PHP version 7.1 or higher');
         }
 
         $installer = new Installer($this, new Manager());

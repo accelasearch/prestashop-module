@@ -1,5 +1,8 @@
-.PHONY: help zip-me version release merge
+-include .env
+export
+.PHONY: help zip-me version release merge lint lint-fix php-lint header-check header-fix phpstan run-tests autoindex deploy
 ZIP_FILES := $(shell cat ./.zip_files)
+MODULE_NAME=accelasearch
 
 # target: merge - Merge develop into master
 merge:
@@ -16,18 +19,19 @@ release:
 # target: zip-me - Create a local zip archive
 zip-me: 
 	@mkdir -p ./temp
-	@mkdir -p ./temp/$(accelasearch)
-	# START REACT #
-	@mkdir -p ./temp/$(accelasearch)/react
-	# END REACT #
+	@mkdir -p ./temp/$(MODULE_NAME)
+	@mkdir -p ./temp/$(MODULE_NAME)/react
 	@mkdir -p ./releases
 
 	@for file in $(ZIP_FILES); do \
-		cp -R $$file ./temp/$(accelasearch); \
+		cp -R $$file ./temp/$(MODULE_NAME); \
 	done
+
+	@cp -R ./react/dist ./temp/$(MODULE_NAME)/react
+	@cp -R ./react/public ./temp/$(MODULE_NAME)/react
 	
-	@rm -rf ./releases/$(accelasearch).zip
-	@cd temp && zip -rq ../releases/$(accelasearch).zip $(accelasearch) && cd ..
+	@rm -rf ./releases/$(MODULE_NAME).zip
+	@cd temp && zip -rq ../releases/$(MODULE_NAME).zip $(MODULE_NAME) && cd ..
 	@rm -rf ./temp
 
 # target: version - Replace version in files
@@ -77,3 +81,8 @@ run-tests:
 autoindex:
 	@echo "Generating index.php files..."
 	@vendor/bin/autoindex prestashop:add:index
+
+deploy:
+	@echo "Deploying $(MODULE_NAME)"
+	@scp -i $(SSH_KEY_PATH) -r ./releases/$(MODULE_NAME).zip $(LIVE_USER)@$(LIVE_HOST):$(REMOTE_MODULE_PATH)/$(MODULE_NAME).zip
+	@ssh -i $(SSH_KEY_PATH) $(LIVE_USER)@$(LIVE_HOST) "cd $(REMOTE_MODULE_PATH) && unzip -o $(MODULE_NAME).zip && rm -rf $(MODULE_NAME).zip"

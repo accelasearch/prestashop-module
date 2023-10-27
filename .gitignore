@@ -3,3 +3,5 @@ releases
 config_it.xml
 vendor/
 .env
+/public/feed/*
+!/public/feed/.gitkeep

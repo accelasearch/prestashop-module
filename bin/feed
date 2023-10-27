@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../../../config/config.inc.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Decorator\ProductDecorator;
+use \Accelasearch\Accelasearch\Entity\Shop;
+use \Accelasearch\Accelasearch\Entity\Language;
+use \Accelasearch\Accelasearch\Command\Feed;
+use \Accelasearch\Accelasearch\Factory\ProductDataFactory;
+use Accelasearch\Accelasearch\Provider\ProductDataProvider;
+use Accelasearch\Accelasearch\Repository\ProductRepository;
+
+if ($argc < 3) {
+    echo "Usage: php bin/feed <id_shop> <id_lang>\n";
+    exit(1);
+}
+
+$id_shop = $argv[1];
+$id_lang = $argv[2];
+
+@Context::getContext()->controller->controller_type = 'front';
+
+$shop = new Shop($id_shop);
+$language = new Language($id_lang);
+$productRepository = new ProductRepository();
+
+$productService = ProductDataFactory::create(
+    $productRepository,
+    new ProductDecorator(new ProductDataProvider($productRepository)),
+    new Config(),
+    Config::get("_ACCELASEARCH_SYNCTYPE")
+);
+
+$feed = new Feed($shop, $language, $productService);
+$feed->setDebug(true);
+$feed->generate();

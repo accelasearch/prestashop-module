@@ -4,8 +4,228 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9abaa724cb752e619e21fca29fd50924",
-    "packages": [],
+    "content-hash": "f83e18226fd0a3e40613751321c69349",
+    "packages": [
+        {
+            "name": "accelasearch/sdk-php",
+            "version": "0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/accelasearch/sdk-php.git",
+                "reference": "c891a332818c276f372caa121d5846dbc6ccf7a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/accelasearch/sdk-php/zipball/c891a332818c276f372caa121d5846dbc6ccf7a1",
+                "reference": "c891a332818c276f372caa121d5846dbc6ccf7a1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=7"
+            },
+            "bin": [
+                "bin/collector.php",
+                "bin/shop.php"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AccelaSearch\\ProductMapper\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Zanella",
+                    "email": "marco.zanella@accelasearch.com"
+                }
+            ],
+            "description": "Allows easy integration with AccelaSearch's product managerment.",
+            "support": {
+                "issues": "https://github.com/accelasearch/sdk-php/issues",
+                "source": "https://github.com/accelasearch/sdk-php/tree/0.5"
+            },
+            "time": "2023-10-19T12:58:25+00:00"
+        },
+        {
+            "name": "sabre/uri",
+            "version": "2.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sabre-io/uri.git",
+                "reference": "c0c9af9f7754e60a49ebd760e1708adc6d1510c0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sabre-io/uri/zipball/c0c9af9f7754e60a49ebd760e1708adc6d1510c0",
+                "reference": "c0c9af9f7754e60a49ebd760e1708adc6d1510c0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~2.19.3",
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/functions.php"
+                ],
+                "psr-4": {
+                    "Sabre\\Uri\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Evert Pot",
+                    "email": "me@evertpot.com",
+                    "homepage": "http://evertpot.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Functions for making sense out of URIs.",
+            "homepage": "http://sabre.io/uri/",
+            "keywords": [
+                "rfc3986",
+                "uri",
+                "url"
+            ],
+            "support": {
+                "forum": "https://groups.google.com/group/sabredav-discuss",
+                "issues": "https://github.com/sabre-io/uri/issues",
+                "source": "https://github.com/fruux/sabre-uri"
+            },
+            "time": "2022-09-19T12:25:28+00:00"
+        },
+        {
+            "name": "sabre/xml",
+            "version": "2.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sabre-io/xml.git",
+                "reference": "9cde7cdab1e50893cc83b037b40cd47bfde42a2b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sabre-io/xml/zipball/9cde7cdab1e50893cc83b037b40cd47bfde42a2b",
+                "reference": "9cde7cdab1e50893cc83b037b40cd47bfde42a2b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xmlreader": "*",
+                "ext-xmlwriter": "*",
+                "lib-libxml": ">=2.6.20",
+                "php": "^7.1 || ^8.0",
+                "sabre/uri": ">=1.0,<3.0.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~2.17.1",
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Deserializer/functions.php",
+                    "lib/Serializer/functions.php"
+                ],
+                "psr-4": {
+                    "Sabre\\Xml\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Evert Pot",
+                    "email": "me@evertpot.com",
+                    "homepage": "http://evertpot.com/",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Markus Staab",
+                    "email": "markus.staab@redaxo.de",
+                    "role": "Developer"
+                }
+            ],
+            "description": "sabre/xml is an XML library that you may not hate.",
+            "homepage": "https://sabre.io/xml/",
+            "keywords": [
+                "XMLReader",
+                "XMLWriter",
+                "dom",
+                "xml"
+            ],
+            "support": {
+                "forum": "https://groups.google.com/group/sabredav-discuss",
+                "issues": "https://github.com/sabre-io/xml/issues",
+                "source": "https://github.com/fruux/sabre-xml"
+            },
+            "time": "2023-06-28T12:56:05+00:00"
+        },
+        {
+            "name": "vitalybaev/google-merchant-feed",
+            "version": "v2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vitalybaev/php-google-merchant-feed.git",
+                "reference": "b0bcb7290e495c12a2038c6aa8db2a3782dc9f43"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vitalybaev/php-google-merchant-feed/zipball/b0bcb7290e495c12a2038c6aa8db2a3782dc9f43",
+                "reference": "b0bcb7290e495c12a2038c6aa8db2a3782dc9f43",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5",
+                "sabre/xml": "^1.5 || ^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vitalybaev\\GoogleMerchant\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vitaly Baev",
+                    "email": "ping@baev.dev"
+                }
+            ],
+            "description": "PHP package for creating Google Merchant products feed",
+            "keywords": [
+                "feed",
+                "google",
+                "merchant"
+            ],
+            "support": {
+                "issues": "https://github.com/vitalybaev/php-google-merchant-feed/issues",
+                "source": "https://github.com/vitalybaev/php-google-merchant-feed/tree/v2.6.0"
+            },
+            "time": "2022-12-23T16:17:16+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "composer/pcre",

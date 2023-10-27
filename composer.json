@@ -29,5 +29,9 @@
         "prepend-autoloader": false
     },
     "author": "PrestaShop",
-    "license": "AFL-3.0"
+    "license": "AFL-3.0",
+    "require": {
+        "accelasearch/sdk-php": "^0.5.0",
+        "vitalybaev/google-merchant-feed": "^2.6"
+    }
 }
