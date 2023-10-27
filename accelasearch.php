@@ -57,6 +57,11 @@ class Accelasearch extends Module
         if (!parent::install())
             return false;
 
+        if (!$this->checkPhpVersion()) {
+            $this->context->controller->errors[] = $this->l('This module requires PHP version 7.1 or higher');
+            return false;
+        }
+
         $installer = new Installer($this, new Manager());
         return $installer->install();
     }
@@ -68,6 +73,11 @@ class Accelasearch extends Module
 
         $installer = new Installer($this, new Manager());
         return $installer->uninstall();
+    }
+
+    public function checkPhpVersion()
+    {
+        return version_compare(PHP_VERSION, '7.1', '>=');
     }
 
     public function hookActionAdminControllerSetMedia()
