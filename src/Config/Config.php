@@ -8,7 +8,7 @@ class Config
     const FEED_OUTPUT_PATH = "public/feed/";
 
     const DEFAULT_CONFIGURATION = [
-        "_ACCELASEARCH_SYNCTYPE" => "all_configurable_with_simple",
+        "_ACCELASEARCH_SYNCTYPE" => "CONFIGURABLE_WITH_SIMPLE",
         "_ACCELASEARCH_FEED_RANDOM_TOKEN" => "",
     ];
 

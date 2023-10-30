@@ -2,11 +2,14 @@
 
 namespace Accelasearch\Accelasearch\Service;
 
+use Accelasearch\Accelasearch\Entity\Language;
+use Accelasearch\Accelasearch\Entity\Shop;
+
 class AllConfigurableWithSimpleService extends AbstractService implements ServiceInterface
 {
-    public function getProducts(int $id_lang, int $start, int $limit): array
+    public function getProducts(Shop $shop, Language $language, int $start, int $limit): array
     {
-        $products = $this->productRepository->getProducts($id_lang, $start, $limit);
+        $products = $this->productRepository->getDbProducts($start, $limit, $language->getId(), $shop->ps);
         $products = $this->productDecorator->decorateProducts($products);
         return $products;
     }

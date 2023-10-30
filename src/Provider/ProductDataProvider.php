@@ -13,8 +13,4 @@ class ProductDataProvider
         $this->productRepository = $productRepository;
     }
 
-    public function getFormattedData()
-    {
-        return $this->productRepository->getProducts(1, 0, 1000);
-    }
 }

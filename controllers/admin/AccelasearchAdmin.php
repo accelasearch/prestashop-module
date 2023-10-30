@@ -23,14 +23,18 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+use Accelasearch\Accelasearch\Dispatcher\Dispatcher;
+
 
 class AccelasearchAdminController extends ModuleAdminController
 {
 
-    public function response($data)
+    private $dispatcher;
+
+    public function __construct()
     {
-        header('Content-Type: application/json');
-        die($this->ajaxRender(json_encode($data)));
+        $this->dispatcher = new Dispatcher();
+        parent::__construct();
     }
 
     // create a controller to redirect to configure page if not accessed via ajax
@@ -42,12 +46,8 @@ class AccelasearchAdminController extends ModuleAdminController
         header('Content-Type: application/json');
     }
 
-    /**
-     * Sample ajax method
-     * @return void
-     */
-    public function ajaxProcessFoo()
+    public function ajaxProcessGetShops()
     {
-        $this->response(['foo' => 'bar']);
+        $this->dispatcher->handleRequest(__FUNCTION__);
     }
 }

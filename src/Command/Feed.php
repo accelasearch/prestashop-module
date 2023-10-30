@@ -45,7 +45,7 @@ class Feed
         $start = microtime(true);
         $memory = memory_get_usage();
 
-        $products = $this->productService->getProducts($this->language->getId(), 0, 1000);
+        $products = $this->productService->getProducts($this->shop, $this->language, 0, 1000);
 
         foreach ($products as $product) {
             $item = new GoogleShoppingProduct();
@@ -73,12 +73,11 @@ class Feed
                 $this->feed->build()
             );
         } catch (IOExceptionInterface $exception) {
-            echo "An error occurred while creating your feed at " . $exception->getPath();
+            echo "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
         }
 
-        if ($this->debug) {
-            echo "Feed generated at " . $this->getOutputPath() . "\n";
-        }
+        echo "Feed generated at " . $this->getOutputPath() . "\n";
+
 
     }
 
