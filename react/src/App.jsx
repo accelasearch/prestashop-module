@@ -1,7 +1,8 @@
 export default function App(){
+
     return (
-        <div>
-            <h1 className="text-red-500 font-bold">Hello World!</h1>
-        </div>
+        <main>
+            <h1 className="text-red-500 font-bold">{_AS.userStatus.logged ? <span>Logged</span> : <span>Not logged</span>}</h1>
+        </main> 
     );
 }

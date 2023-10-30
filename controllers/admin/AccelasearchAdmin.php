@@ -46,6 +46,11 @@ class AccelasearchAdminController extends ModuleAdminController
         header('Content-Type: application/json');
     }
 
+    public function ajaxProcessGetUserInfo()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
     public function ajaxProcessGetShops()
     {
         $this->dispatcher->handleRequest(__FUNCTION__);

@@ -9,7 +9,14 @@ export default {
     "./node_modules/react-tailwindcss-datepicker/dist/index.esm.js",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "as-primary": {
+          500: "#398ff4",
+          600: "#3078cc",
+        },
+      },
+    },
   },
   important: "#accelasearch-app",
   plugins: [forms],
