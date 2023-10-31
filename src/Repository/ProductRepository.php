@@ -273,6 +273,8 @@ class ProductRepository
              sa.id_product_attribute = IFNULL(pas.id_product_attribute, 0) AND sa.id_shop = ps.id_shop');
         }
 
+        $query->where('ps.active = 1');
+
         return $query;
     }
 }

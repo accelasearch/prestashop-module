@@ -26,6 +26,7 @@ class Feed
     private $productService;
     private $feed;
     private $filesystem;
+    private $configurable_ids = [];
     public function __construct(Shop $shop, Language $language, ServiceInterface $productService)
     {
         $this->shop = $shop;
@@ -39,19 +40,38 @@ class Feed
         $this->filesystem = new Filesystem();
     }
 
+    public function isConfigurableCreated($id_product)
+    {
+        return in_array($id_product, $this->configurable_ids);
+    }
+
+    public function createConfigurable($product)
+    {
+        $this->configurable_ids[] = $product["id_product"];
+        $product["id_product_attribute"] = $product["id_product"];
+        $product["id_attribute"] = 0;
+        $item = new GoogleShoppingProduct();
+        $feedProduct = new ProductBuilder($product, $item);
+        $feedProduct->build();
+        $this->feed->addProduct($feedProduct->getItem());
+    }
+
     public function generate()
     {
 
         $start = microtime(true);
         $memory = memory_get_usage();
 
-        $products = $this->productService->getProducts($this->shop, $this->language, 0, 1000);
+        $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000);
 
         foreach ($products as $product) {
             $item = new GoogleShoppingProduct();
             $feedProduct = new ProductBuilder($product, $item);
             $feedProduct->build();
             $this->feed->addProduct($feedProduct->getItem());
+            if ($feedProduct->hasVariants() && !$this->isConfigurableCreated($product["id_product"])) {
+                $this->createConfigurable($product);
+            }
         }
 
         $end = microtime(true);

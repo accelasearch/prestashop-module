@@ -1,8 +1,10 @@
 -include .env
 export
-.PHONY: help zip-me version release merge lint lint-fix php-lint header-check header-fix phpstan run-tests autoindex deploy
+.PHONY: help zip-me version release merge lint lint-fix php-lint header-check header-fix phpstan run-tests autoindex deploy translate
 ZIP_FILES := $(shell cat ./.zip_files)
 MODULE_NAME=accelasearch
+REACT_DIR = ./react
+OUTPUT_TRANSLATION_FILE = ./views/templates/admin/configure.tpl
 
 # target: merge - Merge develop into master
 merge:
@@ -86,3 +88,12 @@ deploy:
 	@echo "Deploying $(MODULE_NAME)"
 	@scp -i $(SSH_KEY_PATH) -r ./releases/$(MODULE_NAME).zip $(LIVE_USER)@$(LIVE_HOST):$(REMOTE_MODULE_PATH)/$(MODULE_NAME).zip
 	@ssh -i $(SSH_KEY_PATH) $(LIVE_USER)@$(LIVE_HOST) "cd $(REMOTE_MODULE_PATH) && unzip -o $(MODULE_NAME).zip && rm -rf $(MODULE_NAME).zip"
+
+
+translate:
+	@cp $(OUTPUT_TRANSLATION_FILE) $(OUTPUT_TRANSLATION_FILE).backup
+	@sed -i -E '/\/\/START_TRANSLATIONS\//,/\/\/END_TRANSLATIONS\//c\/\/START_TRANSLATIONS//' $(OUTPUT_TRANSLATION_FILE)
+	@find $(REACT_DIR) -type f -name '*.jsx' -exec sed -E -n 's/{t\("([^"]+)"\)}/        "\1" : "{l s='\1' mod='accelasearch'}",/p' {} \; >> $(OUTPUT_TRANSLATION_FILE)
+	@echo "//END_TRANSLATIONS//" >> $(OUTPUT_TRANSLATION_FILE)
+
+

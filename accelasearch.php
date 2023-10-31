@@ -1,4 +1,5 @@
 <?php
+use Accelasearch\Accelasearch\Config\Config;
 
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
@@ -86,7 +87,7 @@ class Accelasearch extends Module
             'accelasearch_controller_url' => $actions_controller_link,
             'accelasearch_controller_token' => Tools::getAdminTokenLite('AccelasearchAdmin'),
             'accelasearch_public_url' => Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/react/public/',
-
+            '_AS' => Config::getBackofficeConfig()
         ]);
     }
 

@@ -13,6 +13,7 @@ module.exports = {
     "react-refresh/only-export-components": "warn",
   },
   globals: {
-    _AS: "readonly", // Definisci _AS come variabile globale in sola lettura
+    _AS: "readonly", // configurations
+    _AST: "readonly", // translations
   },
 };
