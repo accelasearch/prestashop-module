@@ -8,6 +8,7 @@ export default function App() {
       </h1>
       {t("Submit")}
       {t("Inexistent translation")}
+      {t("Another translation")}
     </main>
   );
 }

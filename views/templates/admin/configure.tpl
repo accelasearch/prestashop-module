@@ -20,6 +20,8 @@
     const _AST = {
         //START_TRANSLATIONS//
         "Submit" : "{l s='Submit' mod='accelasearch'}",
+        "Inexistent translation" : "{l s='Inexistent translation' mod='accelasearch'}",
+        "Another translation" : "{l s='Another translation' mod='accelasearch'}",
         //END_TRANSLATIONS//
     }
 </script>
