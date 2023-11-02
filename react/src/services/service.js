@@ -10,11 +10,47 @@ const token =
 export const serviceApi = createApi({
   reducerPath: "serviceApi",
   baseQuery: fetchBaseQuery({ baseUrl }),
+  tagTypes: ["SHOPS"],
   endpoints: (builder) => ({
-    getFoo: builder.query({
+    apikeyVerify: builder.mutation({
+      query: (key) => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=apikeyverify`,
+        method: "POST",
+        body: { key },
+      }),
+    }),
+    getShops: builder.query({
       query: () => ({
-        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=foo`,
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=getshops`,
+      }),
+      provideTags: ["SHOPS"],
+    }),
+    getAttributes: builder.query({
+      query: () => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=getAttributes`,
+      }),
+    }),
+    setShops: builder.mutation({
+      query: (shops) => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=setshops`,
+        method: "POST",
+        body: { shops },
+      }),
+    }),
+    updateConfig: builder.mutation({
+      query: (configs) => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=updateconfig`,
+        method: "POST",
+        body: { configs },
       }),
     }),
   }),
 });
+
+export const {
+  useApikeyVerifyMutation,
+  useGetShopsQuery,
+  useSetShopsMutation,
+  useGetAttributesQuery,
+  useUpdateConfigMutation,
+} = serviceApi;

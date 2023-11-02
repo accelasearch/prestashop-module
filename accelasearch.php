@@ -1,6 +1,4 @@
 <?php
-use Accelasearch\Accelasearch\Config\Config;
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -29,8 +27,10 @@ if (file_exists($autoload))
     require_once $autoload;
 # END COMPOSER #
 
-use \Accelasearch\Accelasearch\Install\Installer;
-use \Accelasearch\Accelasearch\Sql\Manager;
+use Accelasearch\Accelasearch\Install\Installer;
+use Accelasearch\Accelasearch\Sql\Manager;
+use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Api\AsClient;
 
 class Accelasearch extends Module
 {

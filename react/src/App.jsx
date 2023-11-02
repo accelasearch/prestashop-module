@@ -1,14 +1,12 @@
-import { t } from "./utils";
+import AsApp from "./pages/AsApp";
+import Welcome from "./pages/Welcome";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
-    <main>
-      <h1 className="text-red-500 font-bold">
-        {_AS.userStatus.logged ? <span>Logged</span> : <span>Not logged</span>}
-      </h1>
-      {t("Submit")}
-      {t("Inexistent translation")}
-      {t("Another translation")}
+    <main className="relative min-h-full py-8 px-4 sm:px-6 lg:px-8 rounded bg-white">
+      <Toaster containerStyle={{ position: "absolute" }} />
+      {_AS.userStatus.logged ? <AsApp /> : <Welcome />}
     </main>
   );
 }

@@ -15,5 +15,6 @@ module.exports = {
   globals: {
     _AS: "readonly", // configurations
     _AST: "readonly", // translations
+    accelasearch_public_url: "readonly",
   },
 };

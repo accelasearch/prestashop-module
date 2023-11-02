@@ -2,9 +2,12 @@
 
 namespace Accelasearch\Accelasearch\Config;
 
+use Accelasearch\Accelasearch\Api\AsClient;
+
 class Config
 {
     const DGCAL_ENDPOINT = 'https://accelaserch.dgcal.it/api/v1/';
+    const ACCELASEARCH_ENDPOINT = 'https://svc11.accelasearch.net/API/';
     const FEED_OUTPUT_PATH = "public/feed/";
 
     const DEFAULT_CONFIGURATION = [
@@ -12,6 +15,10 @@ class Config
         "_ACCELASEARCH_FEED_RANDOM_TOKEN" => "",
         "_ACCELASEARCH_COLOR_LABEL" => "color",
         "_ACCELASEARCH_SIZE_LABEL" => "size",
+        "_ACCELASEARCH_API_KEY" => "",
+        "_ACCELASEARCH_API_COLLECTOR" => "",
+        "_ACCELASEARCH_SHOPS_TO_SYNC" => [],
+        "_ACCELASEARCH_ONBOARDING" => 0,
     ];
 
     public static function get($key, $default = false)
@@ -44,10 +51,12 @@ class Config
      */
     public static function getBackofficeConfig()
     {
+        $apiKey = self::get("_ACCELASEARCH_API_KEY");
+        $logged = AsClient::apiKeyVerify($apiKey);
         return [
             "userStatus" => [
-                "logged" => true,
-                "onBoarding" => 0
+                "logged" => $logged,
+                "onBoarding" => (int) self::get("_ACCELASEARCH_ONBOARDING", 0),
             ]
         ];
     }

@@ -10,7 +10,10 @@ $configuration_file = __DIR__ . "/views/templates/admin/configure.tpl";
 use Symfony\Component\Finder\Finder;
 
 $finder = new Finder();
-$finder->files()->contains('/\{t\("([^"]+)"\)}/')->in($react_dir)->name('*.jsx');
+$finder
+    ->files()
+    ->contains('/\{t\(\s*"([^"]+)"\s*\)\}/')
+    ->in($react_dir)->name('*.jsx');
 
 $words = [
     "//START_TRANSLATIONS//",
@@ -18,9 +21,9 @@ $words = [
 
 foreach ($finder as $file) {
     $content = $file->getContents();
-    preg_match_all('/\{t\("([^"]+)"\)}/', $content, $matches);
+    preg_match_all('/\{t\(\s*"([^"]+)"\s*\)\}/', $content, $matches);
     foreach ($matches[1] as $match) {
-        $words[] = '"' . $match . '" : "{l s=\'' . $match . '\' mod=\'accelasearch\'}",';
+        $words[] = '"' . $match . '" : "{l s=\'' . addslashes($match) . '\' mod=\'accelasearch\'}",';
     }
 }
 

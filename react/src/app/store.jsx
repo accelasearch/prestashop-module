@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import fooReducer from "../features/foo/fooSlice";
+import userReducer from "../features/user/userSlice";
 import { serviceApi } from "../services/service";
 
 export const store = configureStore({
   reducer: {
-    foo: fooReducer,
+    user: userReducer,
     [serviceApi.reducerPath]: serviceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

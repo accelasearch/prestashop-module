@@ -15,8 +15,22 @@ abstract class AbstractController
         $this->response(['success' => true, 'data' => $data]);
     }
 
-    public function error($data = [])
+    public function error($data = [], $statusCode = 200)
     {
+        http_response_code($statusCode);
         $this->response(['success' => false, 'data' => $data]);
+    }
+
+    /**
+     * Parse arguments from JSON input
+     */
+    public function parseArgs()
+    {
+        $input = file_get_contents('php://input');
+        $args = json_decode($input, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->error('Invalid JSON input');
+        }
+        return $args;
     }
 }
