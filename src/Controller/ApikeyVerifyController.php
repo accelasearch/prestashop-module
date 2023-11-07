@@ -22,6 +22,7 @@ class ApikeyVerifyController extends AbstractController implements ControllerInt
         try {
             $credentials = AsClient::getCollectorCredentials();
             Config::updateValue('_ACCELASEARCH_API_COLLECTOR', json_encode($credentials));
+
         } catch (\Exception $e) {
             $this->error('Api key is invalid', 400);
         }

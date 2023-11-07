@@ -6,7 +6,7 @@ use Accelasearch\Accelasearch\Api\AsClient;
 
 class Config
 {
-    const DGCAL_ENDPOINT = 'https://accelaserch.dgcal.it/api/v1/';
+    const DGCAL_ENDPOINT = 'https://dgcal-dev.it/accelasearch/api/v1/';
     const ACCELASEARCH_ENDPOINT = 'https://svc11.accelasearch.net/API/';
     const FEED_OUTPUT_PATH = "public/feed/";
 

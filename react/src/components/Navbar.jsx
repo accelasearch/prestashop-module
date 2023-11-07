@@ -28,7 +28,7 @@ export default function Navbar() {
       )
     )
       return;
-    toast.promise(disconnect, {
+    toast.promise(disconnect(), {
       loading: t("Disconnecting..."),
       success: () => {
         location.reload(true);
