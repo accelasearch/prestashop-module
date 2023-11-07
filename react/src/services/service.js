@@ -30,6 +30,22 @@ export const serviceApi = createApi({
         url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=getAttributes`,
       }),
     }),
+    getCronjobStatus: builder.query({
+      query: () => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=getCronjobStatus`,
+      }),
+    }),
+    getLogs: builder.query({
+      query: () => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=getLogs`,
+      }),
+    }),
+    disconnect: builder.mutation({
+      query: () => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=disconnect`,
+        method: "POST",
+      }),
+    }),
     setShops: builder.mutation({
       query: (shops) => ({
         url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=setshops`,
@@ -53,4 +69,7 @@ export const {
   useSetShopsMutation,
   useGetAttributesQuery,
   useUpdateConfigMutation,
+  useGetCronjobStatusQuery,
+  useDisconnectMutation,
+  useGetLogsQuery,
 } = serviceApi;

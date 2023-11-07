@@ -75,4 +75,19 @@ class AccelasearchAdminController extends ModuleAdminController
     {
         $this->dispatcher->handleRequest(__FUNCTION__);
     }
+
+    public function ajaxProcessGetCronjobStatus()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessGetLogs()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessDisconnect()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
 }

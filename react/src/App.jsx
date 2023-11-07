@@ -1,10 +1,18 @@
 import AsApp from "./pages/AsApp";
 import Welcome from "./pages/Welcome";
 import { Toaster } from "react-hot-toast";
+import { cx } from "./utils";
+import { useSelector } from "react-redux";
 
 export default function App() {
+  const onBoarding = useSelector((state) => state.user.userStatus.onBoarding);
   return (
-    <main className="relative min-h-full py-8 px-4 sm:px-6 lg:px-8 rounded bg-white">
+    <main
+      className={cx(
+        onBoarding !== 3 && "py-8 px-4 sm:px-6 lg:px-8",
+        "relative min-h-full rounded bg-white"
+      )}
+    >
       <Toaster containerStyle={{ position: "absolute" }} />
       {_AS.userStatus.logged ? <AsApp /> : <Welcome />}
     </main>

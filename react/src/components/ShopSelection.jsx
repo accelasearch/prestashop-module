@@ -1,13 +1,13 @@
 import { cx, t } from "../utils";
-import React from "react";
 import { useGetShopsQuery, useSetShopsMutation } from "../services/service";
-import { useDispatch } from "react-redux";
-import { setOnBoarding } from "../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setOnBoarding, setUserShops } from "../features/user/userSlice";
 import toast from "react-hot-toast";
 import Loading from "./Loading";
+import PropTypes from "prop-types";
 
-export default function ShopSelection() {
-  const [shopsToSync, setShopsToSync] = React.useState([]);
+export default function ShopSelection({ isOnBoarding = true }) {
+  const shopsToSync = useSelector((state) => state.user.userStatus.shops);
 
   const { data: shopsDataQuery, isLoading, isError } = useGetShopsQuery();
   const dispatch = useDispatch();
@@ -18,9 +18,12 @@ export default function ShopSelection() {
   const handleCheckboxChange = (shop) => {
     return (event) => {
       if (event.target.checked) {
-        setShopsToSync([...shopsToSync, shop]);
+        dispatch(setUserShops([...shopsToSync, shop]));
       } else {
-        setShopsToSync(shopsToSync.filter((s) => s !== shop));
+        const filteredShops = shopsToSync.filter(
+          (s) => s.id_shop !== shop.id_shop || s.id_lang !== shop.id_lang
+        );
+        dispatch(setUserShops(filteredShops));
       }
     };
   };
@@ -29,7 +32,7 @@ export default function ShopSelection() {
     toast.promise(setShops(shopsToSync), {
       loading: t("Adding shops to sync..."),
       success: () => {
-        dispatch(setOnBoarding(1));
+        if (isOnBoarding) dispatch(setOnBoarding(1));
         return t("Shops selected successfully");
       },
       error: t("An error occurred during sync your shops."),
@@ -38,7 +41,7 @@ export default function ShopSelection() {
 
   return (
     <div>
-      <p className="text-3xl font-bold leading-6 text-zinc-800">
+      <p className="text-3xl font-bold text-zinc-800">
         {t("Select the shops/languages you want to sync on AccelaSearch")}
       </p>
       {isError && (
@@ -57,7 +60,11 @@ export default function ShopSelection() {
                 id={`shop-${shop.id_shop}-${shop.id_lang}`}
                 value={`${shop.id_shop}-${shop.id_lang}`}
                 name="shops_to_sync[]"
-                className="hidden peer"
+                className="!hidden peer"
+                checked={shopsToSync.some(
+                  (s) =>
+                    s.id_shop === shop.id_shop && s.id_lang === shop.id_lang
+                )}
                 onChange={handleCheckboxChange(shop)}
               />
               <label
@@ -79,15 +86,21 @@ export default function ShopSelection() {
         <button
           type="button"
           onClick={handleShopSelectionSubmit}
+          disabled={isLoading || shopsToSync.length === 0 || isSettingShops}
           className={cx(
             "as-btn-primary max-w-sm",
             (isLoading || shopsToSync.length === 0 || isSettingShops) &&
               "cursor-not-allowed"
           )}
         >
-          {t("Synchronize")} {shopsToSync.length} {t("shops to Accelasearch")}
+          {isOnBoarding ? t("Synchronize") : t("Update")} {shopsToSync.length}{" "}
+          {t("shops to Accelasearch")}
         </button>
       </div>
     </div>
   );
 }
+
+ShopSelection.propTypes = {
+  isOnBoarding: PropTypes.bool,
+};

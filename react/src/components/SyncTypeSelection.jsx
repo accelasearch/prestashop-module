@@ -32,8 +32,14 @@ const syncType = [
   },
 ];
 
+const syncPosition = syncType.findIndex(
+  (sync) => sync.slug === _AS.userStatus.syncType
+);
+
 export default function SyncTypeSelection() {
-  const [selectedSyncType, setSelectedSyncType] = useState(syncType[0]);
+  const [selectedSyncType, setSelectedSyncType] = useState(
+    syncType[syncPosition]
+  );
 
   const [updateConfig] = useUpdateConfigMutation();
 

@@ -52,7 +52,7 @@
     }
 </script>
 
-<div id="accelasearch-app">
+<div id="accelasearch-app" style="margin: -15px -10px -15px -15px">
 </div>
 
 

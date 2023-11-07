@@ -1,6 +1,6 @@
-import { t } from "../utils";
 import { useSelector } from "react-redux";
 import OnBoarding from "./OnBoarding";
+import Dashboard from "../components/Dashboard";
 
 export default function AsApp() {
   const { userStatus } = useSelector((state) => state.user);
@@ -8,8 +8,8 @@ export default function AsApp() {
 
   return (
     <div>
-      {onBoarding < 4 && <OnBoarding number={parseInt(onBoarding)} />}
-      {onBoarding === 4 && <div>Onboarding finito</div>}
+      {onBoarding < 3 && <OnBoarding number={parseInt(onBoarding)} />}
+      {onBoarding === 3 && <Dashboard />}
     </div>
   );
 }
