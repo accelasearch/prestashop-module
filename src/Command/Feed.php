@@ -52,7 +52,7 @@ class Feed
         $product["id_attribute"] = 0;
         $item = new GoogleShoppingProduct();
         $feedProduct = new ProductBuilder($product, $item);
-        $feedProduct->build();
+        $feedProduct->build($this->shop, $this->language);
         $this->feed->addProduct($feedProduct->getItem());
     }
 
@@ -67,7 +67,7 @@ class Feed
         foreach ($products as $product) {
             $item = new GoogleShoppingProduct();
             $feedProduct = new ProductBuilder($product, $item);
-            $feedProduct->build();
+            $feedProduct->build($this->shop, $this->language);
             $this->feed->addProduct($feedProduct->getItem());
             if ($feedProduct->hasVariants() && !$this->isConfigurableCreated($product["id_product"])) {
                 $this->createConfigurable($product);

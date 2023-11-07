@@ -50,21 +50,21 @@ class Config
         return \Configuration::deleteByName($key);
     }
 
-    public static function getColorLabel()
+    public static function getColorLabel($id_lang = null)
     {
         $id = self::get("_ACCELASEARCH_COLOR_ID", 0);
         if (empty($id))
             return "color";
-        $attributeGroup = new \AttributeGroup($id);
+        $attributeGroup = new \AttributeGroup($id, $id_lang);
         return $attributeGroup->name;
     }
 
-    public static function getSizeLabel()
+    public static function getSizeLabel($id_lang = null)
     {
         $id = self::get("_ACCELASEARCH_SIZE_ID", 0);
         if (empty($id))
             return "size";
-        $attributeGroup = new \AttributeGroup($id);
+        $attributeGroup = new \AttributeGroup($id, $id_lang);
         return $attributeGroup->name;
     }
 

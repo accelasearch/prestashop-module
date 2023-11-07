@@ -3,6 +3,8 @@
 namespace Accelasearch\Accelasearch\Builder;
 
 use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Entity\Language;
+use Accelasearch\Accelasearch\Entity\Shop;
 use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
 use Vitalybaev\GoogleMerchant\Product\Availability\Availability;
 
@@ -22,11 +24,11 @@ class ProductBuilder
     {
         return (int) $this->product["id_attribute"];
     }
-    public function build()
+    public function build(Shop $shop, Language $language)
     {
 
-        $colorLabel = Config::getColorLabel();
-        $sizeLabel = Config::getSizeLabel();
+        $colorLabel = Config::getColorLabel($language->getId());
+        $sizeLabel = Config::getSizeLabel($language->getId());
 
         // basic product information
         $this->item->setId($this->product['id_product_attribute']);

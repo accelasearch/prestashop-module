@@ -3,6 +3,7 @@
 namespace Accelasearch\Accelasearch\Cron\Operation;
 
 use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Cron\Cron;
 
 abstract class OperationAbstract
 {
@@ -12,17 +13,12 @@ abstract class OperationAbstract
     public function executeAsync()
     {
         \Shop::setContext(\Shop::CONTEXT_ALL);
-        $url = \Context::getContext()->link->getModuleLink('accelasearch', 'cron', [
-            "ajax" => 1,
-            "operation" => $this->getClassName(),
-            "token" => Config::get("_ACCELASEARCH_CRON_TOKEN")
-        ]);
-        dump($url);
-        file_get_contents(
+        $url = Cron::getUrl($this->getClassName());
+        return file_get_contents(
             $url,
             false,
             stream_context_create([
-                "http" => ["timeout" => 1]
+                "http" => ["timeout" => 0.2]
             ])
         );
     }
@@ -43,6 +39,24 @@ abstract class OperationAbstract
     {
         \Shop::setContext(\Shop::CONTEXT_ALL);
         return Config::updateValue("_ACCELASEARCH_LAST_" . $this->getClassName() . "_UPDATE", time());
+    }
+
+    public function lock()
+    {
+        \Shop::setContext(\Shop::CONTEXT_ALL);
+        return Config::updateValue("_ACCELASEARCH_" . $this->getClassName() . "_LOCK", 1);
+    }
+
+    public function unlock()
+    {
+        \Shop::setContext(\Shop::CONTEXT_ALL);
+        return Config::deleteByName("_ACCELASEARCH_" . $this->getClassName() . "_LOCK");
+    }
+
+    public function isLocked(): bool
+    {
+        \Shop::setContext(\Shop::CONTEXT_ALL);
+        return (bool) Config::get("_ACCELASEARCH_" . $this->getClassName() . "_LOCK", false);
     }
 
     public function isOperationToExecute(): bool
