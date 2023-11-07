@@ -24,6 +24,9 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "scripts": {
+        "translate" : "php bin/translate.php"
+    },
     "type": "prestashop-module",
     "config" : {
         "prepend-autoloader": false

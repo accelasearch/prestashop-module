@@ -2,10 +2,10 @@
 
 // helper script to create translation words from .jsx files to .tpl files to let prestashop scan them
 
-require_once __DIR__ . "/../../config/config.inc.php";
+require_once __DIR__ . "/../../../config/config.inc.php";
 
-$react_dir = __DIR__ . "/react/src/";
-$configuration_file = __DIR__ . "/views/templates/admin/configure.tpl";
+$react_dir = __DIR__ . "/../react/src/";
+$configuration_file = __DIR__ . "/../views/templates/admin/configure.tpl";
 
 use Symfony\Component\Finder\Finder;
 
