@@ -46,16 +46,19 @@ class Installer
             return false;
         }
 
-        $this->createToken();
+        self::createTokens();
 
         return true;
     }
 
-    public function createToken()
+    public static function createTokens()
     {
-        $token = \Tools::passwdGen(16);
-        if (!Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN"))
-            Config::updateValue('_ACCELASEARCH_FEED_RANDOM_TOKEN', $token);
+        $feedToken = \Tools::passwdGen(16);
+        $cronToken = \Tools::passwdGen(16);
+        if (empty(Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN")))
+            Config::updateValue('_ACCELASEARCH_FEED_RANDOM_TOKEN', $feedToken);
+        if (empty(Config::get("_ACCELASEARCH_CRON_TOKEN")))
+            Config::updateValue('_ACCELASEARCH_CRON_TOKEN', $cronToken);
     }
 
     public function uninstall()

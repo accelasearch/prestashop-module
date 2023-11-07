@@ -3,6 +3,7 @@
 namespace Accelasearch\Accelasearch\Config;
 
 use Accelasearch\Accelasearch\Api\AsClient;
+use Accelasearch\Accelasearch\Install\Installer;
 
 class Config
 {
@@ -16,6 +17,7 @@ class Config
     const DEFAULT_CONFIGURATION = [
         "_ACCELASEARCH_SYNCTYPE" => "CONFIGURABLE_WITH_SIMPLE",
         "_ACCELASEARCH_FEED_RANDOM_TOKEN" => "",
+        "_ACCELASEARCH_CRON_TOKEN" => "",
         "_ACCELASEARCH_COLOR_ID" => 0,
         "_ACCELASEARCH_SIZE_ID" => 0,
         "_ACCELASEARCH_API_KEY" => "",
@@ -30,6 +32,7 @@ class Config
         foreach (self::DEFAULT_CONFIGURATION as $key => $value) {
             \Configuration::updateValue($key, $value);
         }
+        Installer::createTokens();
     }
 
     public static function get($key, $default = false)

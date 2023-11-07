@@ -1,4 +1,6 @@
 <?php
+use Accelasearch\Accelasearch\Cron\Cron;
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -93,6 +95,11 @@ class Accelasearch extends Module
 
     public function getContent()
     {
+
+        //TODO: Move to an appropriate method, it's here for testing purposes
+        $cron = new Cron();
+        $cron->addOperation(new \Accelasearch\Accelasearch\Cron\Operation\FeedGeneration());
+        $cron->execute();
 
         $this->context->smarty->assign('module_dir', $this->_path);
 
