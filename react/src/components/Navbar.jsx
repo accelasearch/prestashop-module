@@ -67,7 +67,7 @@ export default function Navbar() {
             ))}
           </div>
         </div>
-        <div className="hidden sm:ml-6 sm:flex sm:items-center">
+        <div className="sm:ml-6 sm:flex sm:items-center">
           <Menu as="div" className="relative ml-3">
             <div>
               <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-8 h-8">

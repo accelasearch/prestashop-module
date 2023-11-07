@@ -41,7 +41,7 @@ export default function ShopSelection({ isOnBoarding = true }) {
 
   return (
     <div>
-      <p className="text-3xl font-bold text-zinc-800">
+      <p className="text-xl font-bold text-zinc-800">
         {t("Select the shops/languages you want to sync on AccelaSearch")}
       </p>
       {isError && (
