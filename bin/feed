@@ -4,15 +4,7 @@
 require_once __DIR__ . '/../../../config/config.inc.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Accelasearch\Accelasearch\Config\Config;
-use Accelasearch\Accelasearch\Decorator\ProductDecorator;
-use Accelasearch\Accelasearch\Entity\Shop;
-use Accelasearch\Accelasearch\Entity\Language;
-use Accelasearch\Accelasearch\Command\Feed;
-use Accelasearch\Accelasearch\Factory\ProductDataFactory;
-use Accelasearch\Accelasearch\Formatter\ArrayFormatter;
-use Accelasearch\Accelasearch\Repository\CategoryRepository;
-use Accelasearch\Accelasearch\Repository\ProductRepository;
+use Accelasearch\Accelasearch\Command\FeedFacade;
 
 @ignore_user_abort(true);
 @set_time_limit(0);
@@ -58,37 +50,7 @@ $cmd = parseCommandLineArguments($argv);
 
 $id_shop = $cmd["arguments"][0];
 $id_lang = $cmd["arguments"][1];
-$debugMode = isset($cmd["options"]["debug"]) || isset($cmd["options"]["d"]);
 
 @Context::getContext()->controller->controller_type = 'front';
 
-$shop = new Shop($id_shop);
-$language = new Language($id_lang);
-
-\Shop::setContext(\Shop::CONTEXT_SHOP, $id_shop);
-\Context::getContext()->shop = $shop->ps;
-
-// set default currency
-$currency = new \Currency(Config::get("PS_CURRENCY_DEFAULT"));
-\Context::getContext()->currency = $currency;
-
-$productRepository = new ProductRepository(\Db::getInstance(), \Context::getContext());
-$categoryRepository = new CategoryRepository(\Db::getInstance(), \Context::getContext());
-
-$productService = ProductDataFactory::create(
-    $productRepository,
-    new ProductDecorator(
-        $productRepository,
-        $shop,
-        $language,
-        new ArrayFormatter(),
-        \Context::getContext(),
-        $categoryRepository
-    ),
-    new Config(),
-    Config::get("_ACCELASEARCH_SYNCTYPE")
-);
-
-$feed = new Feed($shop, $language, $productService);
-$feed->setDebug($debugMode);
-$feed->generate();
+FeedFacade::generateByIdShopAndIdLang((int) $id_shop, (int) $id_lang);

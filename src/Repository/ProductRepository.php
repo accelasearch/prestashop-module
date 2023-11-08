@@ -73,12 +73,6 @@ class ProductRepository
         return \Product::getPriceStatic($productId, false, $attributeId, 6, null, false, false);
     }
 
-    public function getProducts(Shop $shop, Language $lang, int $start, int $limit): array
-    {
-        \Shop::setContext(\Shop::CONTEXT_SHOP, $shop->getId());
-        return \Product::getProducts($lang->getId(), $start, $limit, 'id_product', 'ASC', false, true);
-    }
-
     /**
      * @param int $offset
      * @param int $limit

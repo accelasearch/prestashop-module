@@ -7,6 +7,8 @@ use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Entity\Language;
 use Accelasearch\Accelasearch\Entity\Shop;
 use Accelasearch\Accelasearch\Factory\ContextFactory;
+use Accelasearch\Accelasearch\Factory\ProductBuilderFactory;
+use Accelasearch\Accelasearch\Logger\Log;
 use Accelasearch\Accelasearch\Service\ServiceInterface;
 use Vitalybaev\GoogleMerchant\Feed as GoogleShoppingFeed;
 use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
@@ -45,17 +47,6 @@ class Feed
         return in_array($id_product, $this->configurable_ids);
     }
 
-    public function createConfigurable($product)
-    {
-        $this->configurable_ids[] = $product["id_product"];
-        $product["id_product_attribute"] = $product["id_product"];
-        $product["id_attribute"] = 0;
-        $item = new GoogleShoppingProduct();
-        $feedProduct = new ProductBuilder($product, $item);
-        $feedProduct->build($this->shop, $this->language);
-        $this->feed->addProduct($feedProduct->getItem());
-    }
-
     public function generate()
     {
 
@@ -63,16 +54,34 @@ class Feed
         $memory = memory_get_usage();
 
         $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000);
-
+        $total = count($products);
+        $iter = 1;
+        $barWidth = 40;
         foreach ($products as $product) {
+
+            // progress
+            $progress = $iter / $total;
+            $progressWidth = (int) ($progress * $barWidth);
+            $progressBar = str_repeat('█', $progressWidth) . str_repeat(' ', $barWidth - $progressWidth);
+            if (php_sapi_name() === "cli")
+                echo "\033[K";
+
             $item = new GoogleShoppingProduct();
-            $feedProduct = new ProductBuilder($product, $item);
+            $feedProduct = ProductBuilderFactory::create(
+                $product,
+                $item,
+                Config::get("_ACCELASEARCH_SYNCTYPE")
+            );
             $feedProduct->build($this->shop, $this->language);
             $this->feed->addProduct($feedProduct->getItem());
-            if ($feedProduct->hasVariants() && !$this->isConfigurableCreated($product["id_product"])) {
-                $this->createConfigurable($product);
-            }
+
+            if (php_sapi_name() === "cli")
+                echo "Progress: [$progressBar] " . round($progress * 100, 2) . "%\r";
+            $iter++;
         }
+
+        if (php_sapi_name() === "cli")
+            echo "\n\n";
 
         $end = microtime(true);
         $memory = memory_get_usage() - $memory;
@@ -93,12 +102,12 @@ class Feed
                 $this->feed->build()
             );
         } catch (IOExceptionInterface $exception) {
-            echo "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
+            $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
+            Log::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
+            echo $message;
         }
 
         echo "Feed generated at " . $this->getOutputPath() . "\n";
-
-
     }
 
     /**

@@ -8,7 +8,7 @@ use Accelasearch\Accelasearch\Entity\Shop;
 use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
 use Vitalybaev\GoogleMerchant\Product\Availability\Availability;
 
-class ProductBuilder
+abstract class ProductBuilderAbstract
 {
     private $product;
     private $item;
@@ -19,11 +19,13 @@ class ProductBuilder
         $this->product = $product;
         $this->item = $item;
     }
-
-    public function hasVariants()
-    {
-        return (int) $this->product["id_attribute"];
-    }
+    /**
+     * Builds a product object ready to injected in Feed Object for the given shop and language.
+     *
+     * @param Shop $shop The shop object.
+     * @param Language $language The language object.
+     * @return void
+     */
     public function build(Shop $shop, Language $language)
     {
 
@@ -70,13 +72,12 @@ class ProductBuilder
         // categories
         $this->item->setProductType($this->product['category_path']);
 
-        // if has variants
-        if ((int) $this->product["id_attribute"]) {
-            $this->item->setAttribute("item_group_id", $this->product['id_product']);
-        }
-
     }
 
+    public function hasVariants()
+    {
+        return (int) $this->product["id_attribute"];
+    }
     public function getItem()
     {
         return $this->item;

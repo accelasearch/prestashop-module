@@ -9,7 +9,7 @@ class AllSimpleService extends AbstractService implements ServiceInterface
 {
     public function getProducts(Shop $shop, Language $language, int $start, int $limit): array
     {
-        $products = $this->productRepository->getProducts($shop, $language, $start, $limit);
+        $products = $this->productRepository->getDbProducts($start, $limit, $language->getId(), $shop->ps);
         $products = $this->productDecorator->decorateProducts($products);
         return $products;
     }
