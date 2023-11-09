@@ -1,5 +1,6 @@
 <?php
 use Accelasearch\Accelasearch\Cron\Cron;
+use Accelasearch\Accelasearch\Module\Downloader;
 
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
@@ -41,7 +42,7 @@ class Accelasearch extends Module
     {
         $this->name = 'accelasearch';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '0.0.1';
         $this->author = 'AccelaSearch';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7', 'max' => _PS_VERSION_];
@@ -89,7 +90,7 @@ class Accelasearch extends Module
             'accelasearch_controller_url' => $actions_controller_link,
             'accelasearch_controller_token' => Tools::getAdminTokenLite('AccelasearchAdmin'),
             'accelasearch_public_url' => Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/react/public/',
-            '_AS' => Config::getBackofficeConfig()
+            '_AS' => Config::getBackofficeConfig($this)
         ]);
     }
 
@@ -97,9 +98,11 @@ class Accelasearch extends Module
     {
 
         //TODO: Move to an appropriate method, it's here for testing purposes
-        $cron = new Cron();
-        $cron->addOperation(new \Accelasearch\Accelasearch\Cron\Operation\FeedGeneration());
-        $cron->execute();
+        // $cron = new Cron();
+        // $cron->addOperation(new \Accelasearch\Accelasearch\Cron\Operation\FeedGeneration());
+        // $cron->execute();
+
+        // Downloader::updateModule(__DIR__ . "/../");
 
         $this->context->smarty->assign('module_dir', $this->_path);
 

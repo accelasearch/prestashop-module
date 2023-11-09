@@ -4,6 +4,12 @@ namespace Accelasearch\Accelasearch\Controller;
 
 abstract class AbstractController
 {
+
+    private $module;
+    public function __construct(\Module $module)
+    {
+        $this->module = $module;
+    }
     public function response($data)
     {
         header('Content-Type: application/json');

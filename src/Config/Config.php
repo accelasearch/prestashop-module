@@ -4,6 +4,7 @@ namespace Accelasearch\Accelasearch\Config;
 
 use Accelasearch\Accelasearch\Api\AsClient;
 use Accelasearch\Accelasearch\Install\Installer;
+use Accelasearch\Accelasearch\Module\Downloader;
 
 class Config
 {
@@ -85,11 +86,14 @@ class Config
     /**
      * Initial configuration loaded in backoffice page to render the react app with specific behaviour
      */
-    public static function getBackofficeConfig()
+    public static function getBackofficeConfig(\Module $module)
     {
         $apiKey = self::get("_ACCELASEARCH_API_KEY");
         $logged = AsClient::apiKeyVerify($apiKey);
         return [
+            "systemStatus" => [
+                "needUpdate" => Downloader::needUpdateStatic($module->version),
+            ],
             "userStatus" => [
                 "moduleDir" => _PS_MODULE_DIR_ . "accelasearch/",
                 "logged" => $logged,

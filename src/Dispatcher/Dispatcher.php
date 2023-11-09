@@ -4,6 +4,13 @@ namespace Accelasearch\Accelasearch\Dispatcher;
 
 class Dispatcher
 {
+
+    private $module;
+    public function __construct(\Module $module)
+    {
+        $this->module = $module;
+    }
+
     /**
      * Handles the request by getting the controller for the given name and calling its handleRequest method.
      * 
@@ -22,7 +29,7 @@ class Dispatcher
     {
         $name = str_replace('ajaxProcess', '', $name);
         $controllerName = $this->getControllerName($name);
-        $controller = new $controllerName();
+        $controller = new $controllerName($this->module);
         return $controller;
     }
 

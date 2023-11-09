@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "11dcf11bc59623e66d8bef8c51e4c2e2",
+    "content-hash": "1e29837289e26045c34db4efcfdc4244",
     "packages": [
         {
             "name": "accelasearch/google-merchant-validator",
@@ -99,6 +99,48 @@
                 "source": "https://github.com/accelasearch/sdk-php/tree/0.5"
             },
             "time": "2023-10-19T12:58:25+00:00"
+        },
+        {
+            "name": "ector/release-downloader",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ps-ector/release-downloader.git",
+                "reference": "474c9e0c675222590bcf1ac538aae644773ac24d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ps-ector/release-downloader/zipball/474c9e0c675222590bcf1ac538aae644773ac24d",
+                "reference": "474c9e0c675222590bcf1ac538aae644773ac24d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.4",
+                "phpunit/phpunit": "^7.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ector\\ReleaseDownloader\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "DGCAL SRL",
+                    "email": "f.mineo@dgcal.it",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Ector modules download manager",
+            "support": {
+                "issues": "https://github.com/ps-ector/release-downloader/issues",
+                "source": "https://github.com/ps-ector/release-downloader/tree/1.1.1"
+            },
+            "time": "2023-11-09T10:31:51+00:00"
         },
         {
             "name": "sabre/uri",
@@ -4158,7 +4200,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "accelasearch/sdk-php": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],

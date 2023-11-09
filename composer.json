@@ -36,6 +36,7 @@
     "require": {
         "vitalybaev/google-merchant-feed": "^2.6",
         "accelasearch/google-merchant-validator": "^0.2.0",
-        "accelasearch/sdk-php": "dev-main"
+        "accelasearch/sdk-php": "dev-main",
+        "ector/release-downloader": "^1.1"
     }
 }

@@ -33,8 +33,8 @@ class AccelasearchAdminController extends ModuleAdminController
 
     public function __construct()
     {
-        $this->dispatcher = new Dispatcher();
         parent::__construct();
+        $this->dispatcher = new Dispatcher($this->module);
     }
 
     // create a controller to redirect to configure page if not accessed via ajax
@@ -87,6 +87,11 @@ class AccelasearchAdminController extends ModuleAdminController
     }
 
     public function ajaxProcessDisconnect()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessUpdateModule()
     {
         $this->dispatcher->handleRequest(__FUNCTION__);
     }

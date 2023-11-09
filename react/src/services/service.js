@@ -60,6 +60,12 @@ export const serviceApi = createApi({
         body: { configs },
       }),
     }),
+    updateModule: builder.mutation({
+      query: () => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=updateModule`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -72,4 +78,5 @@ export const {
   useGetCronjobStatusQuery,
   useDisconnectMutation,
   useGetLogsQuery,
+  useUpdateModuleMutation,
 } = serviceApi;
