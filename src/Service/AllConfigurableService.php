@@ -19,10 +19,13 @@ class AllConfigurableService extends AbstractService implements ServiceInterface
      *
      * @return array An array of products with their configurable options, SKUs, features, and attributes.
      */
-    public function getProducts(Shop $shop, Language $language, int $start, int $limit): array
+    public function getProducts(Shop $shop, Language $language, int $start, int $limit, $progressIndicator = null): array
     {
         $products = $this->productRepository->getDbProducts($start, $limit, $language->getId(), $shop->ps);
         $products = $this->productDecorator->decorateProducts($products);
+
+        if (php_sapi_name() === "cli")
+            $progressIndicator->advance();
 
         // group same id_product under same array
         $products = array_reduce($products, function ($carry, $item) {

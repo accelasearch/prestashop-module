@@ -4,18 +4,25 @@ namespace Accelasearch\Accelasearch\Cron\Operation;
 
 use Accelasearch\Accelasearch\Command\FeedFacade;
 use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Logger\RemoteLog;
 
 class FeedGeneration extends OperationAbstract
 {
     public function execute()
     {
+
         $this->lock();
 
         $shops = Config::getShopsToSync();
         @\Context::getContext()->controller->controller_type = 'front';
 
         foreach ($shops as $shop) {
-            FeedFacade::generateByIdShopAndIdLang((int) $shop->id_shop, (int) $shop->id_lang);
+            try {
+                FeedFacade::generateByIdShopAndIdLang((int) $shop->id_shop, (int) $shop->id_lang);
+            } catch (\Throwable $e) {
+                $this->unlock();
+                RemoteLog::write($e->getMessage(), RemoteLog::CRITICAL, RemoteLog::CONTEXT_PRODUCT_FEED_CREATION);
+            }
         }
 
         $this->updateExecutionTime();

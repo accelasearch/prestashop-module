@@ -17,7 +17,7 @@ class AllConfigurableWithSimpleService extends AbstractService implements Servic
      * @param int $limit The limit of products to return.
      * @return array The array of products.
      */
-    public function getProducts(Shop $shop, Language $language, int $start, int $limit): array
+    public function getProducts(Shop $shop, Language $language, int $start, int $limit, $progressIndicator = null): array
     {
         $products = $this->productRepository->getDbProducts($start, $limit, $language->getId(), $shop->ps);
         $products = $this->productDecorator->decorateProducts($products);
@@ -25,6 +25,8 @@ class AllConfigurableWithSimpleService extends AbstractService implements Servic
             if (!$this->isConfigurableCreated($product["id_product"])) {
                 $products[] = $this->createConfigurable($product);
             }
+            if (php_sapi_name() === "cli")
+                $progressIndicator->advance();
         }
         return $products;
     }

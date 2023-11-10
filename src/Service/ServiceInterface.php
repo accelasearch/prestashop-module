@@ -7,5 +7,5 @@ use Accelasearch\Accelasearch\Entity\Shop;
 
 interface ServiceInterface
 {
-    public function getProducts(Shop $shop, Language $language, int $start, int $limit): array;
+    public function getProducts(Shop $shop, Language $language, int $start, int $limit, $progressIndicator = null): array;
 }

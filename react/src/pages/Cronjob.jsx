@@ -6,7 +6,7 @@ export default function Cronjob() {
   return (
     <div>
       <p className="text-3xl font-bold text-zinc-800">{t("Cronjob setup")}</p>
-      <div className="rounded-md bg-yellow-50 p-4">
+      <div className="rounded-md bg-yellow-50 p-4 mt-8">
         <div className="flex">
           <div className="flex-shrink-0">
             <ExclamationTriangleIcon

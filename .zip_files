@@ -2,6 +2,7 @@
 ./controllers
 ./src
 ./vendor
+./translations
 ./views
 ./*.php
 ./*.md

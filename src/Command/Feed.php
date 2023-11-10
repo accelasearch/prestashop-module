@@ -16,6 +16,7 @@ use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Helper\ProgressIndicator;
 
 class Feed
 {
@@ -57,7 +58,21 @@ class Feed
 
         Log::write("Getting products from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
-        $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000);
+        $progressIndicator = null;
+
+        if (php_sapi_name() === "cli") {
+            $progressIndicator = new ProgressIndicator($output);
+            $progressIndicator->start("Getting products from Database");
+        }
+
+        $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000, $progressIndicator);
+
+        if (php_sapi_name() === "cli") {
+            $progressIndicator->finish(count($products) . " Products retrieved");
+            echo "\n\n";
+        }
+
+
 
         Log::write(count($products) . " Products retrieved in " . (microtime(true) - $start), Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 

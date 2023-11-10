@@ -1,4 +1,7 @@
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowDownTrayIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/20/solid";
 import { useSelector } from "react-redux";
 import { t } from "../utils";
 import { useUpdateModuleMutation } from "../services/service";
@@ -48,10 +51,16 @@ export default function Notice() {
                 {updateModuleLoading ? (
                   <Loading label={t("Updating module, wait...")} />
                 ) : (
-                  <span>
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-x-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  >
                     {t("Update now")}
-                    <span aria-hidden="true"> &rarr;</span>
-                  </span>
+                    <ArrowDownTrayIcon
+                      className="-mr-0.5 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </button>
                 )}
               </button>
             </p>
