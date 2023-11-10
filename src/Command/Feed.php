@@ -14,6 +14,7 @@ use Vitalybaev\GoogleMerchant\Feed as GoogleShoppingFeed;
 use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class Feed
 {
@@ -47,24 +48,20 @@ class Feed
         return in_array($id_product, $this->configurable_ids);
     }
 
-    public function generate()
+    public function generate($output = null)
     {
 
         $start = microtime(true);
         $memory = memory_get_usage();
 
         $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000);
-        $total = count($products);
-        $iter = 1;
-        $barWidth = 40;
-        foreach ($products as $product) {
 
-            // progress
-            $progress = $iter / $total;
-            $progressWidth = (int) ($progress * $barWidth);
-            $progressBar = str_repeat('█', $progressWidth) . str_repeat(' ', $barWidth - $progressWidth);
-            if (php_sapi_name() === "cli")
-                echo "\033[K";
+        if (php_sapi_name() === "cli") {
+            $progressBar = new ProgressBar($output, count($products));
+            $progressBar->start();
+        }
+
+        foreach ($products as $product) {
 
             $item = new GoogleShoppingProduct();
             $feedProduct = ProductBuilderFactory::create(
@@ -76,9 +73,11 @@ class Feed
             $this->feed->addProduct($feedProduct->getItem());
 
             if (php_sapi_name() === "cli")
-                echo "Progress: [$progressBar] " . round($progress * 100, 2) . "%\r";
-            $iter++;
+                $progressBar->advance();
         }
+
+        if (php_sapi_name() === "cli")
+            $progressBar->finish();
 
         if (php_sapi_name() === "cli")
             echo "\n\n";

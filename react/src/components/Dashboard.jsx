@@ -4,6 +4,7 @@ import Logs from "../pages/Logs";
 import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
 import Notice from "./Notice";
+import { t } from "../utils";
 
 export default function Dashboard() {
   const page = useSelector((state) => state.user.page);
@@ -14,9 +15,9 @@ export default function Dashboard() {
       <div className="py-8">
         <Notice />
         <div className="py-4">
-          {page.name === "Settings" && <Settings />}
-          {page.name === "Logs" && <Logs />}
-          {page.name === "Help" && <Help />}
+          {page.name === t("Settings") && <Settings />}
+          {page.name === t("Logs") && <Logs />}
+          {page.name === t("Help") && <Help />}
         </div>
       </div>
     </div>

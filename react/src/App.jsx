@@ -13,7 +13,9 @@ export default function App() {
         "relative min-h-full rounded bg-white"
       )}
     >
-      <Toaster containerStyle={{ position: "absolute" }} />
+      <div>
+        <Toaster containerStyle={{ position: "absolute" }} />
+      </div>
       {_AS.userStatus.logged ? <AsApp /> : <Welcome />}
     </main>
   );

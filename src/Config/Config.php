@@ -95,6 +95,7 @@ class Config
                 "needUpdate" => Downloader::needUpdateStatic($module->version),
             ],
             "userStatus" => [
+                "cronjobToken" => self::get("_ACCELASEARCH_CRON_TOKEN"),
                 "moduleDir" => _PS_MODULE_DIR_ . "accelasearch/",
                 "logged" => $logged,
                 "onBoarding" => (int) self::get("_ACCELASEARCH_ONBOARDING", 0),

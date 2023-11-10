@@ -14,13 +14,14 @@ abstract class OperationAbstract
     {
         \Shop::setContext(\Shop::CONTEXT_ALL);
         $url = Cron::getUrl($this->getClassName());
-        return file_get_contents(
+        @file_get_contents(
             $url,
             false,
             stream_context_create([
-                "http" => ["timeout" => 0.2]
+                "http" => ["timeout" => 1]
             ])
         );
+        return true;
     }
 
     private function getClassName()

@@ -12,7 +12,7 @@ use Symfony\Component\Finder\Finder;
 $finder = new Finder();
 $finder
     ->files()
-    ->contains('/\{t\(\s*"([^"]+)"\s*\)\}/')
+    ->contains('/\{?t\(\s*"([^"]+)"\s*\)\}?/')
     ->in($react_dir)->name('*.jsx');
 
 $words = [
@@ -21,7 +21,7 @@ $words = [
 
 foreach ($finder as $file) {
     $content = $file->getContents();
-    preg_match_all('/\{t\(\s*"([^"]+)"\s*\)\}/', $content, $matches);
+    preg_match_all('/\{?t\(\s*"([^"]+)"\s*\)\}?/', $content, $matches);
     foreach ($matches[1] as $match) {
         $words[] = '"' . $match . '" : "{l s=\'' . addslashes($match) . '\' mod=\'accelasearch\'}",';
     }

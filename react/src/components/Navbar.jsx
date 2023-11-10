@@ -112,7 +112,7 @@ export default function Navbar() {
                         "block px-4 py-2 text-sm text-red-700 w-full text-left"
                       )}
                     >
-                      Disconnect
+                      {t("Disconnect")}
                     </button>
                   )}
                 </Menu.Item>

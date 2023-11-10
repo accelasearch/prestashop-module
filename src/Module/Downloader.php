@@ -2,6 +2,7 @@
 
 namespace Accelasearch\Accelasearch\Module;
 
+use Accelasearch\Accelasearch\Exception\ModuleUpdateException;
 use Ector\ReleaseDownloader\Downloader as ReleaseDownloader;
 
 class Downloader
@@ -9,13 +10,14 @@ class Downloader
     const OWNER = "buggyzap";
     const REPO = "accelasearch";
     const TOKEN = null;
-    const TEST_MODE = false;
+    const TEST_MODE = true;
 
     private $downloader;
 
     public function __construct()
     {
-        $this->downloader = new ReleaseDownloader(self::OWNER, self::REPO, null, self::TOKEN);
+        //TODO: Uncomment this line to enable auto update
+        // $this->downloader = new ReleaseDownloader(self::OWNER, self::REPO, null, self::TOKEN);
     }
 
     public function needUpdate($current_version)
@@ -51,9 +53,13 @@ class Downloader
 
     public function updateModule(\Module $module)
     {
-        $this->downloader->addAssetToDownload($module->name . '.zip');
-        $this->download($module);
-        $this->extract();
+        try {
+            $this->downloader->addAssetToDownload($module->name . '.zip');
+            $this->download($module);
+            $this->extract();
+        } catch (\Exception $e) {
+            throw new ModuleUpdateException("Unable to get latest version");
+        }
     }
 
 }

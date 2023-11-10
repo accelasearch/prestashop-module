@@ -18,7 +18,7 @@ use Accelasearch\Accelasearch\Repository\ProductRepository;
  */
 class FeedFacade
 {
-    public static function generateByIdShopAndIdLang(int $id_shop, int $id_lang)
+    public static function generateByIdShopAndIdLang(int $id_shop, int $id_lang, $output = null)
     {
         $shop = new Shop($id_shop);
         $language = new Language($id_lang);
@@ -48,6 +48,6 @@ class FeedFacade
 
         $feed = new Feed($shop, $language, $productService);
         $feed->setDebug(true);
-        $feed->generate();
+        $feed->generate($output);
     }
 }

@@ -25,7 +25,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "translate" : "php bin/translate.php"
+        "translate" : "php scripts/translate.php",
+        "md5allocate" : "php scripts/md5allocate.php"
     },
     "type": "prestashop-module",
     "config" : {
@@ -37,6 +38,7 @@
         "vitalybaev/google-merchant-feed": "^2.6",
         "accelasearch/google-merchant-validator": "^0.2.0",
         "accelasearch/sdk-php": "dev-main",
-        "ector/release-downloader": "^1.1"
+        "ector/release-downloader": "^1.1",
+        "guzzlehttp/guzzle": "^7.0"
     }
 }

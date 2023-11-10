@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   page: { name: "Settings" },
-  userStatus: _AS.userStatus,
-  systemStatus: _AS.systemStatus,
+  userStatus: _AS?.userStatus,
+  systemStatus: _AS?.systemStatus,
 };
 
 export const userSlice = createSlice({

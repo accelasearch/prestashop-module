@@ -1,6 +1,5 @@
 <?php
 use Accelasearch\Accelasearch\Cron\Cron;
-use Accelasearch\Accelasearch\Module\Downloader;
 
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
@@ -33,7 +32,6 @@ if (file_exists($autoload))
 use Accelasearch\Accelasearch\Install\Installer;
 use Accelasearch\Accelasearch\Sql\Manager;
 use Accelasearch\Accelasearch\Config\Config;
-use Accelasearch\Accelasearch\Api\AsClient;
 
 class Accelasearch extends Module
 {
@@ -42,7 +40,7 @@ class Accelasearch extends Module
     {
         $this->name = 'accelasearch';
         $this->tab = 'front_office_features';
-        $this->version = '0.0.1';
+        $this->version = '1.0.0';
         $this->author = 'AccelaSearch';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7', 'max' => _PS_VERSION_];
@@ -96,13 +94,6 @@ class Accelasearch extends Module
 
     public function getContent()
     {
-
-        //TODO: Move to an appropriate method, it's here for testing purposes
-        // $cron = new Cron();
-        // $cron->addOperation(new \Accelasearch\Accelasearch\Cron\Operation\FeedGeneration());
-        // $cron->execute();
-
-        // Downloader::updateModule(__DIR__ . "/../");
 
         $this->context->smarty->assign('module_dir', $this->_path);
 

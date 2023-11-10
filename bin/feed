@@ -5,52 +5,23 @@ require_once __DIR__ . '/../../../config/config.inc.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Accelasearch\Accelasearch\Command\FeedFacade;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-@ignore_user_abort(true);
 @set_time_limit(0);
 @ini_set('memory_limit', '1024M');
-function parseCommandLineArguments($argv)
-{
-    $options = [];
-    $arguments = [];
 
-    for ($i = 1; $i < count($argv); $i++) {
-        $arg = $argv[$i];
-
-        if (strpos($arg, '--') === 0) {
-            list($key, $value) = explode('=', substr($arg, 2), 2) + [null, true];
-            $options[$key] = $value;
-        } elseif (strpos($arg, '-') === 0) {
-            $shortOptions = str_split(substr($arg, 1));
-            foreach ($shortOptions as $shortOption) {
-                $options[$shortOption] = true;
-            }
-        } else {
-            $arguments[] = $arg;
-        }
-    }
-
-    return ['options' => $options, 'arguments' => $arguments];
-}
-
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-
-if (php_sapi_name() !== 'cli') {
-    exit;
-}
-
-if ($argc < 3) {
-    echo "Usage: php bin/feed <id_shop> <id_lang>\n";
-    exit(1);
-}
-
-$cmd = parseCommandLineArguments($argv);
-
-$id_shop = $cmd["arguments"][0];
-$id_lang = $cmd["arguments"][1];
-
-@Context::getContext()->controller->controller_type = 'front';
-
-FeedFacade::generateByIdShopAndIdLang((int) $id_shop, (int) $id_lang);
+(new Application('Accelasearch', '1.0.0'))
+    ->register('generate')
+    ->addArgument('id_shop', InputArgument::REQUIRED, 'ID of the shop')
+    ->addArgument('id_lang', InputArgument::REQUIRED, 'ID of the language')
+    ->setCode(function (InputInterface $input, OutputInterface $output) {
+        $id_shop = $input->getArgument('id_shop');
+        $id_lang = $input->getArgument('id_lang');
+        FeedFacade::generateByIdShopAndIdLang((int) $id_shop, (int) $id_lang, $output);
+    })
+    ->getApplication()
+    ->setDefaultCommand('generate', true) // Single command application
+    ->run();

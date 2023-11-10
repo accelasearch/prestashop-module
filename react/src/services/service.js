@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseUrl =
-  window.accelasearch_controller_url.split("?")[0] ??
+  window?.accelasearch_controller_url?.split("?")[0] ??
   "http://localhost:8199/adminPS/index.php";
 
 const token =

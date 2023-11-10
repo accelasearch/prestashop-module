@@ -33,7 +33,20 @@ class Cron
 
     public static function getUrl($operation)
     {
-        return _PS_BASE_URL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?operation=" . $operation . "&token=" . Config::get("_ACCELASEARCH_CRON_TOKEN");
+        return _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?operation=" . $operation . "&token=" . Config::get("_ACCELASEARCH_CRON_TOKEN");
+    }
+
+    public function updateCronjobLastexec()
+    {
+        Config::updateValue("_ACCELASEARCH_CRONJOB_LASTEXEC", time());
+    }
+
+    public function updateOnboarding()
+    {
+        $onBoarding = (int) Config::get("_ACCELASEARCH_ONBOARDING");
+        if ($onBoarding === 2) {
+            Config::updateValue("_ACCELASEARCH_ONBOARDING", 3);
+        }
     }
 
 }
