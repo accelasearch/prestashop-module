@@ -97,6 +97,7 @@ class Config
             "userStatus" => [
                 "cronjobToken" => self::get("_ACCELASEARCH_CRON_TOKEN"),
                 "moduleDir" => _PS_MODULE_DIR_ . "accelasearch/",
+                "shopUrl" => \Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__,
                 "logged" => $logged,
                 "onBoarding" => (int) self::get("_ACCELASEARCH_ONBOARDING", 0),
                 "syncType" => self::get("_ACCELASEARCH_SYNCTYPE", "CONFIGURABLE_WITH_SIMPLE"),

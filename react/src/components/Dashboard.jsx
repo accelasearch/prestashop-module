@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
 import Notice from "./Notice";
 import { t } from "../utils";
+import Cronjob from "../pages/Cronjob";
 
 export default function Dashboard() {
   const page = useSelector((state) => state.user.page);
@@ -18,6 +19,7 @@ export default function Dashboard() {
           {page.name === t("Settings") && <Settings />}
           {page.name === t("Logs") && <Logs />}
           {page.name === t("Help") && <Help />}
+          {page.name === t("Cronjob") && <Cronjob />}
         </div>
       </div>
     </div>

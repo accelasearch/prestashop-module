@@ -33,7 +33,7 @@ const syncType = [
 ];
 
 const syncPosition = syncType.findIndex(
-  (sync) => sync.slug === _AS.userStatus.syncType
+  (sync) => sync.slug === _AS?.userStatus?.syncType
 );
 
 export default function SyncTypeSelection() {

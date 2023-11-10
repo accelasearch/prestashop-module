@@ -9,6 +9,7 @@ use Accelasearch\Accelasearch\Entity\Shop;
 use Accelasearch\Accelasearch\Factory\ContextFactory;
 use Accelasearch\Accelasearch\Factory\ProductBuilderFactory;
 use Accelasearch\Accelasearch\Logger\Log;
+use Accelasearch\Accelasearch\Logger\RemoteLog;
 use Accelasearch\Accelasearch\Service\ServiceInterface;
 use Vitalybaev\GoogleMerchant\Feed as GoogleShoppingFeed;
 use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
@@ -54,7 +55,11 @@ class Feed
         $start = microtime(true);
         $memory = memory_get_usage();
 
+        Log::write("Getting products from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
+
         $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000);
+
+        Log::write(count($products) . " Products retrieved in " . (microtime(true) - $start), Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
         if (php_sapi_name() === "cli") {
             $progressBar = new ProgressBar($output, count($products));
@@ -102,9 +107,11 @@ class Feed
             );
         } catch (IOExceptionInterface $exception) {
             $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
-            Log::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
+            RemoteLog::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
             echo $message;
         }
+
+        Log::write("Feed generated in " . $this->execution_time . ", memory used: " . $this->memory_used, Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
         echo "Feed generated at " . $this->getOutputPath() . "\n";
     }

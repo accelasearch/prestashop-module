@@ -8,8 +8,11 @@ export default function AsApp() {
 
   return (
     <div>
-      {onBoarding < 3 && <OnBoarding number={parseInt(onBoarding)} />}
-      {onBoarding === 3 && <Dashboard />}
+      {onBoarding < 3 ? (
+        <OnBoarding number={parseInt(onBoarding)} />
+      ) : (
+        <Dashboard />
+      )}
     </div>
   );
 }

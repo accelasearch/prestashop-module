@@ -1,7 +1,5 @@
 import { t, cx } from "../utils";
-import { Fragment } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { ArrowTopRightOnSquareIcon, UserIcon } from "@heroicons/react/20/solid";
+import { PowerIcon } from "@heroicons/react/20/solid";
 import { useDispatch, useSelector } from "react-redux";
 import { setPage } from "../features/user/userSlice";
 import { useDisconnectMutation } from "../services/service";
@@ -10,6 +8,7 @@ import toast from "react-hot-toast";
 export default function Navbar() {
   const menu = [
     { name: t("Settings") },
+    { name: t("Cronjob") },
     { name: t("Logs") },
     { name: t("Help") },
   ];
@@ -68,57 +67,14 @@ export default function Navbar() {
           </div>
         </div>
         <div className="sm:ml-6 sm:flex sm:items-center">
-          <Menu as="div" className="relative ml-3">
-            <div>
-              <Menu.Button className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-8 h-8">
-                <span className="absolute -inset-1.5" />
-                <span className="sr-only">Open user menu</span>
-                <UserIcon />
-              </Menu.Button>
-            </div>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <Menu.Item>
-                  {({ active }) => (
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href="https://console.accelasearch.io/dashboard"
-                      className={cx(
-                        active ? "bg-gray-100" : "",
-                        "block px-4 py-2 text-sm text-gray-700"
-                      )}
-                    >
-                      {t("Go to Accelasearch Dashboard")}
-                      <ArrowTopRightOnSquareIcon className="inline-block ml-2 h-4 w-4" />
-                    </a>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      type="button"
-                      onClick={handleDisconnect}
-                      className={cx(
-                        active ? "bg-gray-100" : "",
-                        "block px-4 py-2 text-sm text-red-700 w-full text-left"
-                      )}
-                    >
-                      {t("Disconnect")}
-                    </button>
-                  )}
-                </Menu.Item>
-              </Menu.Items>
-            </Transition>
-          </Menu>
+          <button
+            type="button"
+            onClick={() => handleDisconnect()}
+            className="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          >
+            <PowerIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+            {t("Disconnect")}
+          </button>
         </div>
       </div>
     </div>

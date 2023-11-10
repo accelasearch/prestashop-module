@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { t } from "../../utils";
 
 const initialState = {
-  page: { name: "Settings" },
+  page: { name: t("Settings") },
   userStatus: _AS?.userStatus,
   systemStatus: _AS?.systemStatus,
 };

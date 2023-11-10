@@ -8,6 +8,7 @@ use Accelasearch\Accelasearch\Entity\Language;
 use Accelasearch\Accelasearch\Entity\Shop;
 use Accelasearch\Accelasearch\Factory\ProductDataFactory;
 use Accelasearch\Accelasearch\Formatter\ArrayFormatter;
+use Accelasearch\Accelasearch\Logger\Log;
 use Accelasearch\Accelasearch\Repository\CategoryRepository;
 use Accelasearch\Accelasearch\Repository\ProductRepository;
 
@@ -20,6 +21,9 @@ class FeedFacade
 {
     public static function generateByIdShopAndIdLang(int $id_shop, int $id_lang, $output = null)
     {
+
+        Log::write("Generating feed started for shop $id_shop and language $id_lang", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
+
         $shop = new Shop($id_shop);
         $language = new Language($id_lang);
 
@@ -49,5 +53,7 @@ class FeedFacade
         $feed = new Feed($shop, $language, $productService);
         $feed->setDebug(true);
         $feed->generate($output);
+
+        Log::write("Feed generated", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
     }
 }
