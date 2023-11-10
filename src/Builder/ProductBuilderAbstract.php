@@ -41,6 +41,8 @@ abstract class ProductBuilderAbstract
         $this->item->setBrand($this->product['manufacturer']);
         $this->item->setGtin($this->product['ean']);
 
+        $this->item->setAttribute("sku", $this->product["reference"]);
+
         // set color if exists and id_attribute is not 0
         if (isset($this->product["attributes"][$colorLabel]) && (int) $this->product["id_attribute"])
             $this->item->setColor($this->product["attributes"][$colorLabel]);
