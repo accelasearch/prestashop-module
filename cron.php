@@ -6,6 +6,7 @@ require_once __DIR__ . "/vendor/autoload.php";
 
 @ignore_user_abort(true);
 @set_time_limit(0);
+
 $operation = Tools::getValue("operation");
 $token = Tools::getValue("token");
 if ($token != Configuration::get("_ACCELASEARCH_CRON_TOKEN")) {

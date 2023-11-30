@@ -1,6 +1,4 @@
 <?php
-use Accelasearch\Accelasearch\Cron\Cron;
-use Accelasearch\Accelasearch\Entity\AsShop;
 
 /**
  * Copyright since 2007 PrestaShop SA and Contributors

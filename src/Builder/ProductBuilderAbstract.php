@@ -38,10 +38,14 @@ abstract class ProductBuilderAbstract
         $this->item->setDescription($this->product['description']);
         $this->item->setLink($this->product['link']);
         $this->item->setImage($this->product['cover']);
-        $this->item->setAttribute("brand", $this->product['manufacturer'], true);
+
+        if (!empty($this->product["manufacturer"]))
+            $this->item->setAttribute("brand", $this->product['manufacturer'], true);
+
         $this->item->setGtin($this->product['ean']);
 
-        $this->item->setAttribute("sku", $this->product["reference"], true);
+        if (!empty($this->product["reference"]))
+            $this->item->setAttribute("sku", $this->product["reference"], true);
 
         // set color if exists and id_attribute is not 0
         if (isset($this->product["attributes"][$colorLabel]) && (int) $this->product["id_attribute"])

@@ -26,7 +26,8 @@
     "prefer-stable": true,
     "scripts": {
         "translate" : "php scripts/translate.php",
-        "md5allocate" : "php scripts/md5allocate.php"
+        "md5allocate" : "php scripts/md5allocate.php",
+        "test" : "vendor/bin/phpunit tests"
     },
     "type": "prestashop-module",
     "config" : {

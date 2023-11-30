@@ -58,4 +58,23 @@ class AsShop
         }
         return self::$shop_mapper->search();
     }
+
+    public static function getByUrl(string $url)
+    {
+        $shops = self::getShops();
+        foreach ($shops as $shop) {
+            if ($shop->getUrl() === $url) {
+                return $shop;
+            }
+        }
+        return null;
+    }
+
+    public static function updateFeedUrlByShop($shop, $feedUrl)
+    {
+        $shop->setCmsData([
+            "feedUrl" => $feedUrl
+        ]);
+        self::$shop_mapper->update($shop);
+    }
 }

@@ -78,8 +78,8 @@ header-fix:
 phpstan:
 	_PS_ROOT_DIR_=/var/www/html vendor/bin/phpstan analyse --configuration=tests/phpstan/phpstan.neon
 
-# target: run-tests - Run tests
-run-tests:
+# target: test - Run tests
+test:
 	@echo "Running tests..."
 	@vendor/bin/phpunit tests
 

@@ -36,9 +36,12 @@ class Lock
         return (bool) Config::get("_ACCELASEARCH_" . $this->name . "_LOCK", false);
     }
 
-    public static function getLocks()
+    public static function getLocks($db = null)
     {
-        $_locks = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "configuration WHERE name LIKE '_ACCELASEARCH_%_LOCK'");
+        if ($db === null) {
+            $db = Db::getInstance();
+        }
+        $_locks = $db->executeS("SELECT * FROM " . _DB_PREFIX_ . "configuration WHERE name LIKE '_ACCELASEARCH_%_LOCK'");
         $locks = [];
         foreach ($_locks as $lock) {
             $name = str_replace("_ACCELASEARCH_", "", $lock["name"]);
@@ -51,12 +54,48 @@ class Lock
         return $locks;
     }
 
-    public static function getExpiredLocks()
+    public static function getExpiredLocks($db = null)
     {
-        $locks = self::getLocks();
+        $locks = self::getLocks($db);
         $locks = array_filter($locks, function ($lock) {
             return $lock["value"] < time() - self::CRITICAL_DURATION;
         });
         return $locks;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTimestamp()
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * @param mixed $timestamp 
+     * @return self
+     */
+    public function setTimestamp($timestamp): self
+    {
+        $this->timestamp = $timestamp;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name 
+     * @return self
+     */
+    public function setName($name): self
+    {
+        $this->name = $name;
+        return $this;
     }
 }

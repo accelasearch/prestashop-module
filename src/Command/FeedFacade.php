@@ -6,11 +6,13 @@ use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Decorator\ProductDecorator;
 use Accelasearch\Accelasearch\Entity\Language;
 use Accelasearch\Accelasearch\Entity\Shop;
+use Accelasearch\Accelasearch\Factory\ContextFactory;
 use Accelasearch\Accelasearch\Factory\ProductDataFactory;
 use Accelasearch\Accelasearch\Formatter\ArrayFormatter;
 use Accelasearch\Accelasearch\Logger\Log;
 use Accelasearch\Accelasearch\Repository\CategoryRepository;
 use Accelasearch\Accelasearch\Repository\ProductRepository;
+use Vitalybaev\GoogleMerchant\Feed as GoogleShoppingFeed;
 
 /**
  * This class provides a static method to generate a feed by shop and language IDs.
@@ -24,7 +26,7 @@ class FeedFacade
 
         Log::write("Generating feed started for shop $id_shop and language $id_lang", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
-        $shop = new Shop($id_shop);
+        $shop = new Shop($id_shop, \Context::getContext());
         $language = new Language($id_lang);
 
         \Shop::setContext(\Shop::CONTEXT_SHOP, $id_shop);
@@ -50,7 +52,13 @@ class FeedFacade
             Config::get("_ACCELASEARCH_SYNCTYPE")
         );
 
-        $feed = new Feed($shop, $language, $productService);
+        $feed = new GoogleShoppingFeed(
+            $shop->ps->name . " - " . $language->ps->name,
+            ContextFactory::getContext()->link->getBaseLink($shop->getId()),
+            "Google Shopping Feed for " . $shop->ps->name . " - " . $language->ps->name
+        );
+
+        $feed = new Feed($shop, $language, $productService, $feed);
         $feed->setDebug(true);
         $feed->generate($output);
 

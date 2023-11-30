@@ -2,11 +2,9 @@
 
 namespace Accelasearch\Accelasearch\Command;
 
-use Accelasearch\Accelasearch\Builder\ProductBuilder;
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Entity\Language;
 use Accelasearch\Accelasearch\Entity\Shop;
-use Accelasearch\Accelasearch\Factory\ContextFactory;
 use Accelasearch\Accelasearch\Factory\ProductBuilderFactory;
 use Accelasearch\Accelasearch\Logger\Log;
 use Accelasearch\Accelasearch\Logger\RemoteLog;
@@ -17,6 +15,7 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\ProgressIndicator;
+use Accelasearch\Accelasearch\Entity\AsShop;
 
 class Feed
 {
@@ -32,16 +31,12 @@ class Feed
     private $feed;
     private $filesystem;
     private $configurable_ids = [];
-    public function __construct(Shop $shop, Language $language, ServiceInterface $productService)
+    public function __construct(Shop $shop, Language $language, ServiceInterface $productService, GoogleShoppingFeed $feed)
     {
         $this->shop = $shop;
         $this->language = $language;
         $this->productService = $productService;
-        $this->feed = new GoogleShoppingFeed(
-            $shop->ps->name . " - " . $language->ps->name,
-            ContextFactory::getContext()->link->getBaseLink($shop->getId()),
-            "Google Shopping Feed for " . $shop->ps->name . " - " . $language->ps->name
-        );
+        $this->feed = $feed;
         $this->filesystem = new Filesystem();
     }
 
@@ -71,8 +66,6 @@ class Feed
             $progressIndicator->finish(count($products) . " Products retrieved");
             echo "\n\n";
         }
-
-
 
         Log::write(count($products) . " Products retrieved in " . (microtime(true) - $start), Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
@@ -120,6 +113,11 @@ class Feed
                 $this->getOutputPath(),
                 $this->feed->build()
             );
+            $url = $this->shop->getUrl($this->language->getId());
+            $asShop = AsShop::getByUrl($url);
+            if ($asShop !== null) {
+                AsShop::updateFeedUrlByShop($asShop, $this->getFeedUrl());
+            }
         } catch (IOExceptionInterface $exception) {
             $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
             RemoteLog::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
@@ -127,8 +125,8 @@ class Feed
         }
 
         Log::write("Feed generated in " . $this->execution_time . ", memory used: " . $this->memory_used, Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
-
-        echo "Feed generated at " . $this->getOutputPath() . "\n";
+        echo "Feed generated at " . $this->getOutputPath() . "\n\n";
+        return $this->getFeedUrl();
     }
 
     /**
@@ -154,5 +152,10 @@ class Feed
     public function getOutputPath()
     {
         return _PS_MODULE_DIR_ . 'accelasearch/' . Config::FEED_OUTPUT_PATH . Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN") . "-" . $this->shop->getId() . '_' . $this->language->getId() . '.xml';
+    }
+
+    public function getFeedUrl()
+    {
+        return $this->shop->getUrl($this->language->getId()) . 'modules/accelasearch/' . Config::FEED_OUTPUT_PATH . Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN") . "-" . $this->shop->getId() . '_' . $this->language->getId() . '.xml';
     }
 }
