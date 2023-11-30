@@ -1,5 +1,6 @@
 <?php
 use Accelasearch\Accelasearch\Cron\Cron;
+use Accelasearch\Accelasearch\Entity\AsShop;
 
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
@@ -23,11 +24,9 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-# START COMPOSER #
 $autoload = dirname(__FILE__) . "/vendor/autoload.php";
 if (file_exists($autoload))
     require_once $autoload;
-# END COMPOSER #
 
 use Accelasearch\Accelasearch\Install\Installer;
 use Accelasearch\Accelasearch\Sql\Manager;

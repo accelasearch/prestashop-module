@@ -4,6 +4,7 @@ namespace Accelasearch\Accelasearch\Cron\Operation;
 
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Cron\Cron;
+use Accelasearch\Accelasearch\Entity\Lock;
 
 abstract class OperationAbstract
 {
@@ -44,20 +45,17 @@ abstract class OperationAbstract
 
     public function lock()
     {
-        \Shop::setContext(\Shop::CONTEXT_ALL);
-        return Config::updateValue("_ACCELASEARCH_" . $this->getClassName() . "_LOCK", 1);
+        (new Lock($this->getClassName()))->create();
     }
 
     public function unlock()
     {
-        \Shop::setContext(\Shop::CONTEXT_ALL);
-        return Config::deleteByName("_ACCELASEARCH_" . $this->getClassName() . "_LOCK");
+        (new Lock($this->getClassName()))->delete();
     }
 
     public function isLocked(): bool
     {
-        \Shop::setContext(\Shop::CONTEXT_ALL);
-        return (bool) Config::get("_ACCELASEARCH_" . $this->getClassName() . "_LOCK", false);
+        return (new Lock($this->getClassName()))->isLocked();
     }
 
     public function isOperationToExecute(): bool

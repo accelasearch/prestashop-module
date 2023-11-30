@@ -66,6 +66,12 @@ export const serviceApi = createApi({
         method: "POST",
       }),
     }),
+    unlockModule: builder.mutation({
+      query: () => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=unlockModule`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -79,4 +85,5 @@ export const {
   useDisconnectMutation,
   useGetLogsQuery,
   useUpdateModuleMutation,
+  useUnlockModuleMutation,
 } = serviceApi;

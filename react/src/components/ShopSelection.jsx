@@ -29,14 +29,25 @@ export default function ShopSelection({ isOnBoarding = true }) {
   };
 
   const handleShopSelectionSubmit = () => {
-    toast.promise(setShops(shopsToSync), {
-      loading: t("Adding shops to sync..."),
-      success: () => {
-        if (isOnBoarding) dispatch(setOnBoarding(1));
-        return t("Shops selected successfully");
+    toast.promise(
+      setShops(shopsToSync).unwrap(),
+      {
+        loading: t("Adding shops to sync..."),
+        success: () => {
+          if (isOnBoarding) dispatch(setOnBoarding(1));
+          return t("Shops selected successfully");
+        },
+        error: (data) => {
+          const { data: msg } = data.data;
+          return t("An error occurred during sync your shops: " + msg);
+        },
       },
-      error: t("An error occurred during sync your shops."),
-    });
+      {
+        error: {
+          duration: 10000,
+        },
+      }
+    );
   };
 
   return (
@@ -52,7 +63,7 @@ export default function ShopSelection({ isOnBoarding = true }) {
           <Loading label={t("Loading...")} />
         </div>
       ) : (
-        <ul className="mt-12 grid w-full gap-6 md:grid-cols-3">
+        <ul className="mt-12 grid w-full gap-6 md:grid-cols-3" id="shop-list">
           {shops.map((shop) => (
             <li key={`shop-${shop.id_shop}-${shop.id_lang}`}>
               <input

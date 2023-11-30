@@ -38,10 +38,10 @@ abstract class ProductBuilderAbstract
         $this->item->setDescription($this->product['description']);
         $this->item->setLink($this->product['link']);
         $this->item->setImage($this->product['cover']);
-        $this->item->setBrand($this->product['manufacturer']);
+        $this->item->setAttribute("brand", $this->product['manufacturer'], true);
         $this->item->setGtin($this->product['ean']);
 
-        $this->item->setAttribute("sku", $this->product["reference"]);
+        $this->item->setAttribute("sku", $this->product["reference"], true);
 
         // set color if exists and id_attribute is not 0
         if (isset($this->product["attributes"][$colorLabel]) && (int) $this->product["id_attribute"])
@@ -55,7 +55,7 @@ abstract class ProductBuilderAbstract
         if (!empty($this->product["features"])) {
             foreach ($this->product["features"] as $feature_name => $feature_value) {
                 $feature_name = preg_replace("/[^A-Za-z0-9]/", "", $feature_name);
-                $this->item->setAttribute($feature_name, $feature_value);
+                $this->item->setAttribute($feature_name, $feature_value, true);
             }
         }
 
@@ -72,7 +72,7 @@ abstract class ProductBuilderAbstract
         $this->item->setSalePrice($this->product['sale_price_tax_incl'] . " " . $currency);
 
         // categories
-        $this->item->setProductType($this->product['category_path']);
+        $this->item->setAttribute("product_type", $this->product['category_path'], true);
 
     }
 

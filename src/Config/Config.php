@@ -3,6 +3,7 @@
 namespace Accelasearch\Accelasearch\Config;
 
 use Accelasearch\Accelasearch\Api\AsClient;
+use Accelasearch\Accelasearch\Entity\Lock;
 use Accelasearch\Accelasearch\Install\Installer;
 use Accelasearch\Accelasearch\Module\Downloader;
 
@@ -93,6 +94,7 @@ class Config
         return [
             "systemStatus" => [
                 "needUpdate" => Downloader::needUpdateStatic($module->version),
+                "locks" => Lock::getExpiredLocks()
             ],
             "userStatus" => [
                 "cronjobToken" => self::get("_ACCELASEARCH_CRON_TOKEN"),
@@ -113,7 +115,6 @@ class Config
                 ],
                 "shops" => self::getShopsToSync(),
                 "lastExec" => self::getLastExecLocale(),
-                "exportedProductsCount" => 123456
             ]
         ];
     }

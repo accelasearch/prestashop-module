@@ -95,4 +95,24 @@ class AccelasearchAdminController extends ModuleAdminController
     {
         $this->dispatcher->handleRequest(__FUNCTION__);
     }
+
+    public function ajaxProcessClearAllData()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessSetOnBoarding()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessFinishOnBoarding()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessUnlockModule()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
 }

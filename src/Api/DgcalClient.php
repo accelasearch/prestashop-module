@@ -4,8 +4,8 @@ namespace Accelasearch\Accelasearch\Api;
 
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\DgcalApiException;
-use GuzzleHttp\Psr7\Request;
-use Prestashop\ModuleLibGuzzleAdapter\ClientFactory;
+use GuzzleHttp\Message\Request;
+use GuzzleHttp\Client as GuzzleClient;
 
 class DgcalClient
 {
@@ -14,7 +14,7 @@ class DgcalClient
     private $client;
     private function __construct()
     {
-        $this->client = (new ClientFactory())->getClient([
+        $this->client = new GuzzleClient([
             'base_uri' => Config::DGCAL_ENDPOINT,
             'timeout' => 5.0,
             "headers" => [
@@ -31,33 +31,35 @@ class DgcalClient
         return self::$instance;
     }
 
-    public function post(string $uri, array $data)
+    public function post(string $uri, $headers = [], $body = null)
     {
-        $request = new Request(
-            'POST',
-            $uri,
-            [
-                "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
-                "Content-Type" => "application/x-www-form-urlencoded",
-            ],
-            http_build_query($data, null, '&')
-        );
-        return $this->sendRequest($request);
+        $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
+        $headers["Content-Type"] = "application/x-www-form-urlencoded";
+        $post = $this->client->post($uri, [
+            "headers" => $headers,
+            "body" => http_build_query($body, null, "&")
+        ]);
+        return $this->checkRequest($post);
     }
 
-    public function sendRequest(Request $request)
+    public function checkRequest($req)
     {
-        $req = $this->client->sendRequest($request);
         $statusCode = $req->getStatusCode();
         if ($statusCode !== 200)
-            throw new DgcalApiException($request->getUri() . " returned status code: " . $statusCode);
+            throw new DgcalApiException($req->getUrl() . " returned status code: " . $statusCode);
         $body = $req->getBody()->getContents();
         $body = json_decode($body, true);
         $responseStatus = $body['success'] ?? null;
         if (!$responseStatus) {
-            throw new DgcalApiException($request->getUri() . " returned success false");
+            throw new DgcalApiException($req->getUrl() . " returned success false");
         }
         return $body;
+    }
+
+    public function sendRequest(Request $request)
+    {
+        $req = $this->client->send($request);
+        return $this->checkRequest($req);
     }
 
     public static function createInstance($shop_url, $shop_name, $shop_metadata = null)
@@ -68,7 +70,7 @@ class DgcalClient
             "shop_name" => $shop_name,
             "shop_metadata" => $shop_metadata,
         ];
-        $response = $client->post("instances", $data);
+        $response = $client->post(Config::DGCAL_ENDPOINT . "instances", [], $data);
         return $response;
     }
 
@@ -80,7 +82,7 @@ class DgcalClient
             "gravity" => $gravity,
             "context" => $context,
         ];
-        $response = $client->post("logs", $data);
+        $response = $client->post(Config::DGCAL_ENDPOINT . "logs", [], $data);
         return $response;
     }
 }

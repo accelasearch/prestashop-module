@@ -18,6 +18,10 @@ release:
 	git tag -a $(VERSION) -m "Release $(VERSION)"
 	git push --tags
 
+# target: compose - Run docker-compose
+compose:
+	docker-compose up -d
+
 # target: zip-me - Create a local zip archive
 zip-me: 
 	@mkdir -p ./temp

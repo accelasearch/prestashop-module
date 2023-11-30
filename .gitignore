@@ -5,3 +5,8 @@ vendor/
 .env
 /public/feed/*
 !/public/feed/.gitkeep
+/test-results/
+/storage-state/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

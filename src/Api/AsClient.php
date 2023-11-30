@@ -4,11 +4,7 @@ namespace Accelasearch\Accelasearch\Api;
 
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\AsApiException;
-use \AccelaSearch\ProductMapper\Api\Client;
 use GuzzleHttp\Message\Request;
-use \AccelaSearch\ProductMapper\CollectorFacade;
-use \AccelaSearch\ProductMapper\DataMapper\Sql\Shop as ShopMapper;
-use \AccelaSearch\ProductMapper\DataMapper\Api\Collector as CollectorMapper;
 use GuzzleHttp\Client as GuzzleClient;
 
 class AsClient
@@ -56,9 +52,9 @@ class AsClient
         return $this->sendRequest($request);
     }
 
-    public function post(string $uri, array $data)
+    public function post(string $uri, $headers = [], $body = null)
     {
-        $request = new Request('POST', $uri, [], json_encode($data));
+        $request = new Request('POST', $uri, $headers, $body);
         return $this->sendRequest($request);
     }
 
@@ -71,6 +67,13 @@ class AsClient
     public static function getCollectorCredentials()
     {
         return self::getInstance()->get(Config::ACCELASEARCH_ENDPOINT . 'collector', [
+            "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
+        ]);
+    }
+
+    public static function notifyShops()
+    {
+        return self::getInstance()->post(Config::ACCELASEARCH_ENDPOINT . 'shops/notify', [
             "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
         ]);
     }
@@ -88,36 +91,4 @@ class AsClient
         }
     }
 
-    public static function apiKeyVerify2($key): bool
-    {
-
-        $client = Client::fromApiKey($key);
-        $collector_mapper = new CollectorMapper($client);
-        $collector = $collector_mapper->read();
-
-        $dbh = new \PDO(
-            'mysql:host=' . $collector->getHostName() . ';dbname=' . $collector->getDatabaseName(),
-            $collector->getUsername(),
-            $collector->getPassword(),
-            [
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC
-            ]
-        );
-
-        $shop_mapper = ShopMapper::fromConnection($dbh);
-
-        dump($shop_mapper->search());
-        die;
-
-        $request = new Request('GET', "collector", [
-            "X-Accelasearch-Apikey" => $key
-        ]);
-        try {
-            $req = self::getInstance()->sendRequest($request);
-            return isset($req['password']);
-        } catch (AsApiException $e) {
-            return false;
-        }
-    }
 }

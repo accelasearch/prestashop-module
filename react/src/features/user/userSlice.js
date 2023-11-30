@@ -20,9 +20,12 @@ export const userSlice = createSlice({
     setUserShops: (state, action) => {
       state.userStatus.shops = action.payload;
     },
+    setLocks: (state, action) => {
+      state.systemStatus.locks = action.payload;
+    },
   },
 });
 
-export const { setPage, setOnBoarding, setUserShops } = userSlice.actions;
+export const { setPage, setOnBoarding, setUserShops, setLocks } = userSlice.actions;
 
 export default userSlice.reducer;

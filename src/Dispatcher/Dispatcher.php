@@ -36,8 +36,9 @@ class Dispatcher
     private function getControllerName(string $name)
     {
         $controllerName = 'Accelasearch\\Accelasearch\\Controller\\' . ucfirst($name) . 'Controller';
-        if (!class_exists($controllerName))
+        $controllerTestName = 'Accelasearch\\Accelasearch\\Controller\\Test\\' . ucfirst($name) . 'Controller';
+        if (!class_exists($controllerName) && !class_exists($controllerTestName))
             throw new \Exception('Controller not found: ' . $controllerName);
-        return $controllerName;
+        return class_exists($controllerName) ? $controllerName : $controllerTestName;
     }
 }

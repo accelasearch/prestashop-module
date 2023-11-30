@@ -24,8 +24,17 @@ export default function Settings() {
         />
         <Card
           Icon={MagnifyingGlassCircleIcon}
-          title={_AS.userStatus.exportedProductsCount}
-          description={t("Exported products (based on your configuration)")}
+          title={t("Search Layer")}
+          description={t(
+            "Configure your search layer selectors to start using accelasearch"
+          )}
+          ctaText={t("Go to accelasearch console →")}
+          ctaHandler={() => {
+            window.open(
+              "https://console.accelasearch.io/setup/search",
+              "_blank"
+            );
+          }}
         />
       </div>
       <div className="mt-12">
