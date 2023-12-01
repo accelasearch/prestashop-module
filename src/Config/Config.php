@@ -93,7 +93,7 @@ class Config
         $logged = AsClient::apiKeyVerify($apiKey);
         return [
             "systemStatus" => [
-                "needUpdate" => Downloader::needUpdateStatic($module->version),
+                "needUpdate" => (new Downloader)->needUpdate($module->version),
                 "locks" => Lock::getExpiredLocks()
             ],
             "userStatus" => [

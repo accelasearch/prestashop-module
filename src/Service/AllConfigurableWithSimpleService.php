@@ -23,7 +23,7 @@ class AllConfigurableWithSimpleService extends AbstractService implements Servic
         $products = $this->productDecorator->decorateProducts($products);
         foreach ($products as $product) {
             if (!$this->isConfigurableCreated($product["id_product"])) {
-                $products[] = $this->createConfigurable($product);
+                $products[] = $this->createConfigurable($product, $products);
             }
             if (php_sapi_name() === "cli")
                 $progressIndicator->advance();
@@ -31,11 +31,27 @@ class AllConfigurableWithSimpleService extends AbstractService implements Servic
         return $products;
     }
 
-    public function createConfigurable($product)
+    private function getLowestPricesFromProducts($id_product, $products)
+    {
+        $basePrices = [];
+        $salePrices = [];
+        foreach ($products as $product) {
+            if ($product["id_product"] == $id_product) {
+                $basePrices[] = $product["price_tax_incl"];
+                $salePrices[] = $product["sale_price_tax_incl"];
+            }
+        }
+        return [min($basePrices), min($salePrices)];
+    }
+
+    public function createConfigurable($product, $products)
     {
         $this->configurable_ids[] = $product["id_product"];
         $product["id_product_attribute"] = $product["id_product"];
         $product["id_attribute"] = 0;
+        $lowestPrices = $this->getLowestPricesFromProducts($product["id_product"], $products);
+        $product["price_tax_incl"] = $lowestPrices[0];
+        $product["sale_price_tax_incl"] = $lowestPrices[1];
         return $product;
     }
 

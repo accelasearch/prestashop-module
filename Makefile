@@ -81,7 +81,8 @@ phpstan:
 # target: test - Run tests
 test:
 	@echo "Running tests..."
-	@vendor/bin/phpunit tests
+	@docker exec -it accelasearch-module php /var/www/html/modules/accelasearch/vendor/bin/phpunit -c /var/www/html/modules/accelasearch/tests/Unit/phpunit.xml
+	@npx playwright test
 
 # target: autoindex - Generate index.php files recursively
 autoindex:

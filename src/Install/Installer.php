@@ -15,6 +15,7 @@ class Installer
      */
     const HOOKS = [
         'actionAdminControllerSetMedia',
+        'actionFrontControllerSetMedia',
     ];
 
     private $module;

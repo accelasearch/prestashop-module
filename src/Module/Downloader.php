@@ -2,63 +2,73 @@
 
 namespace Accelasearch\Accelasearch\Module;
 
+use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Cron\Cron;
 use Accelasearch\Accelasearch\Exception\ModuleUpdateException;
-use Ector\ReleaseDownloader\Downloader as ReleaseDownloader;
+use ZipArchive;
+use Accelasearch\Accelasearch\Api\DgcalClient;
 
 class Downloader
 {
-    const OWNER = "buggyzap";
-    const REPO = "accelasearch";
-    const TOKEN = null;
-    const TEST_MODE = true;
 
-    private $downloader;
-
-    public function __construct()
+    private function getLatestVersion()
     {
-        //TODO: Uncomment this line to enable auto update
-        // $this->downloader = new ReleaseDownloader(self::OWNER, self::REPO, null, self::TOKEN);
+        $client = DgcalClient::getInstance();
+        $data = $client->get(Config::DGCAL_ENDPOINT . "module/getLatestVersion");
+        return $data["data"]["version"] ?? null;
+    }
+
+    private function getLatestZip()
+    {
+        $client = DgcalClient::getInstance();
+        $data = $client->getLatestZip();
+        return $data;
     }
 
     public function needUpdate($current_version)
     {
-        if (self::TEST_MODE)
-            return true;
-        $latest = $this->downloader->getLatestTagName();
+        if (!Cron::isReady())
+            return false;
+        $latest = $this->getLatestVersion();
         return version_compare($current_version, $latest, '<');
     }
 
-    public static function needUpdateStatic($current_version)
+    private function writeZip($zip, $module)
     {
-        $instance = new self();
-        return $instance->needUpdate($current_version);
+        $path = realpath($module->getLocalPath() . "/../");
+        file_put_contents($path . "/accelasearch.zip", $zip);
     }
 
-    private function download(\Module $module)
+    private function extractZip($module)
     {
-        $dir = realpath($module->getLocalPath() . "../fakedownloaddir") . "/";
-        if (self::TEST_MODE)
-            dump("Download to " . $dir . $module->name . '.zip');
-        else
-            $this->downloader->download($dir . "/");
+        $path = realpath($module->getLocalPath() . "/../");
+        $file = $path . "/accelasearch.zip";
+        $zip = new ZipArchive();
+        $res = $zip->open($file);
+        if ($res === true) {
+            $zip->extractTo($path);
+            $zip->close();
+        } else {
+            throw new ModuleUpdateException("Unable to extract zip");
+        }
     }
 
-    private function extract()
+    private function deleteZip($module)
     {
-        if (self::TEST_MODE)
-            dump("Extract to destination");
-        else
-            $this->downloader->extract();
+        $path = realpath($module->getLocalPath() . "/../");
+        $file = $path . "/accelasearch.zip";
+        return unlink($file);
     }
 
     public function updateModule(\Module $module)
     {
         try {
-            $this->downloader->addAssetToDownload($module->name . '.zip');
-            $this->download($module);
-            $this->extract();
+            $latestZip = $this->getLatestZip();
+            $this->writeZip($latestZip, $module);
+            $this->extractZip($module);
+            $this->deleteZip($module);
         } catch (\Exception $e) {
-            throw new ModuleUpdateException("Unable to get latest version");
+            throw new ModuleUpdateException("Unable to get latest version - " . $e->getMessage());
         }
     }
 

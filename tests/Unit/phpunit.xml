@@ -1,0 +1,21 @@
+<phpunit
+    bootstrap="bootstrap.php"
+    >
+  <php>
+    <const name="_DB_PREFIX_" value="ps_"/>
+    <const name="_THEME_COL_DIR_" value="/theme/"/>
+    <server name="HTTP_HOST" value="shop.prestashop.com"/>
+  </php>
+
+  <testsuites>
+    <testsuite name="Accelasearch">
+      <directory>.</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist>
+      <directory suffix=".php">../../src</directory>
+    </whitelist>
+  </filter>
+</phpunit>

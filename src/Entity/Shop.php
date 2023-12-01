@@ -2,7 +2,6 @@
 
 namespace Accelasearch\Accelasearch\Entity;
 
-use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\ShopNotFoundException;
 use Context;
 

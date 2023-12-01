@@ -29,6 +29,7 @@ if (file_exists($autoload))
 use Accelasearch\Accelasearch\Install\Installer;
 use Accelasearch\Accelasearch\Sql\Manager;
 use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Entity\Shop as AccelasearchShop;
 
 class Accelasearch extends Module
 {
@@ -87,6 +88,29 @@ class Accelasearch extends Module
             'accelasearch_public_url' => Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/react/public/',
             '_AS' => Config::getBackofficeConfig($this)
         ]);
+    }
+
+    public function getCurrentHash()
+    {
+        $id_shop = $this->context->shop->id;
+        $iso = $this->context->language->iso_code;
+        $id_lang = $this->context->language->id;
+        $shop = new AccelasearchShop($id_shop);
+
+        return md5($this->context->link->getBaseLink($id_shop) . $shop->getLangLink($id_lang, null, $id_shop) . $iso);
+    }
+
+    public function hookActionFrontControllerSetMedia($params)
+    {
+        $this->context->controller->registerJavascript(
+            'as-layer',
+            'https://svc11.accelasearch.io/API/shops/' . $this->getCurrentHash() . '/loader',
+            [
+                'priority' => 0,
+                'attributes' => 'defer',
+                'server' => 'remote',
+            ]
+        );
     }
 
     public function getContent()

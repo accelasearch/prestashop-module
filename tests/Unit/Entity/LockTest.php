@@ -3,8 +3,6 @@
 use PHPUnit\Framework\TestCase;
 use Accelasearch\Accelasearch\Entity\Lock;
 
-const _DB_PREFIX_ = "PREFIX_";
-
 class Db
 {
     public function executeS($query)

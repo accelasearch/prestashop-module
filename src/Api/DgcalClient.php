@@ -31,6 +31,28 @@ class DgcalClient
         return self::$instance;
     }
 
+    public function get(string $uri, $headers = [])
+    {
+        $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
+        $get = $this->client->get($uri, [
+            "headers" => $headers,
+        ]);
+        return $this->checkRequest($get, $uri);
+    }
+
+    public function getLatestZip()
+    {
+        $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
+        $req = $this->client->get(Config::DGCAL_ENDPOINT . "module/download/latest", [
+            "headers" => $headers,
+        ]);
+        $statusCode = $req->getStatusCode();
+        if ($statusCode !== 200)
+            throw new DgcalApiException("module zip download returned status code: " . $statusCode);
+        $body = $req->getBody()->getContents();
+        return $body;
+    }
+
     public function post(string $uri, $headers = [], $body = null)
     {
         $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
@@ -42,16 +64,16 @@ class DgcalClient
         return $this->checkRequest($post);
     }
 
-    public function checkRequest($req)
+    public function checkRequest($req, $url = "")
     {
         $statusCode = $req->getStatusCode();
         if ($statusCode !== 200)
-            throw new DgcalApiException($req->getUrl() . " returned status code: " . $statusCode);
+            throw new DgcalApiException($url . " returned status code: " . $statusCode);
         $body = $req->getBody()->getContents();
         $body = json_decode($body, true);
         $responseStatus = $body['success'] ?? null;
-        if (!$responseStatus) {
-            throw new DgcalApiException($req->getUrl() . " returned success false");
+        if ($responseStatus === false) {
+            throw new DgcalApiException($url . " returned success false");
         }
         return $body;
     }
