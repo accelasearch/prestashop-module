@@ -15,7 +15,7 @@ export default function SyncAttributeContentSelection() {
     toast.promise(
       updateConfig({
         [name]: value,
-      }),
+      }).unwrap(),
       {
         loading: t("Saving..."),
         success: t("Saved"),

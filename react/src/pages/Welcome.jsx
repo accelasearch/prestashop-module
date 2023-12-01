@@ -10,7 +10,7 @@ export default function Welcome() {
   const apikeyRef = React.useRef();
 
   const apikeySubmit = async (apikey) => {
-    const { data } = await toast.promise(apikeyVerify(apikey), {
+    const { data } = await toast.promise(apikeyVerify(apikey).unwrap(), {
       loading: t("Verifying ApiKey..."),
       success: ({ data }) => {
         const { success, data: apikeyVerification } = data;

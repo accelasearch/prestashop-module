@@ -43,9 +43,9 @@ zip-me:
 # target: version - Replace version in files
 version:
 	@echo "...$(VERSION)..."
-	@sed -i.bak -e "s/\(VERSION = \).*/\1\'${VERSION}\';/" $(ordermargins).php
-	@sed -i.bak -e "s/\($this->version = \).*/\1\'${VERSION}\';/" $(ordermargins).php
-	@rm -f $(ordermargins).php.bak config.xml.bak
+	@sed -i.bak -e "s/\(VERSION = \).*/\1\'${VERSION}\';/" $(MODULE_NAME).php
+	@sed -i.bak -e "s/\($this->version = \).*/\1\'${VERSION}\';/" $(MODULE_NAME).php
+	@rm -f $(MODULE_NAME).php.bak config.xml.bak
 
 # target: help - Get help on this file
 help:

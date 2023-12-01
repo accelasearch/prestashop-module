@@ -47,6 +47,12 @@ async function finishOnBoarding(page: Page) {
   await page.goto(controller_url);
 }
 
+async function createExpiredLock(page: Page) {
+  const controller_url =
+    "http://localhost:8199/adminPS/index.php?controller=accelasearchAdmin&ajax=1&action=createExpiredLock";
+  await page.goto(controller_url);
+}
+
 export {
   login,
   clearAllData,
@@ -54,4 +60,5 @@ export {
   goToBackoffice,
   goToModuleConfigurationPage,
   finishOnBoarding,
+  createExpiredLock,
 };

@@ -48,7 +48,7 @@ export default function SyncTypeSelection() {
     toast.promise(
       updateConfig({
         _ACCELASEARCH_SYNCTYPE: type.slug,
-      }),
+      }).unwrap(),
       {
         loading: t("Saving..."),
         success: t("Saved"),

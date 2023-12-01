@@ -55,10 +55,10 @@ make header-check
 make header-fix
 ```
 
-### Run phpunit tests
+### Run phpunit and e2e tests
 
 ```bash
-make run-tests
+make test
 ```
 
 ### Run autoindex file generation

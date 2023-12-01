@@ -106,6 +106,11 @@ class AccelasearchAdminController extends ModuleAdminController
         $this->dispatcher->handleRequest(__FUNCTION__);
     }
 
+    public function ajaxProcessCreateExpiredLock()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
     public function ajaxProcessFinishOnBoarding()
     {
         $this->dispatcher->handleRequest(__FUNCTION__);
