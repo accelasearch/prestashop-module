@@ -15,7 +15,7 @@ jobs:
         node-version: 18
     
     - name: Docker compose environment
-      run: docker-compose up -d
+      run: docker-compose --env-file .env.ci up -d
       
     - name: Install dependencies
       run: npm ci
