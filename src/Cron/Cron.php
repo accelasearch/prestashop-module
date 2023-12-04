@@ -34,7 +34,7 @@ class Cron
 
     public static function getUrl($operation)
     {
-        return Tools::getShopDomainSsl(true) . "modules/accelasearch/cron.php?operation=" . $operation . "&token=" . Config::get("_ACCELASEARCH_CRON_TOKEN");
+        return Tools::getShopDomainSsl(true) . "/modules/accelasearch/cron.php?operation=" . $operation . "&token=" . Config::get("_ACCELASEARCH_CRON_TOKEN");
     }
 
     public function updateCronjobLastexec()
