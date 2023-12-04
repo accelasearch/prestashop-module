@@ -4,8 +4,8 @@ namespace Accelasearch\Accelasearch\Api;
 
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\AsApiException;
-use GuzzleHttp\Message\Request;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Message\Request;
 
 class AsClient
 {
@@ -14,16 +14,10 @@ class AsClient
 
     private function __construct()
     {
-        $this->client = new GuzzleClient([
-            'base_uri' => Config::ACCELASEARCH_ENDPOINT,
-            'timeout' => 5.0,
-            "headers" => [
-                "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
-            ]
-        ]);
+        $this->client = new GuzzleClient();
     }
 
-    public function sendRequest(Request $request)
+    public function sendRequest($request)
     {
         $req = $this->client->send($request);
         $statusCode = $req->getStatusCode();
