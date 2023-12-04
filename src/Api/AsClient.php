@@ -5,29 +5,27 @@ namespace Accelasearch\Accelasearch\Api;
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\AsApiException;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Message\Request;
 
-class AsClient
+class AsClient extends GenericClientAbstract
 {
     private static $instance = null;
     private $client;
 
-    private function __construct()
+    protected function __construct($defaults = [])
     {
-        $this->client = new GuzzleClient();
+        $this->client = new GuzzleClient($defaults);
     }
 
-    public function sendRequest($request)
+    public static function checkRequest($request, $url = "")
     {
-        $req = $this->client->send($request);
-        $statusCode = $req->getStatusCode();
+        $statusCode = $request->getStatusCode();
         if ($statusCode !== 200)
-            throw new AsApiException($request->getUrl() . " returned status code: " . $statusCode);
-        $body = $req->getBody()->getContents();
+            throw new AsApiException($url . " returned status code: " . $statusCode);
+        $body = $request->getBody()->getContents();
         $body = json_decode($body, true);
         $responseStatus = $body['status'] ?? null;
         if ($responseStatus === "ERROR") {
-            throw new AsApiException($request->getUrl() . " returned " . $body['message']);
+            throw new AsApiException($url . " returned " . $body['message']);
         }
         return $body;
     }
@@ -35,50 +33,41 @@ class AsClient
     public static function getInstance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self(self::getDefaults());
         }
         return self::$instance;
     }
 
-    public function get(string $uri, $headers = [])
+    protected static function getDefaults()
     {
-        $request = new Request('GET', $uri, $headers);
-        return $this->sendRequest($request);
-    }
-
-    public function post(string $uri, $headers = [], $body = null)
-    {
-        $request = new Request('POST', $uri, $headers, $body);
-        return $this->sendRequest($request);
-    }
-
-    public function delete(string $uri)
-    {
-        $request = new Request('DELETE', $uri);
-        return $this->sendRequest($request);
+        return [
+            'base_url' => Config::ACCELASEARCH_ENDPOINT,
+            'timeout' => 5.0,
+            'defaults' => [
+                "headers" => [
+                    "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
+                ]
+            ]
+        ];
     }
 
     public static function getCollectorCredentials()
     {
-        return self::getInstance()->get(Config::ACCELASEARCH_ENDPOINT . 'collector', [
-            "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
-        ]);
+        $request = self::getInstance()->client->get('collector');
+        return self::checkRequest($request, 'collector');
     }
 
     public static function notifyShops()
     {
-        return self::getInstance()->post(Config::ACCELASEARCH_ENDPOINT . 'shops/notify', [
-            "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
-        ]);
+        $request = self::getInstance()->client->post('shops/notify');
+        return self::checkRequest($request, 'shops/notify');
     }
 
     public static function apiKeyVerify($key): bool
     {
-        $request = new Request('GET', Config::ACCELASEARCH_ENDPOINT . "collector", [
-            "X-Accelasearch-Apikey" => $key
-        ]);
+        $request = self::getInstance()->client->get('collector');
         try {
-            $req = self::getInstance()->sendRequest($request);
+            $req = self::checkRequest($request, 'collector');
             return isset($req['password']);
         } catch (AsApiException $e) {
             return false;

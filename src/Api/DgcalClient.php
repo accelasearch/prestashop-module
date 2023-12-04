@@ -4,48 +4,48 @@ namespace Accelasearch\Accelasearch\Api;
 
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\DgcalApiException;
-use GuzzleHttp\Message\Request;
 use GuzzleHttp\Client as GuzzleClient;
 
-class DgcalClient
+class DgcalClient extends GenericClientAbstract
 {
 
     private static $instance = null;
     private $client;
-    private function __construct()
+    protected function __construct($defaults = [])
     {
-        $this->client = new GuzzleClient([
-            'base_uri' => Config::DGCAL_ENDPOINT,
-            'timeout' => 5.0,
-            "headers" => [
-                "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
-            ]
-        ]);
+        $this->client = new GuzzleClient($defaults);
     }
 
     public static function getInstance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self(self::getDefaults());
         }
         return self::$instance;
     }
 
+    protected static function getDefaults()
+    {
+        return [
+            'base_uri' => Config::DGCAL_ENDPOINT,
+            'timeout' => 5.0,
+            'defaults' => [
+                "headers" => [
+                    "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
+                ]
+            ]
+        ];
+    }
+
     public function get(string $uri, $headers = [])
     {
-        $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
-        $get = $this->client->get($uri, [
-            "headers" => $headers,
-        ]);
+        $get = self::getInstance()->client->get($uri);
         return $this->checkRequest($get, $uri);
     }
 
     public function getLatestZip()
     {
-        $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
-        $req = $this->client->get(Config::DGCAL_ENDPOINT . "module/download/latest", [
-            "headers" => $headers,
-        ]);
+        $req = $this->client->get("module/download/latest");
         $statusCode = $req->getStatusCode();
         if ($statusCode !== 200)
             throw new DgcalApiException("module zip download returned status code: " . $statusCode);
@@ -55,9 +55,8 @@ class DgcalClient
 
     public function post(string $uri, $headers = [], $body = null)
     {
-        $headers["X-Accelasearch-Apikey"] = Config::get("_ACCELASEARCH_API_KEY");
         $headers["Content-Type"] = "application/x-www-form-urlencoded";
-        $post = $this->client->post($uri, [
+        $post = self::getInstance()->client->post($uri, [
             "headers" => $headers,
             "body" => http_build_query($body, "", "&")
         ]);
@@ -78,33 +77,27 @@ class DgcalClient
         return $body;
     }
 
-    public function sendRequest(Request $request)
-    {
-        $req = $this->client->send($request);
-        return $this->checkRequest($req);
-    }
-
     public static function createInstance($shop_url, $shop_name, $shop_metadata = null)
     {
-        $client = self::getInstance();
+        $client = self::getInstance()->client;
         $data = [
             "shop_url" => $shop_url,
             "shop_name" => $shop_name,
             "shop_metadata" => $shop_metadata,
         ];
-        $response = $client->post(Config::DGCAL_ENDPOINT . "instances", [], $data);
+        $response = $client->post("instances", [], $data);
         return $response;
     }
 
     public static function createLog($message, $gravity, $context)
     {
-        $client = self::getInstance();
+        $client = self::getInstance()->client;
         $data = [
             "message" => $message,
             "gravity" => $gravity,
             "context" => $context,
         ];
-        $response = $client->post(Config::DGCAL_ENDPOINT . "logs", [], $data);
+        $response = $client->post("logs", [], $data);
         return $response;
     }
 }
