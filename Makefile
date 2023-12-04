@@ -35,7 +35,7 @@ zip-me:
 
 	@cp -R ./react/dist ./temp/$(MODULE_NAME)/react
 	@cp -R ./react/public ./temp/$(MODULE_NAME)/react
-	@rm -rf ./src/Controller/Test
+	@rm -rf ./temp/$(MODULE_NAME)/src/Controller/Test
 	
 	@rm -rf ./releases/$(MODULE_NAME).zip
 	@cd temp && zip -rq ../releases/$(MODULE_NAME).zip $(MODULE_NAME) && cd ..
