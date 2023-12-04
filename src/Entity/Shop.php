@@ -12,7 +12,7 @@ class Shop
     private $context;
     public function __construct(int $id, Context $context = null)
     {
-        if (\Shop::getShop($id) === false)
+        if (!is_array(\Shop::getShop($id)))
             throw new ShopNotFoundException($id);
         $this->id = $id;
         $this->ps = new \Shop($id);

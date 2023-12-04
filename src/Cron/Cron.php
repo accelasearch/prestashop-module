@@ -3,6 +3,7 @@
 namespace Accelasearch\Accelasearch\Cron;
 
 use Accelasearch\Accelasearch\Config\Config;
+use Tools;
 
 class Cron
 {
@@ -33,7 +34,7 @@ class Cron
 
     public static function getUrl($operation)
     {
-        return _PS_BASE_URL_SSL_ . __PS_BASE_URI__ . "modules/accelasearch/cron.php?operation=" . $operation . "&token=" . Config::get("_ACCELASEARCH_CRON_TOKEN");
+        return Tools::getShopDomainSsl(true) . "modules/accelasearch/cron.php?operation=" . $operation . "&token=" . Config::get("_ACCELASEARCH_CRON_TOKEN");
     }
 
     public function updateCronjobLastexec()

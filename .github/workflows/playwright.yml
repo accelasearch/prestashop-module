@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, refactor/feed ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, refactor/feed ]
 jobs:
   test:
     timeout-minutes: 60
@@ -13,6 +13,10 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
+    
+    - name: Docker compose environment
+      run: docker-compose up -d
+      
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright Browsers

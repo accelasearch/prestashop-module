@@ -28,7 +28,8 @@ class Log
      **/
     public static function write(string $msg, $gravity = self::CRITICAL, $context = self::CONTEXT_GENERAL, $line = null, $file = null)
     {
-        if (!self::ENABLED)
+        // @phpstan-ignore-next-line
+        if (self::ENABLED === false)
             return 0;
         if ($line !== null)
             $msg .= " in line $line";

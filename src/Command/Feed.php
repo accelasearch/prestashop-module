@@ -54,6 +54,7 @@ class Feed
         Log::write("Getting products from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
         $progressIndicator = null;
+        $progressBar = null;
 
         if (php_sapi_name() === "cli") {
             $progressIndicator = new ProgressIndicator($output);

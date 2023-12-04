@@ -59,7 +59,7 @@ class DgcalClient
         $headers["Content-Type"] = "application/x-www-form-urlencoded";
         $post = $this->client->post($uri, [
             "headers" => $headers,
-            "body" => http_build_query($body, null, "&")
+            "body" => http_build_query($body, "", "&")
         ]);
         return $this->checkRequest($post);
     }

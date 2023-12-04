@@ -7,8 +7,6 @@ use Accelasearch\Accelasearch\Entity\Shop;
 
 class AllConfigurableService extends AbstractService implements ServiceInterface
 {
-    private $configurable_ids = [];
-
     /**
      * Get an array of products with their configurable options, SKUs, features, and attributes.
      *

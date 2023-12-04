@@ -78,11 +78,26 @@ header-fix:
 phpstan:
 	_PS_ROOT_DIR_=/var/www/html vendor/bin/phpstan analyse --configuration=tests/phpstan/phpstan.neon
 
+# target: phpunit-docker						 - Run phpunit in docker
+phpunit-docker:
+	@echo "Running tests..."
+	@docker exec -it accelasearch-module php /var/www/html/modules/accelasearch/vendor/bin/phpunit -c /var/www/html/modules/accelasearch/tests/Unit/phpunit.xml
+
+# target: phpunit                                - Run phpunit
+phpunit:
+	@echo "Running tests..."
+	@php vendor/bin/phpunit -c tests/Unit/phpunit.xml
+
+# target: e2e									- Run e2e tests
+e2e:
+	@echo "Running e2e tests..."
+	@npx playwright test
+
 # target: test - Run tests
 test:
 	@echo "Running tests..."
-	@docker exec -it accelasearch-module php /var/www/html/modules/accelasearch/vendor/bin/phpunit -c /var/www/html/modules/accelasearch/tests/Unit/phpunit.xml
-	@npx playwright test
+	@$(MAKE) phpunit
+	@$(MAKE) e2e
 
 # target: autoindex - Generate index.php files recursively
 autoindex:

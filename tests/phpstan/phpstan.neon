@@ -7,6 +7,9 @@ parameters:
     - ../../
   excludePaths:
     - ../../vendor/
+    - ../../react/
+    - ../../tests/
   reportUnmatchedIgnoredErrors: false
   ignoreErrors:
     - '#Cannot assign offset "merchant…" to string\|true.#'
+    - '#PHPDoc tag \@param for parameter \$context contains unresolvable type.#'

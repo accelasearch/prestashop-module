@@ -8,11 +8,6 @@ use Accelasearch\Accelasearch\Logger\RemoteLog;
 
 class UnlockModuleController extends AbstractController implements ControllerInterface
 {
-    private $module;
-    public function __construct(\Module $module)
-    {
-        $this->module = $module;
-    }
     public function handleRequest()
     {
         try {
