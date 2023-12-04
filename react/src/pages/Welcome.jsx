@@ -10,20 +10,16 @@ export default function Welcome() {
   const apikeyRef = React.useRef();
 
   const apikeySubmit = async (apikey) => {
-    const { data } = await toast.promise(apikeyVerify(apikey).unwrap(), {
-      loading: t("Verifying ApiKey..."),
-      success: ({ data }) => {
-        const { success, data: apikeyVerification } = data;
-        if (!success || !apikeyVerification) {
-          toast.error(t("ApiKey not valid!"));
-          return;
-        }
-        return t("Your ApiKey is valid! Redirecting...");
-      },
-      error: t("ApiKey not valid!"),
-    });
+    const { data, success } = await toast.promise(
+      apikeyVerify(apikey).unwrap(),
+      {
+        loading: t("Verifying ApiKey..."),
+        success: t("Your ApiKey is valid! Redirecting..."),
+        error: t("ApiKey not valid!"),
+      }
+    );
     await new Promise((r) => setTimeout(r, 2000));
-    if (data?.success === true && data?.data === true) location.reload(true);
+    if (success === true && data === true) location.reload(true);
   };
 
   const handleVerify = () => {
