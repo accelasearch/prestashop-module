@@ -6,7 +6,7 @@ on:
     branches: [ main, master, refactor/feed ]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -39,7 +39,10 @@ jobs:
         echo "Server and containers are up and running!"
 
     - name: Disable backoffice TOKEN
-      run: docker exec accelasearch-module bash -c "echo 'SetEnv _TOKEN_ disabled' >> .htaccess"
+      run: docker exec accelasearch-module bash -c "echo 'SetEnv _TOKEN_ disabled' >> /var/www/html/.htaccess"
+
+    - name: Install composer dependencies
+      run: docker exec accelasearch-module bash -c "cd /var/www/html/modules/accelasearch && composer install --no-dev --optimize-autoloader"
 
     - name: Install dependencies
       run: npm ci
