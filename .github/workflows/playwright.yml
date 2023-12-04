@@ -25,6 +25,7 @@ jobs:
         until curl --output /dev/null --silent --head --fail http://localhost:8199; do
             if [ "$(docker-compose ps | grep 'Up' | wc -l)" -ne 2 ]; then
                 echo "Number of 'Up' containers is not 2. Failing the workflow."
+                docker logs accelasearch-module
                 exit 1
             fi
             if [ $elapsed -ge $timeout ]; then
