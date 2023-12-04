@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+
+  mysql:
+    image: mysql/mysql-server:5.7
+    restart: always
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=1
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+  prestashop_latest:
+    container_name: accelasearch-module
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+    ports:
+      - 8199:80
+    volumes:
+      - .:/var/www/html/modules/accelasearch
+    environment:
+      - DB_SERVER=${DB_SERVER}
+      - DB_PREFIX=${DB_PREFIX}
+      - PS_INSTALL_AUTO=${PS_INSTALL_AUTO}
+      - DB_USER=${DB_USER}
+      - DB_PASSWD=${DB_PASSWD}
+      - DB_NAME=${DB_NAME}
+      - PS_FOLDER_ADMIN=${PS_FOLDER_ADMIN}
+      - PS_DOMAIN=${PS_DOMAIN}
+      - PS_LANGUAGE=${PS_LANGUAGE}
+      - PS_COUNTRY=${PS_COUNTRY}
+      - PS_FOLDER_INSTALL=${PS_FOLDER_INSTALL}
