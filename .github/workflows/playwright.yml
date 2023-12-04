@@ -23,8 +23,8 @@ jobs:
         timeout=180 # 180 seconds (3 minutes)
         elapsed=0
         until curl --output /dev/null --silent --head --fail http://localhost:8199; do
-            if [ "$(docker-compose ps | grep 'Up' | wc -l)" -ne 3 ]; then
-                echo "Number of 'Up' containers is not 3. Failing the workflow."
+            if [ "$(docker-compose ps | grep 'Up' | wc -l)" -ne 2 ]; then
+                echo "Number of 'Up' containers is not 2. Failing the workflow."
                 exit 1
             fi
             if [ $elapsed -ge $timeout ]; then
