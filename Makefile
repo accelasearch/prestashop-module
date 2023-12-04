@@ -35,6 +35,7 @@ zip-me:
 
 	@cp -R ./react/dist ./temp/$(MODULE_NAME)/react
 	@cp -R ./react/public ./temp/$(MODULE_NAME)/react
+	@rm -rf ./src/Controller/Test
 	
 	@rm -rf ./releases/$(MODULE_NAME).zip
 	@cd temp && zip -rq ../releases/$(MODULE_NAME).zip $(MODULE_NAME) && cd ..
@@ -88,16 +89,16 @@ phpunit:
 	@echo "Running tests..."
 	@php vendor/bin/phpunit -c tests/Unit/phpunit.xml
 
-# target: e2e									- Run e2e tests
-e2e:
-	@echo "Running e2e tests..."
+# target: endtoend									- Run endtoend tests
+endtoend:
+	@echo "Running endtoend tests..."
 	@npx playwright test
 
 # target: test - Run tests
 test:
 	@echo "Running tests..."
 	@$(MAKE) phpunit
-	@$(MAKE) e2e
+	@$(MAKE) endtoend
 
 # target: autoindex - Generate index.php files recursively
 autoindex:
