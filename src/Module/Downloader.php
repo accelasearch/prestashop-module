@@ -14,8 +14,7 @@ class Downloader
     private function getLatestVersion()
     {
         $client = DgcalClient::getInstance();
-        $data = $client->get(Config::DGCAL_ENDPOINT . "module/getLatestVersion");
-        return $data["data"]["version"] ?? null;
+        return $client->getLatestVersion();
     }
 
     private function getLatestZip()

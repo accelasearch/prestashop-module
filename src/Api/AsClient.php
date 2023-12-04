@@ -43,29 +43,24 @@ class AsClient extends GenericClientAbstract
         return [
             'base_url' => Config::ACCELASEARCH_ENDPOINT,
             'timeout' => 5.0,
-            'defaults' => [
-                "headers" => [
-                    "X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY"),
-                ]
-            ]
         ];
     }
 
     public static function getCollectorCredentials()
     {
-        $request = self::getInstance()->client->get('collector');
+        $request = self::getInstance()->client->get('collector', ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
         return self::checkRequest($request, 'collector');
     }
 
     public static function notifyShops()
     {
-        $request = self::getInstance()->client->post('shops/notify');
+        $request = self::getInstance()->client->post('shops/notify', ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
         return self::checkRequest($request, 'shops/notify');
     }
 
     public static function apiKeyVerify($key): bool
     {
-        $request = self::getInstance()->client->get('collector');
+        $request = self::getInstance()->client->get('collector', ["headers" => ["X-Accelasearch-Apikey" => $key]]);
         try {
             $req = self::checkRequest($request, 'collector');
             return isset($req['password']);

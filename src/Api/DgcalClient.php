@@ -27,7 +27,7 @@ class DgcalClient extends GenericClientAbstract
     protected static function getDefaults()
     {
         return [
-            'base_uri' => Config::DGCAL_ENDPOINT,
+            'base_url' => Config::DGCAL_ENDPOINT,
             'timeout' => 5.0,
             'defaults' => [
                 "headers" => [
@@ -43,6 +43,11 @@ class DgcalClient extends GenericClientAbstract
         return $this->checkRequest($get, $uri);
     }
 
+    public function getClient()
+    {
+        return $this->client;
+    }
+
     public function getLatestZip()
     {
         $req = $this->client->get("module/download/latest");
@@ -51,6 +56,18 @@ class DgcalClient extends GenericClientAbstract
             throw new DgcalApiException("module zip download returned status code: " . $statusCode);
         $body = $req->getBody()->getContents();
         return $body;
+    }
+
+    public function getLatestVersion()
+    {
+        try {
+            $req = $this->client->get("module/getLatestVersion");
+            $req = $this->checkRequest($req);
+            return $req['data']['version'] ?? null;
+        } catch (\Exception $e) {
+            return null;
+        }
+
     }
 
     public function post(string $uri, $headers = [], $body = null)
@@ -85,7 +102,12 @@ class DgcalClient extends GenericClientAbstract
             "shop_name" => $shop_name,
             "shop_metadata" => $shop_metadata,
         ];
-        $response = $client->post("instances", [], $data);
+        $response = $client->post("instances", [
+            "headers" => [
+                "Content-Type" => "x-www-form-urlencoded"
+            ],
+            "body" => http_build_query($data, "", "&")
+        ]);
         return $response;
     }
 
@@ -97,7 +119,15 @@ class DgcalClient extends GenericClientAbstract
             "gravity" => $gravity,
             "context" => $context,
         ];
-        $response = $client->post("logs", [], $data);
+        $response = $client->post(
+            "logs",
+            [
+                "headers" => [
+                    "Content-Type" => "x-www-form-urlencoded"
+                ],
+                "body" => http_build_query($data, "", "&")
+            ]
+        );
         return $response;
     }
 }
