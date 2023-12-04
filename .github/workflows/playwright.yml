@@ -40,6 +40,14 @@ jobs:
       
     - name: Install dependencies
       run: npm ci
+    - name: Build module
+      env:
+        CI: false
+      run: |
+        cd react
+        npm ci
+        npm run build
+        cd ..
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
