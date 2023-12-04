@@ -47,6 +47,9 @@ jobs:
     - name: Install module
       run: docker exec accelasearch-module bash -c "cd /var/www/html && php bin/console prestashop:module install accelasearch"
 
+    - name: Reset module
+      run: docker exec accelasearch-module bash -c "cd /var/www/html && php bin/console prestashop:module reset accelasearch"
+
     - name: Install dependencies
       run: npm ci
     - name: Build module
