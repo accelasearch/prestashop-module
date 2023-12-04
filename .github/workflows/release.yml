@@ -14,9 +14,6 @@ jobs:
       - name: Install composer local modules
         run: composer install && composer dump-autoload -o --no-dev
 
-      - name: Copy index.php to new composer vendor folder
-        run: cp index.php vendor/ && cp index.php vendor/composer/
-
       - name: Build plugin and zip
         env:
           CI: false
