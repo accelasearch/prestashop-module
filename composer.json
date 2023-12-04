@@ -21,6 +21,7 @@
         "prestashop/autoindex": "^2.1",
         "phpstan/phpstan": "^1.9",
         "phpunit/phpunit": "^8.5.34",
+        "accelasearch/google-merchant-validator": "^0.2.0",
         "mockery/mockery": "^1.2"
     },
     "minimum-stability": "dev",
@@ -38,7 +39,6 @@
     "license": "AFL-3.0",
     "require": {
         "vitalybaev/google-merchant-feed": "^2.6",
-        "accelasearch/google-merchant-validator": "^0.2.0",
         "accelasearch/sdk-php": "dev-main",
         "ector/release-downloader": "^1.1"
     }
