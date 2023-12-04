@@ -17,21 +17,21 @@ jobs:
     - name: Docker compose environment
       run: docker-compose --env-file .env.ci up -d
 
-    - name: Wait for server to be ready
+    - name: Wait for server and containers to be ready
       run: |
-        echo "Waiting for server to be ready..."
-        timeout=120 # 120 seconds (2 minutes)
+        echo "Waiting for server and containers to be ready..."
+        timeout=180 # 180 seconds (3 minutes)
         elapsed=0
-        until curl --output /dev/null --silent --head --fail http://localhost:8199; do
+        until [ "$(docker-compose ps | grep 'Up' | wc -l)" -eq 3 ] && curl --output /dev/null --silent --head --fail http://localhost:8199; do
             if [ $elapsed -ge $timeout ]; then
-                echo "Server did not become ready in time. Failing the workflow."
+                echo "Server or containers did not become ready in time. Failing the workflow."
                 exit 1
             fi
             printf '.'
             sleep 5
             elapsed=$(($elapsed + 5))
         done
-        echo "Server is up and running!"
+        echo "Server and containers are up and running!"
       
     - name: Install dependencies
       run: npm ci
