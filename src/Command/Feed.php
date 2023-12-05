@@ -96,7 +96,7 @@ class Feed
                 if (php_sapi_name() === "cli")
                     $progressBar->advance();
             }
-        } while ($totalProducts - 10000 > 0);
+        } while ($totalProducts > 0);
 
         if (php_sapi_name() === "cli")
             $progressBar->finish();
