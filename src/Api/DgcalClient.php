@@ -103,11 +103,9 @@ class DgcalClient extends GenericClientAbstract
             "shop_metadata" => $shop_metadata,
         ];
         $response = $client->post("instances", [
-            "headers" => [
-                "Content-Type" => "x-www-form-urlencoded"
-            ],
-            "body" => http_build_query($data, "", "&")
+            "body" => $data
         ]);
+        self::getInstance()->checkRequest($response);
         return $response;
     }
 
@@ -119,15 +117,10 @@ class DgcalClient extends GenericClientAbstract
             "gravity" => $gravity,
             "context" => $context,
         ];
-        $response = $client->post(
-            "logs",
-            [
-                "headers" => [
-                    "Content-Type" => "x-www-form-urlencoded"
-                ],
-                "body" => http_build_query($data, "", "&")
-            ]
-        );
+        $response = $client->post("logs", [
+            "body" => $data
+        ]);
+        self::getInstance()->checkRequest($response);
         return $response;
     }
 }

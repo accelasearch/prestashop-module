@@ -2,8 +2,11 @@
 
 namespace Accelasearch\Accelasearch\Entity;
 
+use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Exception\ShopNotFoundException;
 use Context;
+use Tools;
+use DbQuery;
 
 class Shop
 {
@@ -76,5 +79,68 @@ class Shop
         $url = $this->getUrl($id_lang);
         $iso = $this->context->language->iso_code;
         return md5($url . $iso);
+    }
+
+    public static function getTotalRevenue()
+    {
+        $dbQuery = new DbQuery();
+        $dbQuery->select('SUM(total_paid_tax_incl)');
+        $dbQuery->from('orders');
+        $dbQuery->where('current_state = ' . \Configuration::get('PS_OS_PAYMENT'));
+        $dbQuery->where('valid = 1');
+
+        return \Db::getInstance()->getValue($dbQuery);
+    }
+
+    public static function getTotalOrders()
+    {
+        $dbQuery = new DbQuery();
+        $dbQuery->select('COUNT(*)');
+        $dbQuery->from('orders');
+        $dbQuery->where('valid = 1');
+
+        return \Db::getInstance()->getValue($dbQuery);
+    }
+
+    public static function getTotalProducts()
+    {
+        $dbQuery = new DbQuery();
+        $dbQuery->select('COUNT(*)');
+        $dbQuery->from('product');
+
+        return \Db::getInstance()->getValue($dbQuery);
+    }
+
+    public static function getTotalCustomers()
+    {
+        $dbQuery = new DbQuery();
+        $dbQuery->select('COUNT(*)');
+        $dbQuery->from('customer');
+
+        return \Db::getInstance()->getValue($dbQuery);
+    }
+
+    public static function getMainShopInfo()
+    {
+        $shop_url = Tools::getShopDomainSsl(true, true);
+        $shop_name = Config::get('PS_SHOP_NAME');
+        $metadata = [
+            'prestashop_version' => _PS_VERSION_,
+            'php_version' => phpversion(),
+            'mysql_version' => \Db::getInstance()->getVersion(),
+            'php_memory_limit' => ini_get('memory_limit'),
+            'php_max_execution_time' => ini_get('max_execution_time'),
+            'php_max_input_vars' => ini_get('max_input_vars'),
+            'php_post_max_size' => ini_get('post_max_size'),
+            'order_revenue' => self::getTotalRevenue(),
+            'order_count' => self::getTotalOrders(),
+            'product_count' => self::getTotalProducts(),
+            'customer_count' => self::getTotalCustomers(),
+        ];
+        return [
+            'shop_url' => $shop_url,
+            'shop_name' => $shop_name,
+            'shop_metadata' => $metadata,
+        ];
     }
 }
