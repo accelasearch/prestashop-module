@@ -27,6 +27,7 @@ class Config
         "_ACCELASEARCH_SHOPS_TO_SYNC" => "[]",
         "_ACCELASEARCH_ONBOARDING" => 0,
         "_ACCELASEARCH_CRONJOB_LASTEXEC" => 0,
+        "_ACCELASEARCH_UPGRADE_VERSION" => "0.0.0",
     ];
 
     public static function initialize()

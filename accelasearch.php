@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -30,6 +29,7 @@ use Accelasearch\Accelasearch\Install\Installer;
 use Accelasearch\Accelasearch\Sql\Manager;
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Entity\Shop as AccelasearchShop;
+use Accelasearch\Accelasearch\Sql\Upgrade;
 
 class Accelasearch extends Module
 {
@@ -50,6 +50,8 @@ class Accelasearch extends Module
         $this->description = $this->l('Boost your search engine with AI');
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
+
+        (new Upgrade($this))->upgrade();
     }
 
     public function install()
