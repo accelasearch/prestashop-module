@@ -16,11 +16,7 @@ export default function Card({
       </h5>
       <p className="mb-3 font-normal text-gray-500 ">{description}</p>
       {ctaText && (
-        <button
-          type="button"
-          className="as-btn-primary bg-red-500"
-          onClick={ctaHandler}
-        >
+        <button type="button" className="as-btn-primary" onClick={ctaHandler}>
           {ctaText}
         </button>
       )}

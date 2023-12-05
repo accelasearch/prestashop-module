@@ -38,7 +38,7 @@ class Accelasearch extends Module
     {
         $this->name = 'accelasearch';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '100.0.1';
         $this->author = 'AccelaSearch';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7', 'max' => _PS_VERSION_];
