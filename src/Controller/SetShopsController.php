@@ -24,10 +24,12 @@ class SetShopsController extends AbstractController implements ControllerInterfa
                 $shopObject = new Shop($shop['id_shop'], Context::getContext());
                 $url = $shopObject->getUrl($shop["id_lang"]);
                 $iso = $shop['iso_code'];
-                AsShop::create($url, $iso);
+                //TODO: Uncomment this line when the shop is ready to synced
+                // AsShop::create($url, $iso);
             }
 
-            AsClient::notifyShops();
+            //TODO: Uncomment this line when the shop is ready to synced
+            // AsClient::notifyShops();
 
             Config::updateValue('_ACCELASEARCH_SHOPS_TO_SYNC', json_encode($shops));
             Config::updateValue('_ACCELASEARCH_ONBOARDING', 1);

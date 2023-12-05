@@ -16,4 +16,9 @@ abstract class AbstractService
         $this->productDecorator = $productDecorator;
         $this->config = $config;
     }
+
+    public function getProductsNb($id_shop, $id_lang): int
+    {
+        return $this->productRepository->getProductsNb($id_shop, $id_lang);
+    }
 }

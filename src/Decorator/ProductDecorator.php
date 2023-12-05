@@ -177,16 +177,10 @@ class ProductDecorator
      */
     private function addProductPrices(array &$product)
     {
-        $product['price_tax_excl'] = (float) $product['price_tax_excl'];
         $product['price_tax_incl'] =
             (float) $this->productRepository->getPriceTaxIncluded($product['id_product'], $product['id_attribute']);
-        $product['sale_price_tax_excl'] =
-            (float) $this->productRepository->getSalePriceTaxExcluded($product['id_product'], $product['id_attribute']);
         $product['sale_price_tax_incl'] =
             (float) $this->productRepository->getSalePriceTaxIncluded($product['id_product'], $product['id_attribute']);
-
-        $product['tax'] = $product['price_tax_incl'] - $product['price_tax_excl'];
-        $product['sale_tax'] = $product['sale_price_tax_incl'] - $product['sale_price_tax_excl'];
     }
 
     private function addLink(array &$product)

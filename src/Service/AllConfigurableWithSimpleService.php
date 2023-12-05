@@ -21,14 +21,17 @@ class AllConfigurableWithSimpleService extends AbstractService implements Servic
     {
         $products = $this->productRepository->getDbProducts($start, $limit, $language->getId(), $shop->ps);
         $products = $this->productDecorator->decorateProducts($products);
+        $this->addConfigurables($products);
+        return $products;
+    }
+
+    private function addConfigurables(&$products)
+    {
         foreach ($products as $product) {
-            if (!$this->isConfigurableCreated($product["id_product"])) {
+            if (!$this->isConfigurableCreated($product["id_product"]) && !empty($product["id_attribute"])) {
                 $products[] = $this->createConfigurable($product, $products);
             }
-            if (php_sapi_name() === "cli")
-                $progressIndicator->advance();
         }
-        return $products;
     }
 
     private function getLowestPricesFromProducts($id_product, $products)

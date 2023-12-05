@@ -8,4 +8,6 @@ use Accelasearch\Accelasearch\Entity\Shop;
 interface ServiceInterface
 {
     public function getProducts(Shop $shop, Language $language, int $start, int $limit, $progressIndicator = null): array;
+
+    public function getProductsNb($id_shop, $id_lang): int;
 }

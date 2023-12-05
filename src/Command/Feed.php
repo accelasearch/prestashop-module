@@ -49,7 +49,7 @@ class Feed
     {
 
         $start = microtime(true);
-        $memory = memory_get_usage();
+        $memory = memory_get_usage(true);
 
         Log::write("Getting products from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
@@ -61,34 +61,42 @@ class Feed
             $progressIndicator->start("Getting products from Database");
         }
 
-        $products = $this->productService->getProducts($this->shop, $this->language, 0, 100000, $progressIndicator);
+        $totalProducts = $this->productService->getProductsNb($this->shop->getId(), $this->language->getId());
+        $totalProcessed = 0;
+        $iteration_number = 0;
 
-        if (php_sapi_name() === "cli") {
-            $progressIndicator->finish(count($products) . " Products retrieved");
-            echo "\n\n";
-        }
+        do {
+            $products = $this->productService->getProducts($this->shop, $this->language, $iteration_number * 10000, 10000, $progressIndicator);
+            $totalProcessed += count($products);
+            $iteration_number++;
+            $totalProducts -= 10000;
+            if (php_sapi_name() === "cli") {
+                $progressIndicator->finish(count($products) . " Products retrieved");
+                echo "\n\n";
+            }
 
-        Log::write(count($products) . " Products retrieved in " . (microtime(true) - $start), Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
+            Log::write(count($products) . " Products retrieved in " . (microtime(true) - $start), Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
-        if (php_sapi_name() === "cli") {
-            $progressBar = new ProgressBar($output, count($products));
-            $progressBar->start();
-        }
+            if (php_sapi_name() === "cli") {
+                $progressBar = new ProgressBar($output, count($products));
+                $progressBar->start();
+            }
 
-        foreach ($products as $product) {
+            foreach ($products as $product) {
 
-            $item = new GoogleShoppingProduct();
-            $feedProduct = ProductBuilderFactory::create(
-                $product,
-                $item,
-                Config::get("_ACCELASEARCH_SYNCTYPE")
-            );
-            $feedProduct->build($this->shop, $this->language);
-            $this->feed->addProduct($feedProduct->getItem());
+                $item = new GoogleShoppingProduct();
+                $feedProduct = ProductBuilderFactory::create(
+                    $product,
+                    $item,
+                    Config::get("_ACCELASEARCH_SYNCTYPE")
+                );
+                $feedProduct->build($this->shop, $this->language);
+                $this->feed->addProduct($feedProduct->getItem());
 
-            if (php_sapi_name() === "cli")
-                $progressBar->advance();
-        }
+                if (php_sapi_name() === "cli")
+                    $progressBar->advance();
+            }
+        } while ($totalProducts - 10000 > 0);
 
         if (php_sapi_name() === "cli")
             $progressBar->finish();
@@ -97,7 +105,7 @@ class Feed
             echo "\n\n";
 
         $end = microtime(true);
-        $memory = memory_get_usage() - $memory;
+        $memory = memory_get_usage(true) - $memory;
 
         $this->execution_time = ($end - $start);
         $this->memory_used = ($memory / 1024 / 1024);
@@ -107,7 +115,7 @@ class Feed
             echo "Memory: " . ($memory / 1024 / 1024) . " MB\n";
         }
 
-        echo "Products: " . count($products) . "\n";
+        echo "Products: " . $totalProcessed . "\n";
 
         try {
             $this->filesystem->dumpFile(

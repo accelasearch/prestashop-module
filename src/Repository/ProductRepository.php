@@ -217,24 +217,33 @@ class ProductRepository
         return is_array($result) ? $result : [];
     }
 
+    public function getProductsNb($id_shop, $id_lang)
+    {
+        $query = new \DbQuery();
+
+        $query->select('COUNT(*)')
+            ->from('product', 'p')
+            ->innerJoin('product_shop', 'ps', 'ps.id_product = p.id_product AND ps.id_shop = ' . (int) $id_shop)
+            ->innerJoin('product_lang', 'pl', 'pl.id_product = ps.id_product AND pl.id_shop = ps.id_shop AND pl.id_lang = ' . (int) $id_lang)
+            ->leftJoin('product_attribute_shop', 'pas', 'pas.id_product = p.id_product AND pas.id_shop = ps.id_shop')
+            ->leftJoin('product_attribute', 'pa', 'pas.id_product_attribute = pa.id_product_attribute')
+            ->where('ps.active = 1');
+
+        return (int) $this->db->getValue($query);
+    }
+
     private function addSelectParameters(\DbQuery $query)
     {
         $query->select('p.id_product, p.id_manufacturer, p.id_supplier, IFNULL(pas.id_product_attribute, 0) as id_attribute, pas.default_on as is_default_attribute,
             pl.name, pl.description, pl.description_short, pl.link_rewrite, cl.name as default_category,
             ps.id_category_default, IFNULL(NULLIF(pa.reference, ""), p.reference) as reference, IFNULL(NULLIF(pa.upc, ""), p.upc) as upc,
             IFNULL(NULLIF(pa.ean13, ""), p.ean13) as ean, ps.condition, ps.visibility, ps.active, sa.quantity, m.name as manufacturer,
-            (p.weight + IFNULL(pas.weight, 0)) as weight, (ps.price + IFNULL(pas.price, 0)) as price_tax_excl,
-            p.date_add as created_at, p.date_upd as updated_at,
-            p.available_for_order, p.available_date, p.cache_is_pack as is_bundle, p.is_virtual,
             p.unity, p.unit_price_ratio
             ');
 
         if (property_exists(new \Product(), 'mpn')) {
             $query->select('p.mpn');
         }
-
-        $query->select('p.width, p.height, p.depth, p.additional_delivery_times, p.additional_shipping_cost');
-        $query->select('pl.delivery_in_stock, pl.delivery_out_stock');
 
         if (version_compare(_PS_VERSION_, '1.7', '>=')) {
             $query->select('IFNULL(NULLIF(pa.isbn, ""), p.isbn) as isbn');
