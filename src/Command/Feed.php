@@ -51,8 +51,6 @@ class Feed
         $start = microtime(true);
         $memory = memory_get_usage(true);
 
-        Log::write("Getting products from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
-
         $progressIndicator = null;
         $progressBar = null;
 
@@ -65,6 +63,8 @@ class Feed
         $totalProcessed = 0;
         $iteration_number = 0;
 
+        Log::write("Getting $totalProducts products info from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
+
         do {
             $products = $this->productService->getProducts($this->shop, $this->language, $iteration_number * 10000, 10000, $progressIndicator);
             $totalProcessed += count($products);
@@ -75,7 +75,7 @@ class Feed
                 echo "\n\n";
             }
 
-            Log::write(count($products) . " Products retrieved in " . (microtime(true) - $start), Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
+            Log::write(count($products) . " Products retrieved - " . $iteration_number + 1 . " iteration", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
             if (php_sapi_name() === "cli") {
                 $progressBar = new ProgressBar($output, count($products));
