@@ -22,4 +22,4 @@ $operation = "Accelasearch\\Accelasearch\\Cron\\Operation\\" . $operation;
 if (!class_exists($operation))
     die("Invalid operation");
 $operation = new $operation();
-return $operation->execute();
+$operation->execute();

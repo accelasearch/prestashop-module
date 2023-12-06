@@ -27,6 +27,7 @@ class SetShopsController extends AbstractController implements ControllerInterfa
                 $url = $shopObject->getUrl($shop["id_lang"]);
                 $iso = $shop['iso_code'];
                 $id_shop_collector = AsShop::create($url, $iso);
+                AsClient::notifyShops();
                 $shops[$k]["id_shop_as"] = AsClient::convertIdCollectorToReal($id_shop_collector);
             }
 
