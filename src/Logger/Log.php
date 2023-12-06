@@ -32,7 +32,7 @@ class Log
     {
         // @phpstan-ignore-next-line
         if(self::ENABLED === false) {
-            return 0;
+            return "";
         }
         if($line !== null) {
             $msg .= " in line $line";
