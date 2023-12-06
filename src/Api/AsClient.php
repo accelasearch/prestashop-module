@@ -19,8 +19,9 @@ class AsClient extends GenericClientAbstract
     public static function checkRequest($request, $url = "")
     {
         $statusCode = $request->getStatusCode();
-        if ($statusCode !== 200)
+        if ($statusCode !== 200) {
             throw new AsApiException($url . " returned status code: " . $statusCode);
+        }
         $body = $request->getBody()->getContents();
         $body = json_decode($body, true);
         $responseStatus = $body['status'] ?? null;
@@ -58,6 +59,13 @@ class AsClient extends GenericClientAbstract
         return self::checkRequest($request, 'shops/notify');
     }
 
+    public static function convertIdCollectorToReal($id_collector)
+    {
+        $request = self::getInstance()->client->get("shops/$id_collector/convert", ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
+        $result = self::checkRequest($request, 'shops/' . $id_collector . '/convert');
+        return $result["shopIdentifier"];
+    }
+
     public static function apiKeyVerify($key): bool
     {
         $request = self::getInstance()->client->get('collector', ["headers" => ["X-Accelasearch-Apikey" => $key]]);
@@ -67,6 +75,18 @@ class AsClient extends GenericClientAbstract
         } catch (AsApiException $e) {
             return false;
         }
+    }
+
+    public static function updateCmsDataByRealId($id, $data)
+    {
+        $request = self::getInstance()->client->put(
+            "shops/$id/data",
+            [
+                "headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")],
+                "json" => $data
+            ]
+        );
+        return self::checkRequest($request, "shops/$id/data");
     }
 
 }

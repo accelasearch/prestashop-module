@@ -54,7 +54,7 @@ class Feed
         $progressIndicator = null;
         $progressBar = null;
 
-        if (php_sapi_name() === "cli") {
+        if(php_sapi_name() === "cli") {
             $progressIndicator = new ProgressIndicator($output);
             $progressIndicator->start("Getting products from Database");
         }
@@ -70,19 +70,19 @@ class Feed
             $totalProcessed += count($products);
             $iteration_number++;
             $totalProducts -= 10000;
-            if (php_sapi_name() === "cli") {
+            if(php_sapi_name() === "cli") {
                 $progressIndicator->finish(count($products) . " Products retrieved");
                 echo "\n\n";
             }
 
-            Log::write(count($products) . " Products retrieved - " . $iteration_number + 1 . " iteration", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
+            Log::write(count($products) . " Products retrieved - " . $iteration_number . " iteration", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
-            if (php_sapi_name() === "cli") {
+            if(php_sapi_name() === "cli") {
                 $progressBar = new ProgressBar($output, count($products));
                 $progressBar->start();
             }
 
-            foreach ($products as $product) {
+            foreach($products as $product) {
 
                 $item = new GoogleShoppingProduct();
                 $feedProduct = ProductBuilderFactory::create(
@@ -93,16 +93,16 @@ class Feed
                 $feedProduct->build($this->shop, $this->language);
                 $this->feed->addProduct($feedProduct->getItem());
 
-                if (php_sapi_name() === "cli")
+                if(php_sapi_name() === "cli") {
                     $progressBar->advance();
+                }
             }
-        } while ($totalProducts > 0);
+        } while($totalProducts > 0);
 
-        if (php_sapi_name() === "cli")
+        if(php_sapi_name() === "cli") {
             $progressBar->finish();
-
-        if (php_sapi_name() === "cli")
             echo "\n\n";
+        }
 
         $end = microtime(true);
         $memory = memory_get_usage(true) - $memory;
@@ -110,7 +110,7 @@ class Feed
         $this->execution_time = ($end - $start);
         $this->memory_used = ($memory / 1024 / 1024);
 
-        if ($this->debug) {
+        if($this->debug) {
             echo "Time: " . ($end - $start) . "\n";
             echo "Memory: " . ($memory / 1024 / 1024) . " MB\n";
         }
@@ -122,11 +122,7 @@ class Feed
                 $this->getOutputPath(),
                 $this->feed->build()
             );
-            $url = $this->shop->getUrl($this->language->getId());
-            $asShop = AsShop::getByUrl($url);
-            if ($asShop !== null) {
-                AsShop::updateFeedUrlByShop($asShop, $this->getFeedUrl());
-            }
+            AsShop::updateFeedUrlByIdShopAndIdLang($this->shop->getId(), $this->language->getId(), $this->getFeedUrl());
         } catch (IOExceptionInterface $exception) {
             $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
             RemoteLog::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
@@ -139,7 +135,7 @@ class Feed
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function getDebug()
@@ -148,8 +144,8 @@ class Feed
     }
 
     /**
-     * 
-     * @param bool $debug 
+     *
+     * @param bool $debug
      * @return self
      */
     public function setDebug($debug): self

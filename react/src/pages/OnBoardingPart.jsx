@@ -6,7 +6,7 @@ import CronjobConfiguration from "../components/CronjobConfiguration";
 export default function OnBoardingPart({ number }) {
   return (
     <div>
-      {number === 0 && <ShopSelection />}
+      {number === 0 && <ShopSelection isOnBoarding={true} />}
       {number === 1 && <SyncAttributeSelection />}
       {number === 2 && <CronjobConfiguration />}
     </div>

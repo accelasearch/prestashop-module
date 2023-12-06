@@ -10,6 +10,6 @@ class RemoteLog extends Log
     {
         parent::write($msg, $gravity, $context, $line, $file);
         DgcalClient::createLog($msg, $gravity, $context);
-        return 0;
+        return php_sapi_name() !== "cli" ? $msg : "";
     }
 }

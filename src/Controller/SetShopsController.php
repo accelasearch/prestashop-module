@@ -18,21 +18,22 @@ class SetShopsController extends AbstractController implements ControllerInterfa
             $this->error('No shops provided', 400);
         }
 
+        $currentShops = json_decode(Config::get('_ACCELASEARCH_SHOPS_TO_SYNC', "[]"), true);
+
         try {
             // create shops on AccelaSearch
-            foreach ($shops as $shop) {
+            foreach ($shops as $k => $shop) {
                 $shopObject = new Shop($shop['id_shop'], Context::getContext());
                 $url = $shopObject->getUrl($shop["id_lang"]);
                 $iso = $shop['iso_code'];
-                //TODO: Uncomment this line when the shop is ready to synced
-                // AsShop::create($url, $iso);
+                $id_shop_collector = AsShop::create($url, $iso);
+                $shops[$k]["id_shop_as"] = AsClient::convertIdCollectorToReal($id_shop_collector);
             }
 
-            //TODO: Uncomment this line when the shop is ready to synced
-            // AsClient::notifyShops();
-
             Config::updateValue('_ACCELASEARCH_SHOPS_TO_SYNC', json_encode($shops));
-            Config::updateValue('_ACCELASEARCH_ONBOARDING', 1);
+            if(count($currentShops) === 0) {
+                Config::updateValue('_ACCELASEARCH_ONBOARDING', 1);
+            }
             $this->success(true);
         } catch (\Exception $e) {
             $this->error($e->getMessage(), 500);

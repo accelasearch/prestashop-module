@@ -38,7 +38,7 @@ export default function Settings() {
         />
       </div>
       <div className="mt-12">
-        <ShopSelection isOnBoarding={true} />
+        <ShopSelection isOnBoarding={false} />
       </div>
       <div className="mt-12">
         <SyncAttributeSelection withSubmit={false} />
