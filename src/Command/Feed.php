@@ -5,17 +5,19 @@ namespace Accelasearch\Accelasearch\Command;
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Entity\Language;
 use Accelasearch\Accelasearch\Entity\Shop;
+use Accelasearch\Accelasearch\Factory\ContextFactory;
 use Accelasearch\Accelasearch\Factory\ProductBuilderFactory;
 use Accelasearch\Accelasearch\Logger\Log;
 use Accelasearch\Accelasearch\Logger\RemoteLog;
 use Accelasearch\Accelasearch\Service\ServiceInterface;
-use Vitalybaev\GoogleMerchant\Feed as GoogleShoppingFeed;
 use Vitalybaev\GoogleMerchant\Product as GoogleShoppingProduct;
+use Vitalybaev\GoogleMerchant\Feed as GoogleShoppingFeed;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\ProgressIndicator;
-use Accelasearch\Accelasearch\Entity\AsShop;
+use XMLReader;
+use XMLWriter;
 
 class Feed
 {
@@ -31,12 +33,12 @@ class Feed
     private $feed;
     private $filesystem;
     private $configurable_ids = [];
-    public function __construct(Shop $shop, Language $language, ServiceInterface $productService, GoogleShoppingFeed $feed)
+    public const FACTOR = 10000;
+    public function __construct(Shop $shop, Language $language, ServiceInterface $productService)
     {
         $this->shop = $shop;
         $this->language = $language;
         $this->productService = $productService;
-        $this->feed = $feed;
         $this->filesystem = new Filesystem();
     }
 
@@ -66,10 +68,19 @@ class Feed
         Log::write("Getting $totalProducts products info from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
         do {
-            $products = $this->productService->getProducts($this->shop, $this->language, $iteration_number * 10000, 10000, $progressIndicator);
+
+            $feed = new GoogleShoppingFeed(
+                $this->shop->ps->name . " - " . $this->language->ps->name,
+                ContextFactory::getContext()->link->getBaseLink($this->shop->getId()),
+                "Google Shopping Feed for " . $this->shop->ps->name . " - " . $this->language->ps->name
+            );
+
+            $this->feed = $feed;
+
+            $products = $this->productService->getProducts($this->shop, $this->language, $iteration_number * self::FACTOR, self::FACTOR, $progressIndicator);
             $totalProcessed += count($products);
             $iteration_number++;
-            $totalProducts -= 10000;
+            $totalProducts -= self::FACTOR;
             if(php_sapi_name() === "cli") {
                 $progressIndicator->finish(count($products) . " Products retrieved");
                 echo "\n\n";
@@ -97,6 +108,18 @@ class Feed
                     $progressBar->advance();
                 }
             }
+
+            try {
+                $this->filesystem->dumpFile(
+                    $this->getOutputPath($iteration_number),
+                    $this->feed->build()
+                );
+            } catch (IOExceptionInterface $exception) {
+                $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
+                RemoteLog::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
+                echo $message;
+            }
+
         } while($totalProducts > 0);
 
         if(php_sapi_name() === "cli") {
@@ -117,22 +140,94 @@ class Feed
 
         echo "Products: " . $totalProcessed . "\n";
 
-        try {
-            $this->filesystem->dumpFile(
-                $this->getOutputPath(),
-                $this->feed->build()
-            );
-            AsShop::updateFeedUrlByIdShopAndIdLang($this->shop->getId(), $this->language->getId(), $this->getFeedUrl());
-        } catch (IOExceptionInterface $exception) {
-            $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
-            RemoteLog::write($message, Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
-            echo $message;
+        // create an array of filenames by iterations number
+        $filePaths = [];
+        for($i = 0; $i < $iteration_number; $i++) {
+            $filePaths[] = $this->getOutputPath($i + 1);
+        }
+
+        $this->mergeXmlFiles($filePaths, $this->getOutputPath());
+
+        // remove all files except the merged one
+        foreach($filePaths as $filePath) {
+            if($filePath !== $this->getOutputPath()) {
+                $this->filesystem->remove($filePath);
+            }
         }
 
         Log::write("Feed generated in " . $this->execution_time . ", memory used: " . $this->memory_used, Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
         echo "Feed generated at " . $this->getOutputPath() . "\n\n";
         return $this->getFeedUrl();
     }
+
+
+    private function mergeXmlFiles(array $filePaths, $outputFile)
+    {
+        $output = new XMLWriter();
+        $output->openURI($outputFile);
+        $output->startDocument('1.0');
+        $output->setIndent(true);
+
+        $output->startElement('rss');
+        $output->writeAttribute('xmlns:g', 'http://base.google.com/ns/1.0');
+        $output->startElement('channel');
+
+        $firstFile = true;
+
+        foreach ($filePaths as $filePath) {
+            $reader = new XMLReader();
+            if (!$reader->open($filePath)) {
+                continue;
+            }
+
+            while ($reader->read()) {
+                if ($reader->nodeType == XMLReader::ELEMENT) {
+                    if ($reader->localName == 'item') {
+                        $output->startElement('item');
+                        while ($reader->read()) {
+                            if ($reader->nodeType == XMLReader::ELEMENT) {
+                                $name = $reader->localName;
+                                $output->startElement("g:$name");
+                                if (!$reader->isEmptyElement) {
+                                    $reader->read();
+                                    if ($reader->nodeType == XMLReader::TEXT) {
+                                        $output->text($reader->value);
+                                    } elseif ($reader->nodeType == XMLReader::CDATA) {
+                                        $output->writeCData($reader->value);
+                                    }
+                                }
+                                $output->endElement();
+                            } elseif ($reader->nodeType == XMLReader::END_ELEMENT && $reader->localName == 'item') {
+                                break;
+                            }
+                        }
+                        $output->endElement();
+                    } elseif ($firstFile && in_array($reader->localName, ['title', 'link', 'description'])) {
+                        $output->startElement($reader->localName);
+                        if (!$reader->isEmptyElement) {
+                            $reader->read();
+                            if ($reader->nodeType == XMLReader::TEXT) {
+                                $output->text($reader->value);
+                            } elseif ($reader->nodeType == XMLReader::CDATA) {
+                                $output->writeCData($reader->value);
+                            }
+                        }
+                        $output->endElement();
+                    }
+                }
+            }
+
+            $reader->close();
+            $firstFile = false;
+        }
+
+        $output->endElement();
+        $output->endElement();
+        $output->endDocument();
+
+        $output->flush();
+    }
+
 
     /**
      *
@@ -154,9 +249,10 @@ class Feed
         return $this;
     }
 
-    public function getOutputPath()
+    public function getOutputPath($iteration = null)
     {
-        return _PS_MODULE_DIR_ . 'accelasearch/' . Config::FEED_OUTPUT_PATH . Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN") . "-" . $this->shop->getId() . '_' . $this->language->getId() . '.xml';
+        $suffix = $iteration ? "_" . $iteration : "";
+        return _PS_MODULE_DIR_ . 'accelasearch/' . Config::FEED_OUTPUT_PATH . Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN") . "-" . $this->shop->getId() . '_' . $this->language->getId() . $suffix . '.xml';
     }
 
     public function getFeedUrl()
