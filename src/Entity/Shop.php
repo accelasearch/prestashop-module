@@ -15,8 +15,9 @@ class Shop
     private $context;
     public function __construct(int $id, Context $context = null)
     {
-        if (!is_array(\Shop::getShop($id)))
+        if (!is_array(\Shop::getShop($id))) {
             throw new ShopNotFoundException($id);
+        }
         $this->id = $id;
         $this->ps = new \Shop($id);
         $this->context = $context;
@@ -38,7 +39,7 @@ class Shop
                 if ($language['shops'][$shop['id_shop']] === true) {
                     $id_lang = $language['id_lang'];
                     $id_shop = $shop['id_shop'];
-                    $flagIcon = \Tools::getShopDomainSsl(true) . __PS_BASE_URI__ . 'img/tmp/lang_mini_' . $id_lang . '_' . $id_shop . '.jpg';
+                    $flagIcon = Tools::getShopDomainSsl(true) . __PS_BASE_URI__ . 'img/tmp/lang_mini_' . $id_lang . '_' . $id_shop . '.jpg';
                     $language['flagIcon'] = $flagIcon;
                     $available_languages[] = $language;
                 }
