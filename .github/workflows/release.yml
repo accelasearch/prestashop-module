@@ -26,14 +26,14 @@ jobs:
           cd ..
 
       - name: Bump version
-        run: MODULE_NAME=${{ github.event.repository.name }} make version
+        run: MODULE_NAME=accelasearch make version
         env:
           VERSION: ${{ github.event.release.tag_name }}
 
       - name: Create & upload artifact
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ github.event.repository.name }}
+          name: accelasearch
           path: ./
 
   clean-artifacts:
@@ -69,13 +69,13 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v1
         with:
-          name: ${{ github.event.repository.name }}
+          name: accelasearch
 
       - name: Bundle the production zip
         run: |
           cd ${{ github.event.repository.name }}
           echo "$CONFIG_FILE" >> .config.prod.yml
-          MODULE_NAME=${{ github.event.repository.name }} make zip-me
+          MODULE_NAME=accelasearch make zip-me
 
       - name: Publish the production zip
         uses: actions/upload-release-asset@v1.0.1
@@ -83,8 +83,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GA_ACCESS_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./${{ github.event.repository.name }}/releases/${{ github.event.repository.name }}.zip
-          asset_name: ${{ github.event.repository.name }}.zip
+          asset_path: ./${{ github.event.repository.name }}/releases/accelasearch.zip
+          asset_name: accelasearch.zip
           asset_content_type: application/zip
 
   changelog:
