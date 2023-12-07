@@ -66,41 +66,16 @@ export default function Help() {
           <div className="w-full sm:w-1/2 px-4">
             <div className="bg-gray-100 p-8 text-center">
               <p className="text-center text-zinc-600 pb-4 text-xl">
-                {t("Need help? Read a module documentation")}
+                {t("Cannot find a solution to your issue?")}
               </p>
               <a
-                href={`${accelasearch_public_url}docs.pdf`}
+                href="https://dgcalsupport.atlassian.net/servicedesk/customer/portal/3"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-as-primary-500 hover:bg-as-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-as-primary-500"
               >
-                Open PDF
+                {t("Open a support ticket")}
               </a>
-            </div>
-            <div className="text-center mt-6">
-              <div>{t("Cannot find a solution to your issue?")}</div>
-              <div className="">
-                <a
-                  href="https://dgcalsupport.atlassian.net/servicedesk/customer/portal/3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-link flex justify-center items-center text-as-primary-400"
-                >
-                  {t("Open a support ticket")}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="ml-2 h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
-                </a>
-              </div>
             </div>
           </div>
         </div>
