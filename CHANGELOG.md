@@ -1,4 +1,9 @@
 
+## [1.0.13] - 2023-12-07
+### :sparkles: New Features
+- [`f4ae0e2`](https://github.com/accelasearch/prestashop-module/commit/f4ae0e2cf729b336d87d85b706e5f6972aee4873) - new translations and removed text in help page *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.12] - 2023-12-07
 ### :sparkles: New Features
 - [`adc4b41`](https://github.com/accelasearch/prestashop-module/commit/adc4b417e470149c347dba9359b146bbd459c9af) - added issue template *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -13,3 +18,4 @@
 [1.0.10]: https://github.com/accelasearch/prestashop-module/compare/1.0.9...1.0.10
 
 [1.0.12]: https://github.com/accelasearch/prestashop-module/compare/1.0.11...1.0.12
+[1.0.13]: https://github.com/accelasearch/prestashop-module/compare/1.0.12...1.0.13
