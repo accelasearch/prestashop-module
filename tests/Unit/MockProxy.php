@@ -99,6 +99,12 @@ class Shop extends MockProxy
     {
         return \Shop::CONTEXT_ALL;
     }
+
+    public static function setContext($context)
+    {
+        return true;
+    }
+
     protected static $mock;
 }
 
