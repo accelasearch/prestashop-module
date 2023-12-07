@@ -12,8 +12,10 @@ class Cron
     public function execute()
     {
         foreach ($this->operations as $operation) {
-            if (!$operation->isOperationToExecute() || $operation->isLocked())
+            if (!$operation->isOperationToExecute() || $operation->isLocked()) {
+                echo !$operation->isOperationToExecute() ? "The operation " . get_class($operation) . " is not ready to be executed\n" : "The operation " . get_class($operation) . " is locked\n";
                 continue;
+            }
             $operation->executeAsync();
         }
     }

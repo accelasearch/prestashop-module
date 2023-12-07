@@ -2,7 +2,7 @@
 
 namespace Accelasearch\Accelasearch\Controller;
 
-use Configuration;
+use Accelasearch\Accelasearch\Config\Config;
 use AttributeGroup;
 
 class GetAttributesController extends AbstractController implements ControllerInterface
@@ -10,7 +10,7 @@ class GetAttributesController extends AbstractController implements ControllerIn
     public function handleRequest()
     {
         // get default language
-        $id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
+        $id_lang = (int) Config::get('PS_LANG_DEFAULT');
         $attributes = AttributeGroup::getAttributesGroups($id_lang);
         $this->success($attributes);
     }

@@ -9,14 +9,14 @@ use Accelasearch\Accelasearch\Module\Downloader;
 
 class Config
 {
-    const DGCAL_ENDPOINT = 'https://dgcal-dev.it/accelasearch/api/v1/';
-    const ACCELASEARCH_ENDPOINT = 'https://svc11.accelasearch.net/API/';
-    const FEED_OUTPUT_PATH = "public/feed/";
+    public const DGCAL_ENDPOINT = 'https://dgcal-dev.it/accelasearch/api/v1/';
+    public const ACCELASEARCH_ENDPOINT = 'https://svc11.accelasearch.net/API/';
+    public const FEED_OUTPUT_PATH = "public/feed/";
 
     /**
      * Possible values used for Configuration ( ps_configuration )
      */
-    const DEFAULT_CONFIGURATION = [
+    public const DEFAULT_CONFIGURATION = [
         "_ACCELASEARCH_SYNCTYPE" => "CONFIGURABLE_WITH_SIMPLE",
         "_ACCELASEARCH_FEED_RANDOM_TOKEN" => "",
         "_ACCELASEARCH_CRON_TOKEN" => "",
@@ -40,24 +40,28 @@ class Config
 
     public static function get($key, $default = false)
     {
+        \Shop::setContext(\Shop::CONTEXT_ALL);
         return \Configuration::get($key, null, null, null, $default);
     }
 
     public static function updateValue($key, $value)
     {
+        \Shop::setContext(\Shop::CONTEXT_ALL);
         return \Configuration::updateValue($key, $value);
     }
 
     public static function deleteByName($key)
     {
+        \Shop::setContext(\Shop::CONTEXT_ALL);
         return \Configuration::deleteByName($key);
     }
 
     public static function getColorLabel($id_lang = null)
     {
         $id = self::get("_ACCELASEARCH_COLOR_ID", 0);
-        if (empty($id))
+        if (empty($id)) {
             return "color";
+        }
         $attributeGroup = new \AttributeGroup($id, $id_lang);
         return $attributeGroup->name;
     }
@@ -65,8 +69,9 @@ class Config
     public static function getSizeLabel($id_lang = null)
     {
         $id = self::get("_ACCELASEARCH_SIZE_ID", 0);
-        if (empty($id))
+        if (empty($id)) {
             return "size";
+        }
         $attributeGroup = new \AttributeGroup($id, $id_lang);
         return $attributeGroup->name;
     }
@@ -80,8 +85,9 @@ class Config
     public static function getLastExecLocale()
     {
         $lastExec = self::get("_ACCELASEARCH_CRONJOB_LASTEXEC", 0);
-        if (empty($lastExec))
+        if (empty($lastExec)) {
             return "never";
+        }
         return date("d/m/Y H:i:s", $lastExec);
     }
 
@@ -94,7 +100,7 @@ class Config
         $logged = AsClient::apiKeyVerify($apiKey);
         return [
             "systemStatus" => [
-                "needUpdate" => (new Downloader)->needUpdate($module->version),
+                "needUpdate" => (new Downloader())->needUpdate($module->version),
                 "locks" => Lock::getExpiredLocks()
             ],
             "userStatus" => [
