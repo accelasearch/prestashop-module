@@ -3,6 +3,7 @@
 namespace Accelasearch\Accelasearch\Command;
 
 use Accelasearch\Accelasearch\Config\Config;
+use Accelasearch\Accelasearch\Entity\AsShop;
 use Accelasearch\Accelasearch\Entity\Language;
 use Accelasearch\Accelasearch\Entity\Shop;
 use Accelasearch\Accelasearch\Factory\ContextFactory;
@@ -30,7 +31,6 @@ class Feed
     private $execution_time = 0;
     private $memory_used = 0;
     private $productService;
-    private $feed;
     private $filesystem;
     private $configurable_ids = [];
     public const FACTOR = 10000;
@@ -68,14 +68,11 @@ class Feed
         Log::write("Getting $totalProducts products info from Database", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
         do {
-
             $feed = new GoogleShoppingFeed(
                 $this->shop->ps->name . " - " . $this->language->ps->name,
                 ContextFactory::getContext()->link->getBaseLink($this->shop->getId()),
                 "Google Shopping Feed for " . $this->shop->ps->name . " - " . $this->language->ps->name
             );
-
-            $this->feed = $feed;
 
             $products = $this->productService->getProducts($this->shop, $this->language, $iteration_number * self::FACTOR, self::FACTOR, $progressIndicator);
             $totalProcessed += count($products);
@@ -102,7 +99,7 @@ class Feed
                     Config::get("_ACCELASEARCH_SYNCTYPE")
                 );
                 $feedProduct->build($this->shop, $this->language);
-                $this->feed->addProduct($feedProduct->getItem());
+                $feed->addProduct($feedProduct->getItem());
 
                 if(php_sapi_name() === "cli") {
                     $progressBar->advance();
@@ -112,7 +109,7 @@ class Feed
             try {
                 $this->filesystem->dumpFile(
                     $this->getOutputPath($iteration_number),
-                    $this->feed->build()
+                    $feed->build()
                 );
             } catch (IOExceptionInterface $exception) {
                 $message = "An error occurred while creating your feed at " . $exception->getPath() . "\n" . $exception->getMessage() . "\n";
@@ -154,6 +151,8 @@ class Feed
                 $this->filesystem->remove($filePath);
             }
         }
+
+        AsShop::updateFeedUrlByIdShopAndIdLang($this->shop->getId(), $this->language->getId(), $this->getFeedUrl());
 
         Log::write("Feed generated in " . $this->execution_time . ", memory used: " . $this->memory_used, Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
         echo "Feed generated at " . $this->getOutputPath() . "\n\n";
