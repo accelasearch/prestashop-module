@@ -15,7 +15,7 @@ class AsShop
 {
     private static $shop_mapper;
 
-    public static function setupShopMapper()
+    public static function getDbh()
     {
         $apiKey = Config::get("_ACCELASEARCH_API_KEY");
         if(empty($apiKey)) {
@@ -34,9 +34,20 @@ class AsShop
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
             ]
         );
+        return $dbh;
+    }
+
+    public static function setupShopMapper()
+    {
+        $dbh = self::getDbh();
         self::$shop_mapper = ShopMapper::fromConnection($dbh);
     }
 
+    public static function softDeleteAllProducts($as_shop_id)
+    {
+        $dbh = self::getDbh();
+        return $dbh->exec("UPDATE products SET deleted = 1 WHERE siteid = (SELECT id FROM storeviews WHERE cmsdata LIKE '%\"id\":$as_shop_id%')");
+    }
 
     public static function create(string $url, string $iso)
     {

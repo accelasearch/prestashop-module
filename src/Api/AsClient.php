@@ -89,4 +89,15 @@ class AsClient extends GenericClientAbstract
         return self::checkRequest($request, "shops/$id/data");
     }
 
+    public static function deleteSync($id)
+    {
+        $request = self::getInstance()->client->delete(
+            "shops/$id/synchronization",
+            [
+                "headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")],
+            ]
+        );
+        return self::checkRequest($request, "shops/$id");
+    }
+
 }
