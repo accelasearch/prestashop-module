@@ -1,4 +1,5 @@
 <?php
+use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Cron\Cron;
 
 require_once __DIR__ . "/../../config/config.inc.php";
@@ -9,7 +10,7 @@ require_once __DIR__ . "/vendor/autoload.php";
 
 $operation = Tools::getValue("operation");
 $token = Tools::getValue("token");
-if ($token != Configuration::get("_ACCELASEARCH_CRON_TOKEN")) {
+if ($token != Config::get("_ACCELASEARCH_CRON_TOKEN")) {
     die("Invalid token");
 }
 
@@ -21,5 +22,6 @@ if (!Cron::isReady() && $module->active)
 $operation = "Accelasearch\\Accelasearch\\Cron\\Operation\\" . $operation;
 if (!class_exists($operation))
     die("Invalid operation");
+\Shop::setContext(\Shop::CONTEXT_ALL);
 $operation = new $operation();
 $operation->execute();

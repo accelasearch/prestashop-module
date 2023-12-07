@@ -13,10 +13,9 @@ if ($token !== Config::get("_ACCELASEARCH_CRON_TOKEN")) {
 }
 
 $cron = new Cron();
+$cron->updateOnboarding();
 $cron->addOperation(new FeedGeneration());
 $cron->execute();
-
-$cron->updateOnboarding();
 
 $cron->updateCronjobLastexec();
 

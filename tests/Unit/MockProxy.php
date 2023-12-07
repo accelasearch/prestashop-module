@@ -93,6 +93,18 @@ class Manufacturer extends MockProxy
 class Shop extends MockProxy
 {
     // Redeclare to use this instead MockProxy::mock
+    public const CONTEXT_ALL = 1;
+
+    public static function getContext()
+    {
+        return \Shop::CONTEXT_ALL;
+    }
+
+    public static function setContext($context)
+    {
+        return true;
+    }
+
     protected static $mock;
 }
 

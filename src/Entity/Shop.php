@@ -53,7 +53,7 @@ class Shop
     {
         static $psRewritingSettings = null;
         if ($psRewritingSettings === null) {
-            $psRewritingSettings = (int) \Configuration::get('PS_REWRITING_SETTINGS', null, null, $idShop);
+            $psRewritingSettings = (int) Config::get('PS_REWRITING_SETTINGS', null);
         }
         if (!$context) {
             $context = Context::getContext();
@@ -87,7 +87,7 @@ class Shop
         $dbQuery = new DbQuery();
         $dbQuery->select('SUM(total_paid_tax_incl)');
         $dbQuery->from('orders');
-        $dbQuery->where('current_state = ' . \Configuration::get('PS_OS_PAYMENT'));
+        $dbQuery->where('current_state = ' . Config::get('PS_OS_PAYMENT'));
         $dbQuery->where('valid = 1');
 
         return \Db::getInstance()->getValue($dbQuery);
