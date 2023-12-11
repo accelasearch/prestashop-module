@@ -7,6 +7,14 @@ AccelaSearch Prestashop Module is a Prestashop module that allows you to add a p
 Minimum Prestashop version: 1.7.0 or higher
 Minimum PHP version: 7.1 or higher
 
+## Controller Routing
+
+Routing of ajax calls made by RTK Query is done by official AdminController and managed by a Dispatcher that route the request to src/Controller/CamelCaseController.php dinamically. To add a new route just add row to the controllers/AccelasearchAdmin.php and create a new controller in src/Controller folder.
+
+### React side
+
+Create a new service in react/services folder and add it to the service.js file.
+
 ## Start a local tunnel
 
 You can use localtunnel to expose your local Prestashop installation to the internet.
@@ -17,7 +25,7 @@ npx localtunnel --port 8199
 
 ## Make Commands
 
-All commands needs to be run inside the container.
+Some commands needs to be run inside the container, check **make help** for more info.
 
 ### Lint view
 
@@ -65,6 +73,12 @@ make test
 
 ```bash
 make autoindex
+```
+
+### Create new official release ( see make help for more options )
+
+```bash
+TYPE=patch make release
 ```
 
 ## Write new tests
