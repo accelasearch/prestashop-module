@@ -2,8 +2,12 @@ import { t, cx } from "../utils";
 import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import { useUpdateConfigMutation } from "../services/service";
+import {
+  useUpdateConfigMutation,
+  useUpdateSyncTypeMutation,
+} from "../services/service";
 import toast from "react-hot-toast";
+import PropTypes from "prop-types";
 
 const syncType = [
   {
@@ -36,25 +40,37 @@ const syncPosition = syncType.findIndex(
   (sync) => sync.slug === _AS?.userStatus?.syncType
 );
 
-export default function SyncTypeSelection() {
+export default function SyncTypeSelection({ isOnBoarding = true }) {
   const [selectedSyncType, setSelectedSyncType] = useState(
     syncType[syncPosition]
   );
 
   const [updateConfig] = useUpdateConfigMutation();
+  const [updateSyncType] = useUpdateSyncTypeMutation();
 
   const selectType = (type) => {
+    if (
+      !isOnBoarding &&
+      !confirm(
+        t(
+          "Changing a sync type will remove all of your indexed data and reindex it, incurring in a little delay about between 5-20 minutes, please confirm that you want to proceed."
+        )
+      )
+    )
+      return;
     setSelectedSyncType(type);
-    toast.promise(
-      updateConfig({
-        _ACCELASEARCH_SYNCTYPE: type.slug,
-      }).unwrap(),
-      {
-        loading: t("Saving..."),
-        success: t("Saved"),
-        error: t("Error"),
-      }
-    );
+    const operation = isOnBoarding
+      ? updateConfig({
+          _ACCELASEARCH_SYNCTYPE: type.slug,
+        }).unwrap()
+      : updateSyncType({
+          _ACCELASEARCH_SYNCTYPE: type.slug,
+        }).unwrap();
+    toast.promise(operation, {
+      loading: t("Saving..."),
+      success: t("Saved"),
+      error: t("Error"),
+    });
   };
 
   return (
@@ -118,3 +134,7 @@ export default function SyncTypeSelection() {
     </RadioGroup>
   );
 }
+
+SyncTypeSelection.propTypes = {
+  isOnBoarding: PropTypes.bool,
+};

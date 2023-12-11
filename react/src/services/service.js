@@ -60,6 +60,13 @@ export const serviceApi = createApi({
         body: { configs },
       }),
     }),
+    updateSyncType: builder.mutation({
+      query: (configs) => ({
+        url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=updatesynctype`,
+        method: "POST",
+        body: { configs },
+      }),
+    }),
     updateModule: builder.mutation({
       query: () => ({
         url: `?controller=accelasearchAdmin&token=${token}&ajax=1&action=updateModule`,
@@ -81,6 +88,7 @@ export const {
   useSetShopsMutation,
   useGetAttributesQuery,
   useUpdateConfigMutation,
+  useUpdateSyncTypeMutation,
   useGetCronjobStatusQuery,
   useDisconnectMutation,
   useGetLogsQuery,

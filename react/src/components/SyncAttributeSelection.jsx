@@ -7,7 +7,10 @@ import { setOnBoarding } from "../features/user/userSlice";
 import toast from "react-hot-toast";
 import PropTypes from "prop-types";
 
-export default function SyncAttributeSelection({ withSubmit = true }) {
+export default function SyncAttributeSelection({
+  withSubmit = true,
+  isOnBoarding = true,
+}) {
   const [updateConfig, { isLoading: isSyncSubmitting }] =
     useUpdateConfigMutation();
   const dispatch = useDispatch();
@@ -35,7 +38,7 @@ export default function SyncAttributeSelection({ withSubmit = true }) {
           {t("Select your synchronization type")}
         </h2>
         <div className="mt-6">
-          <SyncTypeSelection />
+          <SyncTypeSelection isOnBoarding={isOnBoarding} />
         </div>
       </div>
       <div>
@@ -69,4 +72,5 @@ export default function SyncAttributeSelection({ withSubmit = true }) {
 
 SyncAttributeSelection.propTypes = {
   withSubmit: PropTypes.bool,
+  isOnBoarding: PropTypes.bool,
 };

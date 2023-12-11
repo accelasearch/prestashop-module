@@ -117,7 +117,6 @@ class Accelasearch extends Module
 
     public function getContent()
     {
-
         $this->context->smarty->assign('module_dir', $this->_path);
 
         if (Tools::getValue('configure') == $this->name) {

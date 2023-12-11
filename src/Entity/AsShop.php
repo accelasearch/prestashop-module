@@ -46,7 +46,58 @@ class AsShop
     public static function softDeleteAllProducts($as_shop_id)
     {
         $dbh = self::getDbh();
-        return $dbh->exec("UPDATE products SET deleted = 1 WHERE siteid = (SELECT id FROM storeviews WHERE cmsdata LIKE '%\"id\":$as_shop_id%')");
+
+        // tables with a relation of products
+        $tables = [
+            "products_attr_datetime",
+            "products_attr_float",
+            "products_attr_int",
+            "products_attr_str",
+            "products_attr_text",
+            "products_children",
+            "stocks",
+        ];
+
+        foreach($tables as $table) {
+            $sql = "
+            UPDATE $table tb 
+            LEFT JOIN products p ON p.id = tb.productid
+            LEFT JOIN storeviews s ON s.id = p.siteid
+            SET tb.deleted = 1
+            WHERE s.cmsdata LIKE '%\"id\":$as_shop_id%'
+            ";
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute();
+        }
+
+        // tables with a relation of storeviews
+        $tables = [
+            "products_attr_label",
+            "products_images_lbl",
+            "warehouses"
+        ];
+
+        foreach($tables as $table) {
+            $sql = "
+            UPDATE $table tb 
+            LEFT JOIN storeviews s ON s.id = tb.storeviewid
+            SET tb.deleted = 1
+            WHERE s.cmsdata LIKE '%\"id\":$as_shop_id%'
+            ";
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute();
+        }
+
+
+        $sql = "
+        UPDATE products p
+        LEFT JOIN storeviews s ON s.id = p.siteid
+        SET p.deleted = 1
+        WHERE s.cmsdata LIKE '%\"id\":$as_shop_id%'
+        ";
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
     }
 
     public static function create(string $url, string $iso)

@@ -41,7 +41,7 @@ export default function Settings() {
         <ShopSelection isOnBoarding={false} />
       </div>
       <div className="mt-12">
-        <SyncAttributeSelection withSubmit={false} />
+        <SyncAttributeSelection isOnBoarding={false} withSubmit={false} />
       </div>
     </div>
   );

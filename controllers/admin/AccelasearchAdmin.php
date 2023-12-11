@@ -25,10 +25,8 @@ if (!defined('_PS_VERSION_')) {
 
 use Accelasearch\Accelasearch\Dispatcher\Dispatcher;
 
-
 class AccelasearchAdminController extends ModuleAdminController
 {
-
     private $dispatcher;
 
     public function __construct()
@@ -72,6 +70,11 @@ class AccelasearchAdminController extends ModuleAdminController
     }
 
     public function ajaxProcessUpdateConfig()
+    {
+        $this->dispatcher->handleRequest(__FUNCTION__);
+    }
+
+    public function ajaxProcessUpdateSyncType()
     {
         $this->dispatcher->handleRequest(__FUNCTION__);
     }
