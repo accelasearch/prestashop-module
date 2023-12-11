@@ -53,7 +53,7 @@ export default function SyncTypeSelection({ isOnBoarding = true }) {
       !isOnBoarding &&
       !confirm(
         t(
-          "Changing a sync type will remove all of your indexed data and reindex it, incurring in a little delay about between 5-20 minutes, please confirm that you want to proceed."
+          "Changing a sync type will remove all of your indexed data and reindex it, incurring in a little delay about between 5-20 minutes, you have to reconfigure your query and results terms from backoffice, please confirm that you want to proceed."
         )
       )
     )
