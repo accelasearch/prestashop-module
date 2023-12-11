@@ -1,4 +1,9 @@
 
+## [1.0.15] - 2023-12-11
+### :bug: Bug Fixes
+- [`967c389`](https://github.com/accelasearch/prestashop-module/commit/967c3897eb2d68d8e4e0a602d2e9dfe3b538f05f) - **tables**: added missing tables on sync type change *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.14] - 2023-12-11
 ### :sparkles: New Features
 - [`98206f3`](https://github.com/accelasearch/prestashop-module/commit/98206f3d76599d7e165c92f560f1aea915210814) - added translation e new asclient calls *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -30,3 +35,4 @@
 [1.0.12]: https://github.com/accelasearch/prestashop-module/compare/1.0.11...1.0.12
 [1.0.13]: https://github.com/accelasearch/prestashop-module/compare/1.0.12...1.0.13
 [1.0.14]: https://github.com/accelasearch/prestashop-module/compare/1.0.13...1.0.14
+[1.0.15]: https://github.com/accelasearch/prestashop-module/compare/1.0.14...1.0.15
