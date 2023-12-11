@@ -1,4 +1,14 @@
 
+## [1.0.14] - 2023-12-11
+### :sparkles: New Features
+- [`98206f3`](https://github.com/accelasearch/prestashop-module/commit/98206f3d76599d7e165c92f560f1aea915210814) - added translation e new asclient calls *(commit by [@buggyzap](https://github.com/buggyzap))*
+- [`e1cee3e`](https://github.com/accelasearch/prestashop-module/commit/e1cee3e4f00aaeb034c98e96f3d19acb5560fb83) - **synctype**: added new check on sync type, reindex data on change and new controller *(commit by [@buggyzap](https://github.com/buggyzap))*
+- [`4638eb3`](https://github.com/accelasearch/prestashop-module/commit/4638eb3f214958c57d7e293e81e489ce97139b72) - **make**: added new release command [skip ci] *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+### :white_check_mark: Tests
+- [`7ca05bf`](https://github.com/accelasearch/prestashop-module/commit/7ca05bf9f22e41bb19b311b1dbc74218bb011fa1) - **e2e**: changed string with updated translation *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.13] - 2023-12-07
 ### :sparkles: New Features
 - [`f4ae0e2`](https://github.com/accelasearch/prestashop-module/commit/f4ae0e2cf729b336d87d85b706e5f6972aee4873) - new translations and removed text in help page *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -19,3 +29,4 @@
 
 [1.0.12]: https://github.com/accelasearch/prestashop-module/compare/1.0.11...1.0.12
 [1.0.13]: https://github.com/accelasearch/prestashop-module/compare/1.0.12...1.0.13
+[1.0.14]: https://github.com/accelasearch/prestashop-module/compare/1.0.13...1.0.14
