@@ -50,8 +50,6 @@ class Accelasearch extends Module
         $this->description = $this->l('Boost your search engine with AI');
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
-
-        (new Upgrade($this))->upgrade();
     }
 
     public function install()
@@ -117,6 +115,8 @@ class Accelasearch extends Module
 
     public function getContent()
     {
+        (new Upgrade($this))->upgrade();
+        
         $this->context->smarty->assign('module_dir', $this->_path);
 
         if (Tools::getValue('configure') == $this->name) {

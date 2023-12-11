@@ -53,7 +53,7 @@ class Shop
     {
         static $psRewritingSettings = null;
         if ($psRewritingSettings === null) {
-            $psRewritingSettings = (int) Config::get('PS_REWRITING_SETTINGS', null);
+            $psRewritingSettings = (int) \Configuration::get('PS_REWRITING_SETTINGS', null);
         }
         if (!$context) {
             $context = Context::getContext();
