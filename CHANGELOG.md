@@ -1,4 +1,9 @@
 
+## [1.0.16] - 2023-12-11
+### :bug: Bug Fixes
+- [`5bb67c8`](https://github.com/accelasearch/prestashop-module/commit/5bb67c82431ee884c1c7aa0ddb002db80b1ed0d5) - **shopcontext**: shop context_all can cause issues in some modules in frontoffice *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.15] - 2023-12-11
 ### :bug: Bug Fixes
 - [`967c389`](https://github.com/accelasearch/prestashop-module/commit/967c3897eb2d68d8e4e0a602d2e9dfe3b538f05f) - **tables**: added missing tables on sync type change *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -36,3 +41,4 @@
 [1.0.13]: https://github.com/accelasearch/prestashop-module/compare/1.0.12...1.0.13
 [1.0.14]: https://github.com/accelasearch/prestashop-module/compare/1.0.13...1.0.14
 [1.0.15]: https://github.com/accelasearch/prestashop-module/compare/1.0.14...1.0.15
+[1.0.16]: https://github.com/accelasearch/prestashop-module/compare/1.0.15...1.0.16
