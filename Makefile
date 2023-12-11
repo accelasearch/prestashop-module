@@ -13,8 +13,8 @@ merge:
 	git push
 	git checkout development
 
-# target: release - Create a release to github
-release:
+# target: tag - Create a tag to github
+tag:
 	git tag -a $(VERSION) -m "Release $(VERSION)"
 	git push --tags
 
@@ -110,5 +110,30 @@ deploy:
 	@scp -i $(SSH_KEY_PATH) -r ./releases/$(MODULE_NAME).zip $(LIVE_USER)@$(LIVE_HOST):$(REMOTE_MODULE_PATH)/$(MODULE_NAME).zip
 	@ssh -i $(SSH_KEY_PATH) $(LIVE_USER)@$(LIVE_HOST) "cd $(REMOTE_MODULE_PATH) && unzip -o $(MODULE_NAME).zip && rm -rf $(MODULE_NAME).zip"
 
-
-
+# target: release - Create a new release, accepts TYPE=major|minor|patch as argument
+release:
+	@echo "Releasing $(MODULE_NAME)" && \
+	MODULE_TAG=`git describe --abbrev=0 --tags`; \
+	echo "Current tag: $$MODULE_TAG for $(MODULE_NAME)" && \
+	if [ $$TYPE = "major" ]; then \
+		MODULE_TAG=`echo $$MODULE_TAG | awk -F. -v OFS=. '{$$1 = $$1 + 1; $$2 = 0; $$3 = 0;} 1'`; \
+	elif [ $$TYPE = "minor" ]; then \
+		MODULE_TAG=`echo $$MODULE_TAG | awk -F. -v OFS=. '{$$2 = $$2 + 1; $$3 = 0;} 1'`; \
+	elif [ $$TYPE = "patch" ]; then \
+		MODULE_TAG=`echo $$MODULE_TAG | awk -F. -v OFS=. '{$$3 = $$3 + 1;} 1'`; \
+	else \
+		echo "Invalid release type"; \
+		exit 1; \
+	fi; \
+	echo "New tag: $$MODULE_TAG for $(MODULE_NAME)" && \
+	read -p "Are you sure you want to create a new release? [y/N] " -n 1 -r; \
+	echo ; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "Releasing $(MODULE_NAME)"; \
+	else \
+		echo "Aborting"; \
+		exit 1; \
+	fi; \
+	git tag -a $$MODULE_TAG -m "Release" && git push --tags && \
+	RELEASE_ID=`curl -s -H "Authorization: token $(GITHUB_TOKEN)" -d '{"tag_name": "'$$MODULE_TAG'", "name": "Release '$$MODULE_TAG'", "body": "Release description", "draft": false, "prerelease": false}' https://api.github.com/repos/accelasearch/prestashop-module/releases | grep -oP '(?<="id":)[^,]*'` && \
+    echo "Release created with ID: $$RELEASE_ID"
