@@ -36,13 +36,11 @@ test.describe("Test Dashboard page", () => {
     await page.click("button.bg-orange-600");
 
     // wait for loading
-    await expect(
-      page.getByText("Unlocking and sending report...")
-    ).toBeVisible();
+    await expect(page.getByText("Sblocco ed invio report...")).toBeVisible();
 
     // wait for success
     await expect(
-      page.getByText("Cronjob unlocked and report sent successfully.")
+      page.getByText("Cronjob sbloccato e report inviato")
     ).toBeVisible({ timeout: 20000 });
 
     // check that notice is not visible anymore
