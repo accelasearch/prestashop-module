@@ -20,19 +20,16 @@ class Lock
 
     public function create()
     {
-        Shop::setContext(Shop::CONTEXT_ALL);
         return Config::updateValue("_ACCELASEARCH_" . $this->name . "_LOCK", $this->timestamp);
     }
 
     public function delete()
     {
-        Shop::setContext(Shop::CONTEXT_ALL);
         return Config::deleteByName("_ACCELASEARCH_" . $this->name . "_LOCK");
     }
 
     public function isLocked(): bool
     {
-        Shop::setContext(Shop::CONTEXT_ALL);
         return (bool) Config::get("_ACCELASEARCH_" . $this->name . "_LOCK", false);
     }
 
@@ -72,7 +69,7 @@ class Lock
     }
 
     /**
-     * @param mixed $timestamp 
+     * @param mixed $timestamp
      * @return self
      */
     public function setTimestamp($timestamp): self
@@ -90,7 +87,7 @@ class Lock
     }
 
     /**
-     * @param mixed $name 
+     * @param mixed $name
      * @return self
      */
     public function setName($name): self

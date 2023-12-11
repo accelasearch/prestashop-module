@@ -56,6 +56,9 @@ class AsShop
             "products_attr_text",
             "products_children",
             "stocks",
+            "prices",
+            "products_categories",
+            "products_images",
         ];
 
         foreach($tables as $table) {
