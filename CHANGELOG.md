@@ -1,4 +1,9 @@
 
+## [1.0.19] - 2023-12-13
+### :recycle: Refactors
+- [`5a33e75`](https://github.com/accelasearch/prestashop-module/commit/5a33e757d81c6743a5a2c9c944485f76fd418c2d) - **synctype**: delete sync are moved after generation of the new feed *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.18] - 2023-12-13
 ### :bug: Bug Fixes
 - [`ad7fc94`](https://github.com/accelasearch/prestashop-module/commit/ad7fc94ffc123c7d51ce654a6c5ea67d05e3b992) - **client**: fixed url *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -57,3 +62,4 @@
 [1.0.16]: https://github.com/accelasearch/prestashop-module/compare/1.0.15...1.0.16
 [1.0.17]: https://github.com/accelasearch/prestashop-module/compare/1.0.16...1.0.17
 [1.0.18]: https://github.com/accelasearch/prestashop-module/compare/1.0.17...1.0.18
+[1.0.19]: https://github.com/accelasearch/prestashop-module/compare/1.0.18...1.0.19
