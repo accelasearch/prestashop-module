@@ -1,4 +1,9 @@
 
+## [1.0.18] - 2023-12-13
+### :bug: Bug Fixes
+- [`ad7fc94`](https://github.com/accelasearch/prestashop-module/commit/ad7fc94ffc123c7d51ce654a6c5ea67d05e3b992) - **client**: fixed url *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.17] - 2023-12-13
 ### :sparkles: New Features
 - [`e61592d`](https://github.com/accelasearch/prestashop-module/commit/e61592d99c0cbd80dbce55f0d2dc44fa312937d6) - **deletesync**: added new api that delete the synced shops inside configuration and collector *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -51,3 +56,4 @@
 [1.0.15]: https://github.com/accelasearch/prestashop-module/compare/1.0.14...1.0.15
 [1.0.16]: https://github.com/accelasearch/prestashop-module/compare/1.0.15...1.0.16
 [1.0.17]: https://github.com/accelasearch/prestashop-module/compare/1.0.16...1.0.17
+[1.0.18]: https://github.com/accelasearch/prestashop-module/compare/1.0.17...1.0.18
