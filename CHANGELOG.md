@@ -1,4 +1,12 @@
 
+## [1.0.17] - 2023-12-13
+### :sparkles: New Features
+- [`e61592d`](https://github.com/accelasearch/prestashop-module/commit/e61592d99c0cbd80dbce55f0d2dc44fa312937d6) - **deletesync**: added new api that delete the synced shops inside configuration and collector *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+### :wrench: Chores
+- [`aa72b58`](https://github.com/accelasearch/prestashop-module/commit/aa72b58a3be8f3ba84918d415cb2d2581ad9571b) - **trans**: changed notice text *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.16] - 2023-12-11
 ### :bug: Bug Fixes
 - [`5bb67c8`](https://github.com/accelasearch/prestashop-module/commit/5bb67c82431ee884c1c7aa0ddb002db80b1ed0d5) - **shopcontext**: shop context_all can cause issues in some modules in frontoffice *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -42,3 +50,4 @@
 [1.0.14]: https://github.com/accelasearch/prestashop-module/compare/1.0.13...1.0.14
 [1.0.15]: https://github.com/accelasearch/prestashop-module/compare/1.0.14...1.0.15
 [1.0.16]: https://github.com/accelasearch/prestashop-module/compare/1.0.15...1.0.16
+[1.0.17]: https://github.com/accelasearch/prestashop-module/compare/1.0.16...1.0.17
