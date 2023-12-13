@@ -21,14 +21,13 @@ class UpdateSyncTypeController extends AbstractController implements ControllerI
             }
             try {
                 $shops = json_decode(Config::get("_ACCELASEARCH_SHOPS_TO_SYNC"), true);
-                foreach($shops as $shop) {
+                foreach ($shops as $shop) {
                     $as_shop_id = (int) $shop['id_shop_as'] ?? 0;
                     $id_shop = (int) $shop['id_shop'];
                     $id_lang = (int) $shop['id_lang'];
-                    if(empty($as_shop_id)) {
+                    if (empty($as_shop_id)) {
                         throw new \Exception("No id_shop_as found for id_shop $id_shop and id_lang $id_lang");
                     }
-                    AsShop::softDeleteAllProducts($as_shop_id);
                     AsClient::deleteSync($as_shop_id);
                     Config::updateValue($key, $value);
                 }
