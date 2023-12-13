@@ -2,6 +2,7 @@
 
 namespace Accelasearch\Accelasearch\Command;
 
+use Accelasearch\Accelasearch\Api\AsClient;
 use Accelasearch\Accelasearch\Config\Config;
 use Accelasearch\Accelasearch\Decorator\ProductDecorator;
 use Accelasearch\Accelasearch\Entity\Language;
@@ -53,6 +54,16 @@ class FeedFacade
         $feed = new Feed($shop, $language, $productService);
         $feed->setDebug(true);
         $feed->generate($output);
+
+        if ((int) Config::get("_ACCELASEARCH_DELETE_SYNC") === 1) {
+            try {
+                AsClient::deleteSync($shop->getAsShopId());
+            } catch (\Exception $e) {
+                Log::write("Error deleting sync for shop $id_shop and language $id_lang", Log::ERROR, Log::CONTEXT_PRODUCT_FEED_CREATION);
+            } finally {
+                Config::deleteByName("_ACCELASEARCH_DELETE_SYNC");
+            }
+        }
 
         Log::write("Feed generated", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
     }

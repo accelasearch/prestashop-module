@@ -2,10 +2,7 @@ import { t, cx } from "../utils";
 import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import {
-  useUpdateConfigMutation,
-  useUpdateSyncTypeMutation,
-} from "../services/service";
+import { useUpdateConfigMutation } from "../services/service";
 import toast from "react-hot-toast";
 import PropTypes from "prop-types";
 
@@ -46,14 +43,13 @@ export default function SyncTypeSelection({ isOnBoarding = true }) {
   );
 
   const [updateConfig] = useUpdateConfigMutation();
-  const [updateSyncType] = useUpdateSyncTypeMutation();
 
   const selectType = (type) => {
     if (
       !isOnBoarding &&
       !confirm(
         t(
-          "Changing a sync type will remove all of your indexed data and reindex it, incurring in a little delay about between 5-20 minutes, you have to reconfigure your query and results terms from backoffice, please confirm that you want to proceed."
+          "Changing a sync type will remove all of your indexed data and reindex it, incurring in a little delay about between 5-10 minutes, you have to reconfigure your query and results terms from Accelasearch backoffice, please confirm that you want to proceed."
         )
       )
     )
@@ -63,8 +59,9 @@ export default function SyncTypeSelection({ isOnBoarding = true }) {
       ? updateConfig({
           _ACCELASEARCH_SYNCTYPE: type.slug,
         }).unwrap()
-      : updateSyncType({
+      : updateConfig({
           _ACCELASEARCH_SYNCTYPE: type.slug,
+          _ACCELASEARCH_DELETE_SYNC: 1,
         }).unwrap();
     toast.promise(operation, {
       loading: t("Saving..."),

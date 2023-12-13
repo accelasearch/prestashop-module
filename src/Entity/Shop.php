@@ -27,6 +27,19 @@ class Shop
         return $this->id;
     }
 
+    public function getAsShopId()
+    {
+        $shops = json_decode(Config::get("_ACCELASEARCH_SHOPS_TO_SYNC"), true);
+        foreach ($shops as $shop) {
+            $as_shop_id = (int) $shop['id_shop_as'] ?? 0;
+            $id_shop = (int) $shop['id_shop'];
+            if ($id_shop === $this->id) {
+                return $as_shop_id;
+            }
+        }
+        return 0;
+    }
+
     public static function getShopsInfo()
     {
         \Shop::setContext(\Shop::CONTEXT_ALL);
