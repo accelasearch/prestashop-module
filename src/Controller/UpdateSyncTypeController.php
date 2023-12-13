@@ -4,7 +4,6 @@ namespace Accelasearch\Accelasearch\Controller;
 
 use Accelasearch\Accelasearch\Api\AsClient;
 use Accelasearch\Accelasearch\Config\Config;
-use Accelasearch\Accelasearch\Entity\AsShop;
 
 class UpdateSyncTypeController extends AbstractController implements ControllerInterface
 {

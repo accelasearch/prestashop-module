@@ -92,7 +92,7 @@ class AsClient extends GenericClientAbstract
     public static function deleteSync($id)
     {
         $shopRequest = self::getInstance()->client->delete(
-            "integrations/google-shopping/shops/$id/synchronization",
+            "https://svc11.accelasearch.net/integrations/google-shopping/shops/$id/synchronization",
             [
                 "headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")],
             ]
