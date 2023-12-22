@@ -81,6 +81,9 @@ class Accelasearch extends Module
 
     public function hookActionAdminControllerSetMedia()
     {
+        $module = Tools::getValue("configure");
+        if ($module !== $this->name)
+            return;
         $actions_controller_link = $this->context->link->getAdminLink('AccelasearchAdmin');
         Media::addJsDef([
             'accelasearch_controller_url' => $actions_controller_link,
@@ -116,7 +119,7 @@ class Accelasearch extends Module
     public function getContent()
     {
         (new Upgrade($this))->upgrade();
-        
+
         $this->context->smarty->assign('module_dir', $this->_path);
 
         if (Tools::getValue('configure') == $this->name) {
