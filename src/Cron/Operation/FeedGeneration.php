@@ -32,6 +32,6 @@ class FeedGeneration extends OperationAbstract
 
     public function getUpdateTiming(): int
     {
-        return 60 * 15;
+        return 60 * 60;
     }
 }
