@@ -1,4 +1,9 @@
 
+## [1.0.22] - 2024-04-19
+### :bug: Bug Fixes
+- [`6811dfc`](https://github.com/accelasearch/prestashop-module/commit/6811dfcfc74c71be7c301a04806acbb3ee6cf74d) - updated generated url without lang suffix *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.21] - 2024-03-28
 ### :recycle: Refactors
 - [`86611cd`](https://github.com/accelasearch/prestashop-module/commit/86611cdcafeda9967d9c8650fa310e4ad65e97e4) - changed cronjob execution timing *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -75,3 +80,4 @@
 [1.0.19]: https://github.com/accelasearch/prestashop-module/compare/1.0.18...1.0.19
 [1.0.20]: https://github.com/accelasearch/prestashop-module/compare/1.0.19...1.0.20
 [1.0.21]: https://github.com/accelasearch/prestashop-module/compare/1.0.20...1.0.21
+[1.0.22]: https://github.com/accelasearch/prestashop-module/compare/1.0.21...1.0.22
