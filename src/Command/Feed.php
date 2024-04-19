@@ -19,6 +19,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\ProgressIndicator;
 use XMLReader;
 use XMLWriter;
+use Tools;
 
 class Feed
 {
@@ -56,7 +57,7 @@ class Feed
         $progressIndicator = null;
         $progressBar = null;
 
-        if(php_sapi_name() === "cli") {
+        if (php_sapi_name() === "cli") {
             $progressIndicator = new ProgressIndicator($output);
             $progressIndicator->start("Getting products from Database");
         }
@@ -78,19 +79,19 @@ class Feed
             $totalProcessed += count($products);
             $iteration_number++;
             $totalProducts -= self::FACTOR;
-            if(php_sapi_name() === "cli") {
+            if (php_sapi_name() === "cli") {
                 $progressIndicator->finish(count($products) . " Products retrieved");
                 echo "\n\n";
             }
 
             Log::write(count($products) . " Products retrieved - " . $iteration_number . " iteration", Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
 
-            if(php_sapi_name() === "cli") {
+            if (php_sapi_name() === "cli") {
                 $progressBar = new ProgressBar($output, count($products));
                 $progressBar->start();
             }
 
-            foreach($products as $product) {
+            foreach ($products as $product) {
 
                 $item = new GoogleShoppingProduct();
                 $feedProduct = ProductBuilderFactory::create(
@@ -101,7 +102,7 @@ class Feed
                 $feedProduct->build($this->shop, $this->language);
                 $feed->addProduct($feedProduct->getItem());
 
-                if(php_sapi_name() === "cli") {
+                if (php_sapi_name() === "cli") {
                     $progressBar->advance();
                 }
             }
@@ -117,9 +118,9 @@ class Feed
                 echo $message;
             }
 
-        } while($totalProducts > 0);
+        } while ($totalProducts > 0);
 
-        if(php_sapi_name() === "cli") {
+        if (php_sapi_name() === "cli") {
             $progressBar->finish();
             echo "\n\n";
         }
@@ -130,7 +131,7 @@ class Feed
         $this->execution_time = ($end - $start);
         $this->memory_used = ($memory / 1024 / 1024);
 
-        if($this->debug) {
+        if ($this->debug) {
             echo "Time: " . ($end - $start) . "\n";
             echo "Memory: " . ($memory / 1024 / 1024) . " MB\n";
         }
@@ -139,15 +140,15 @@ class Feed
 
         // create an array of filenames by iterations number
         $filePaths = [];
-        for($i = 0; $i < $iteration_number; $i++) {
+        for ($i = 0; $i < $iteration_number; $i++) {
             $filePaths[] = $this->getOutputPath($i + 1);
         }
 
         $this->mergeXmlFiles($filePaths, $this->getOutputPath());
 
         // remove all files except the merged one
-        foreach($filePaths as $filePath) {
-            if($filePath !== $this->getOutputPath()) {
+        foreach ($filePaths as $filePath) {
+            if ($filePath !== $this->getOutputPath()) {
                 $this->filesystem->remove($filePath);
             }
         }
@@ -155,7 +156,7 @@ class Feed
         AsShop::updateFeedUrlByIdShopAndIdLang($this->shop->getId(), $this->language->getId(), $this->getFeedUrl());
 
         Log::write("Feed generated in " . $this->execution_time . ", memory used: " . $this->memory_used, Log::INFO, Log::CONTEXT_PRODUCT_FEED_CREATION);
-        echo "Feed generated at " . $this->getOutputPath() . "\n\n";
+        echo "Feed reachable via " . $this->getFeedUrl() . " and generated at " . $this->getOutputPath() . "\n\n";
         return $this->getFeedUrl();
     }
 
@@ -256,6 +257,7 @@ class Feed
 
     public function getFeedUrl()
     {
-        return $this->shop->getUrl($this->language->getId()) . 'modules/accelasearch/' . Config::FEED_OUTPUT_PATH . Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN") . "-" . $this->shop->getId() . '_' . $this->language->getId() . '.xml';
+        $baseUrl = Tools::getShopDomainSsl(true, true);
+        return $baseUrl . '/modules/accelasearch/' . Config::FEED_OUTPUT_PATH . Config::get("_ACCELASEARCH_FEED_RANDOM_TOKEN") . "-" . $this->shop->getId() . '_' . $this->language->getId() . '.xml';
     }
 }
