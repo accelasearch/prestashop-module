@@ -78,7 +78,12 @@ class Shop
             $idLang = $context->language->id;
         }
 
-        return \Language::getIsoById($idLang) . '/';
+        $iso = \Language::getIsoById($idLang);
+        if ($iso === "gb") {
+            $iso = "en";
+        }
+
+        return $iso . '/';
     }
 
     public function getUrl($id_lang)
@@ -92,6 +97,9 @@ class Shop
     {
         $url = $this->getUrl($id_lang);
         $iso = $this->context->language->iso_code;
+        if ($iso === "gb") {
+            $iso = "en";
+        }
         return md5($url . $iso);
     }
 

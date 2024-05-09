@@ -97,6 +97,8 @@ class Accelasearch extends Module
     {
         $id_shop = $this->context->shop->id;
         $iso = $this->context->language->iso_code;
+        if ($iso === "gb")
+            $iso = "en";
         $id_lang = $this->context->language->id;
         $shop = new AccelasearchShop($id_shop);
 

@@ -18,7 +18,7 @@ class AsShop
     public static function getDbh()
     {
         $apiKey = Config::get("_ACCELASEARCH_API_KEY");
-        if(empty($apiKey)) {
+        if (empty($apiKey)) {
             throw new \Exception("No API key found");
         }
         $client = Client::fromApiKey($apiKey);
@@ -61,7 +61,7 @@ class AsShop
             "products_images",
         ];
 
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             $sql = "
             UPDATE $table tb 
             LEFT JOIN products p ON p.id = tb.productid
@@ -80,7 +80,7 @@ class AsShop
             "warehouses"
         ];
 
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             $sql = "
             UPDATE $table tb 
             LEFT JOIN storeviews s ON s.id = tb.storeviewid
@@ -105,7 +105,7 @@ class AsShop
 
     public static function create(string $url, string $iso)
     {
-        if(self::$shop_mapper === null) {
+        if (self::$shop_mapper === null) {
             self::setupShopMapper();
         }
         $cms = new Cms(60, "Prestashop Module", "1.0");
@@ -117,7 +117,7 @@ class AsShop
 
     public static function getShops()
     {
-        if(self::$shop_mapper === null) {
+        if (self::$shop_mapper === null) {
             self::setupShopMapper();
         }
         return self::$shop_mapper->search();
@@ -126,8 +126,8 @@ class AsShop
     public static function getByUrl(string $url)
     {
         $shops = self::getShops();
-        foreach($shops as $shop) {
-            if($shop->getUrl() === $url) {
+        foreach ($shops as $shop) {
+            if ($shop->getUrl() === $url) {
                 return $shop;
             }
         }
@@ -137,8 +137,8 @@ class AsShop
     public static function getRealIdByIdShopAndIdLang($id_shop, $id_lang)
     {
         $shops = json_decode(Config::get("_ACCELASEARCH_SHOPS_TO_SYNC"), true);
-        foreach($shops as $shop) {
-            if((int)$shop['id_shop'] === (int)$id_shop && (int)$shop['id_lang'] === (int)$id_lang) {
+        foreach ($shops as $shop) {
+            if ((int) $shop['id_shop'] === (int) $id_shop && (int) $shop['id_lang'] === (int) $id_lang) {
                 return (int) $shop['id_shop_as'];
             }
         }
@@ -148,7 +148,7 @@ class AsShop
     public static function updateFeedUrlByIdShopAndIdLang($id_shop, $id_lang, $feedUrl)
     {
         $id_shop_as = self::getRealIdByIdShopAndIdLang($id_shop, $id_lang);
-        if($id_shop_as === false) {
+        if ($id_shop_as === false) {
             throw new \Exception("No id_shop_as found for id_shop $id_shop and id_lang $id_lang");
         }
         $data = [
