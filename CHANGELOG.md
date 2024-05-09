@@ -1,4 +1,9 @@
 
+## [1.0.23] - 2024-05-09
+### :bug: Bug Fixes
+- [`38830c5`](https://github.com/accelasearch/prestashop-module/commit/38830c5b1d00c7716b9502b1cf4e40e2844698c5) - fixed gb iso_code *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.22] - 2024-04-19
 ### :bug: Bug Fixes
 - [`6811dfc`](https://github.com/accelasearch/prestashop-module/commit/6811dfcfc74c71be7c301a04806acbb3ee6cf74d) - updated generated url without lang suffix *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -81,3 +86,4 @@
 [1.0.20]: https://github.com/accelasearch/prestashop-module/compare/1.0.19...1.0.20
 [1.0.21]: https://github.com/accelasearch/prestashop-module/compare/1.0.20...1.0.21
 [1.0.22]: https://github.com/accelasearch/prestashop-module/compare/1.0.21...1.0.22
+[1.0.23]: https://github.com/accelasearch/prestashop-module/compare/1.0.22...1.0.23
