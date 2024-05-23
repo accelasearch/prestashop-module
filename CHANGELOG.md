@@ -1,4 +1,9 @@
 
+## [1.0.24] - 2024-05-23
+### :bug: Bug Fixes
+- [`993be74`](https://github.com/accelasearch/prestashop-module/commit/993be74e1da640b3d31b163d995d068bf7c11435) - missing feature name cause an error on feed generation *(commit by [@buggyzap](https://github.com/buggyzap))*
+
+
 ## [1.0.23] - 2024-05-09
 ### :bug: Bug Fixes
 - [`38830c5`](https://github.com/accelasearch/prestashop-module/commit/38830c5b1d00c7716b9502b1cf4e40e2844698c5) - fixed gb iso_code *(commit by [@buggyzap](https://github.com/buggyzap))*
@@ -87,3 +92,4 @@
 [1.0.21]: https://github.com/accelasearch/prestashop-module/compare/1.0.20...1.0.21
 [1.0.22]: https://github.com/accelasearch/prestashop-module/compare/1.0.21...1.0.22
 [1.0.23]: https://github.com/accelasearch/prestashop-module/compare/1.0.22...1.0.23
+[1.0.24]: https://github.com/accelasearch/prestashop-module/compare/1.0.23...1.0.24
