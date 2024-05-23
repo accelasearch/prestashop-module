@@ -58,6 +58,8 @@ abstract class ProductBuilderAbstract
         // custom product attributes
         if (!empty($this->product["features"])) {
             foreach ($this->product["features"] as $feature_name => $feature_value) {
+                if (empty($feature_name) || empty($feature_value))
+                    continue;
                 $feature_name = preg_replace("/[^A-Za-z0-9]/", "", $feature_name);
                 $this->item->setAttribute($feature_name, $feature_value, true);
             }
