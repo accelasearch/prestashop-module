@@ -49,26 +49,26 @@ class AsClient extends GenericClientAbstract
 
     public static function getCollectorCredentials()
     {
-        $request = self::getInstance()->client->get('collector', ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
+        $request = self::getInstance()->client->get(Config::ACCELASEARCH_ENDPOINT . 'collector', ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
         return self::checkRequest($request, 'collector');
     }
 
     public static function notifyShops()
     {
-        $request = self::getInstance()->client->post('shops/notify', ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
+        $request = self::getInstance()->client->post(Config::ACCELASEARCH_ENDPOINT . 'shops/notify', ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
         return self::checkRequest($request, 'shops/notify');
     }
 
     public static function convertIdCollectorToReal($id_collector)
     {
-        $request = self::getInstance()->client->get("shops/$id_collector/convert", ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
+        $request = self::getInstance()->client->get(Config::ACCELASEARCH_ENDPOINT . "shops/$id_collector/convert", ["headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")]]);
         $result = self::checkRequest($request, 'shops/' . $id_collector . '/convert');
         return $result["shopIdentifier"];
     }
 
     public static function apiKeyVerify($key): bool
     {
-        $request = self::getInstance()->client->get('collector', ["headers" => ["X-Accelasearch-Apikey" => $key]]);
+        $request = self::getInstance()->client->get(Config::ACCELASEARCH_ENDPOINT . 'collector', ["headers" => ["X-Accelasearch-Apikey" => $key]]);
         try {
             $req = self::checkRequest($request, 'collector');
             return isset($req['password']);
@@ -80,7 +80,7 @@ class AsClient extends GenericClientAbstract
     public static function updateCmsDataByRealId($id, $data)
     {
         $request = self::getInstance()->client->put(
-            "shops/$id/data",
+            Config::ACCELASEARCH_ENDPOINT . "shops/$id/data",
             [
                 "headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")],
                 "json" => $data
@@ -98,7 +98,7 @@ class AsClient extends GenericClientAbstract
             ]
         );
         $request = self::getInstance()->client->delete(
-            "shops/$id/synchronization",
+            Config::ACCELASEARCH_ENDPOINT . "shops/$id/synchronization",
             [
                 "headers" => ["X-Accelasearch-Apikey" => Config::get("_ACCELASEARCH_API_KEY")],
             ]

@@ -50,7 +50,7 @@ class DgcalClient extends GenericClientAbstract
 
     public function getLatestZip()
     {
-        $req = $this->client->get("module/download/latest");
+        $req = $this->client->get(Config::DGCAL_ENDPOINT . "module/download/latest");
         $statusCode = $req->getStatusCode();
         if ($statusCode !== 200)
             throw new DgcalApiException("module zip download returned status code: " . $statusCode);
@@ -61,7 +61,7 @@ class DgcalClient extends GenericClientAbstract
     public function getLatestVersion()
     {
         try {
-            $req = $this->client->get("module/getLatestVersion");
+            $req = $this->client->get(Config::DGCAL_ENDPOINT . "module/getLatestVersion");
             $req = $this->checkRequest($req);
             return $req['data']['version'] ?? null;
         } catch (\Exception $e) {
@@ -102,7 +102,7 @@ class DgcalClient extends GenericClientAbstract
             "shop_name" => $shop_name,
             "shop_metadata" => $shop_metadata,
         ];
-        $response = $client->post("instances", [
+        $response = $client->post(Config::DGCAL_ENDPOINT . "instances", [
             "body" => $data
         ]);
         self::getInstance()->checkRequest($response);
@@ -117,7 +117,7 @@ class DgcalClient extends GenericClientAbstract
             "gravity" => $gravity,
             "context" => $context,
         ];
-        $response = $client->post("logs", [
+        $response = $client->post(Config::DGCAL_ENDPOINT . "logs", [
             "body" => $data
         ]);
         self::getInstance()->checkRequest($response);
