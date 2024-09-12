@@ -35,6 +35,7 @@ jobs:
         with:
           name: accelasearch
           path: ./
+          include-hidden-files: true
 
   clean-artifacts:
     name: Clean previous artifacts
