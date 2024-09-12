@@ -73,7 +73,6 @@ jobs:
 
       - name: Bundle the production zip
         run: |
-          cd accelasearch
           echo "$CONFIG_FILE" >> .config.prod.yml
           MODULE_NAME=accelasearch make zip-me
 
@@ -83,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GA_ACCESS_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./accelasearch/releases/accelasearch.zip
+          asset_path: ./releases/accelasearch.zip
           asset_name: accelasearch.zip
           asset_content_type: application/zip
 
