@@ -50,8 +50,8 @@ export default function SyncAttributeContentSelection() {
                     key={attribute.id_attribute_group}
                     value={attribute.id_attribute_group}
                     selected={
-                      attribute.id_attribute_group ===
-                      _AS.userStatus.attributes.color.id
+                      parseInt(attribute.id_attribute_group) ===
+                      parseInt(_AS.userStatus.attributes.color.id)
                     }
                   >
                     {attribute.name}
@@ -80,8 +80,8 @@ export default function SyncAttributeContentSelection() {
                     key={attribute.id_attribute_group}
                     value={attribute.id_attribute_group}
                     selected={
-                      attribute.id_attribute_group ===
-                      _AS.userStatus.attributes.size.id
+                      parseInt(attribute.id_attribute_group) ===
+                      parseInt(_AS.userStatus.attributes.size.id)
                     }
                   >
                     {attribute.name}
